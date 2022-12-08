@@ -1,9 +1,10 @@
 {
     "compilerOptions": {
+        "module": "CommonJS",
         "outDir": "bin",
-        "sourceMap": true,
+        // "sourceMap": true,
         "removeComments": true
     },
-    "include": ["src/*.ts"],
+    "include": ["src/**/*.ts"],
     "exclude": []
 }

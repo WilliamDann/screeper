@@ -1,4 +1,4 @@
-import { Job, JobData }      from "./Job";
+import { Job, JobData }      from "./Jobs/Job";
 
 export class JobRunner
 {

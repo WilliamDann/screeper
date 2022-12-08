@@ -1,7 +1,7 @@
 import { JobRunner }    from "./JobRunner";
-import { StepJob }      from "./StepJob";
-import { HarvestJob }   from "./HarvestJob";
-import { TransferJob }  from "./TransferJob";
+import { StepJob }      from "./Jobs/StepJob";
+import { HarvestJob }   from "./Jobs/HarvestJob";
+import { TransferJob }  from "./Jobs/TransferJob";
 
 export function loop()
 {
