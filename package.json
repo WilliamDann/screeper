@@ -11,7 +11,7 @@
   "main": "main.js",
   "scripts": {
     "build": "echo Building... && rm -rf ./bin/* && tsc -p tsconfig.json && echo Done.",
-    "push": "npm run build && echo Pushing... && grunt screeps && echo Done.",
+    "push": "npm run build && echo Pushing... && grunt && echo Done.",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
