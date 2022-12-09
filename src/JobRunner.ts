@@ -61,7 +61,7 @@ export class JobRunner
         this.queue          = Memory['JobRunner'].queue;
 
         this.creepsWorking  = Memory['JobRunner'].creepsWorking as any;
-        this.creepsIdle     = Memory['JobRunner'].creepsIdle as any;
+        this.creepsIdle     = Memory['JobRunner'].creepsIdle    as any;
     }
 
     tick()
@@ -109,8 +109,8 @@ export class JobRunner
         let jobClass = globalThis.jobs[dataObj.jobCode];
         if (!jobClass)
             return null;
-    
-        let obj = { run: jobClass.run } as Job;
+
+        let obj = { run: jobClass.run };
         for (let name in dataObj)
             obj[name] = dataObj[name];
 
@@ -124,7 +124,13 @@ export class JobRunner
 
     pollCreeps()
     {
-        this.creepsIdle = []
+        this.creepsIdle     = []
+        this.creepsWorking  = []
+
+        for (let job of this.running)
+            if (Game.creeps[job.creep])
+                this.creepsWorking.push(job.creep);
+
         for (let name in Game.creeps)
             if (!this.creepIsPolled(name))
                 this.creepsIdle.push(name);
@@ -136,12 +142,10 @@ export class JobRunner
         {
             this.creepsWorking = this.creepsWorking.filter(x => x != name);
             this.creepsIdle.push(name);
+            return;
         }
-        else
-        {
-            this.creepsIdle = this.creepsIdle.filter(x => x != name);
-            this.creepsWorking.push(name);
-        }
+        this.creepsIdle = this.creepsIdle.filter(x => x != name);
+        this.creepsWorking.push(name);
     }
 
     setCreepWorking(name: string, working: boolean=true)
@@ -157,8 +161,9 @@ export class JobRunner
 
         job.creep = creep;
 
-        this.running.push(job);
         this.setCreepWorking(creep);
+        this.running.push(job);
+
         return true;
     }
 
@@ -168,7 +173,7 @@ export class JobRunner
         if (loadedJob == null)
         {
             this.setCreepIdle(job.creep);
-            this.running.splice(this.running.indexOf(job), 1);
+            this.dequeue(job.jobID, true);
             return;
         }
 
@@ -181,7 +186,7 @@ export class JobRunner
         if (status >= 200)
         {
             this.setCreepIdle(job.creep);
-            this.running.splice(this.running.indexOf(job), 1)
+            this.dequeue(job.jobID, true);
         }
     }
     //#endregion

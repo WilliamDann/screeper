@@ -25,7 +25,7 @@ export class HarvestJob implements Job
         if (!creep || !target)
             return JobCode.InvalidJob;
 
-        let code    : number = creep.harvest(target);
+        let code = creep.harvest(target) as number;
 
         if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
             return JobCode.FinishedOk;
