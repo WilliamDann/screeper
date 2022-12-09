@@ -1,6 +1,7 @@
 export interface JobData
 {
     // job info
+    jobID?          : string;
     jobCode         : string;
     creep           : string;
 

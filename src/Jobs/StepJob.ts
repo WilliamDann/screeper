@@ -43,10 +43,7 @@ export class StepJob implements Job
         
         let code = job.run();
         if (code > 199 && code < 300) // 200 OK
-        {
             this.step++;
-            console.log(this.step);
-        }
         if (code > 299) // 300 error
         return JobCode.FinishedError;
         

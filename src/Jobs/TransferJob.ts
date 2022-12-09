@@ -21,6 +21,9 @@ export class TransferJob implements Job
         let creep   : Creep     = Game.creeps[this.creep];
         let target  : Structure = Game.getObjectById(this.target as any) as Structure;
 
+        if (!creep || !target)
+            return JobCode.InvalidJob;
+
         let code    : number = creep.transfer(target, RESOURCE_ENERGY);
         creep.say(code.toString());
         if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
