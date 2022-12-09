@@ -18,14 +18,14 @@ export class TransferJob implements Job
     }
     run()
     {
-        let creep   : Creep     = Game.creeps[this.creep];
-        let target  : Structure = Game.getObjectById(this.target as any) as Structure;
+        let creep = Game.creeps[this.creep];
+        let target = Game.getObjectById(this.target as any) as Structure;
 
         if (!creep || !target)
             return JobCode.InvalidJob;
 
-        let code    : number = creep.transfer(target, RESOURCE_ENERGY);
-        creep.say(code.toString());
+        let code = creep.transfer(target, RESOURCE_ENERGY) as number;
+
         if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
             return JobCode.FinishedOk;
         if (code == ERR_NOT_IN_RANGE)

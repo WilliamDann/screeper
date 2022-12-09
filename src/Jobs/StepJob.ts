@@ -40,13 +40,13 @@ export class StepJob implements Job
         if (job == null)
             return JobCode.InvalidJob;
         job.creep = this.creep;
-        
+
         let code = job.run();
         if (code > 199 && code < 300) // 200 OK
             this.step++;
         if (code > 299) // 300 error
         return JobCode.FinishedError;
-        
+
         if (this.step >= this.steps.length)
             return JobCode.FinishedOk;
         return JobCode.Running;

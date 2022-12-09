@@ -173,7 +173,7 @@ export class JobRunner
         }
 
         let status = loadedJob.run();
-        
+
         // copy state to stored job
         for (let name in job)
             job[name] = loadedJob[name];

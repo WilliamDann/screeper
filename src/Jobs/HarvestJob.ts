@@ -3,7 +3,7 @@ import {Job, JobCode} from "./Job"
 export class HarvestJob implements Job
 {
     jobCode : string;
-    
+
     creep   : string;
     target  : string;
 
@@ -13,14 +13,14 @@ export class HarvestJob implements Job
             this.creep = creep;
         if (target)
             this.target = target;
-            
+
         this.jobCode = "HarvestJob";
     }
 
     run()
     {
-        let creep   : Creep  = Game.creeps[this.creep];
-        let target  : Source = Game.getObjectById(this.target as any) as Source;
+        let creep  = Game.creeps[this.creep];
+        let target = Game.getObjectById(this.target as any) as Source;
 
         if (!creep || !target)
             return JobCode.InvalidJob;

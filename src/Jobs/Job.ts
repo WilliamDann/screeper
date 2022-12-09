@@ -11,7 +11,7 @@ export interface JobData
 }
 export interface Job extends JobData
 {
-    run()           : JobCode;
+    run() : JobCode;
 }
 
 export enum JobCode {

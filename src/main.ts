@@ -5,7 +5,7 @@ import { TransferJob }  from "./Jobs/TransferJob";
 
 export function loop()
 {
-    // TODO yuck
+    // TODO yuck global
     globalThis.jobs = {
         'HarvestJob'    : HarvestJob.prototype,
         'TransferJob'   : TransferJob.prototype,

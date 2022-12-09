@@ -1,9 +1,9 @@
-import _ = require("lodash");
+import _ =              require("lodash");
 import { JobProducer }  from "./JobProducer";
-import { JobRunner } from "./JobRunner";
-import { HarvestJob } from "./Jobs/HarvestJob";
-import { StepJob } from "./Jobs/StepJob";
-import { TransferJob } from "./Jobs/TransferJob";
+import { JobRunner }    from "./JobRunner";
+import { HarvestJob }   from "./Jobs/HarvestJob";
+import { StepJob }      from "./Jobs/StepJob";
+import { TransferJob }  from "./Jobs/TransferJob";
 
 export class SpawnJobProducer implements JobProducer
 {
