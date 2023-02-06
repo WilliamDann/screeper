@@ -1,6 +1,7 @@
-import { Job, JobData }      from "./Jobs/Job";
+import { Runnable } from "../Runnable";
+import { Job, JobData }      from "./Job";
 
-export class JobRunner
+export class JobRunner implements Runnable
 {
     running         : JobData[]; // TODO linked list instead of []
     queue           : JobData[]; // TODO linked list instead of []
@@ -17,7 +18,7 @@ export class JobRunner
         this.creepsWorking  = [];
     }
 
-    //#region queue funcs
+    //#region job queue funcs
 
     enqueue(job: JobData): string
     {
@@ -52,10 +53,10 @@ export class JobRunner
     //#endregion
 
     //#region run funcs
-    setup()
+    pre()
     {
         if (!Memory['JobRunner'])
-            this.teardown();
+            this.post();
 
         this.running        = Memory['JobRunner'].running;
         this.queue          = Memory['JobRunner'].queue;
@@ -82,7 +83,7 @@ export class JobRunner
             job.queueTime = (job.queueTime === undefined) ? 0 : job.queueTime + 1
     }
 
-    teardown()
+    post()
     {
         Memory['JobRunner'] = {
             running         : this.running,

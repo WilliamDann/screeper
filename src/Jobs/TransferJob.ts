@@ -3,7 +3,7 @@ import {Job, JobCode} from "./Job"
 export class TransferJob implements Job
 {
     jobCode : string;
-    
+
     creep   : string;
     target  : string;
 
@@ -13,7 +13,7 @@ export class TransferJob implements Job
             this.creep = creep;
         if (target)
             this.target = target;
-            
+
         this.jobCode = "TransferJob";
     }
     run()

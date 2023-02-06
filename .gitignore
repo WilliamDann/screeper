@@ -1,3 +1,6 @@
+# personal dirs
+md/
+
 # Screeps Files
 .screeps.json
 src/*.js
