@@ -1,5 +1,6 @@
 import { CreepPool } from "../CreepPool";
 import { JobQueue } from "../JobQueue";
+import { Job, JobData } from "../Jobs/Job";
 import { Runnable } from "../Runnable";
 
 export class Agent implements Runnable
@@ -17,20 +18,6 @@ export class Agent implements Runnable
         this.memSignature = memSignature;
     }
 
-    updateCreepPool()
-    {
-        this.creepsIdle     = []
-        this.creepsWorking  = []
-
-        for (let job of this.running)
-            if (Game.creeps[job.creep])
-                this.creepsWorking.push(job.creep);
-
-        for (let name in Game.creeps)
-            if (!this.creepIsPolled(name))
-                this.creepsIdle.push(name);
-    }
-
     pre(): void {
         if (!Memory[this.memSignature])
             this.post();
@@ -43,14 +30,74 @@ export class Agent implements Runnable
     }
 
     tick(): void {
-        this.updateCreepPool();
+        for (let name of this.creepPool.creepsIdle)
+            if (!this.assignNextJob(name))
+                break;
 
+        for (let job of this.jobQueue.running)
+        {
+            this.runJob(job);
+            job.runTime = (job.runTime === undefined) ? 0 : job.runTime + 1
+        }
+
+        for (let job of this.jobQueue.queue)
+            job.queueTime = (job.queueTime === undefined) ? 0 : job.queueTime + 1
     }
 
     post(): void {
         Memory[this.memSignature] = {
             'jobQueue'  : this.jobQueue,
             'creepPool' : this.creepPool
+        }
+    }
+
+    assignNextJob(creep: string): boolean
+    {
+        let job = this.jobQueue.queue.shift();
+        if (job === undefined)
+            return false;
+
+        job.creep = creep;
+
+        this.creepPool.setCreepWorking(creep);
+        this.jobQueue.running.push(job);
+
+        return true;
+    }
+
+    loadJob(dataObj: JobData): (Job|null)
+    {
+        let jobClass = globalThis.jobs[dataObj.jobCode];
+        if (!jobClass)
+            return null;
+
+        let obj = { run: jobClass.run };
+        for (let name in dataObj)
+            obj[name] = dataObj[name];
+
+        return obj as Job;
+    }
+
+    runJob(job: JobData)
+    {
+        let loadedJob = this.loadJob(job);
+        if (loadedJob == null)
+        {
+            this.creepPool.setCreepIdle(job.creep);
+            this.jobQueue.dequeue(job.jobID, true);
+            return;
+        }
+
+        let status = loadedJob.run();
+
+        // copy state to stored job
+        for (let name in job)
+            job[name] = loadedJob[name];
+
+        if (status >= 200)
+        {
+            this.creepPool.setCreepIdle(job.creep);
+            this.jobQueue.dequeue(job.jobID, true);
         }
     }
 }

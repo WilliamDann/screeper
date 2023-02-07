@@ -1,4 +1,3 @@
-import { JobRunner }    from "./Jobs/JobRunner";
 import { StepJob }      from "./Jobs/StepJob";
 import { HarvestJob }   from "./Jobs/HarvestJob";
 import { TransferJob }  from "./Jobs/TransferJob";
@@ -14,22 +13,11 @@ export function loop()
         'StepJob'       : StepJob.prototype,
     }
 
-    let runner  = new JobRunner();
-    let sa      = new SpawnerAgent('ac531d55b6a49c9354066adb');
-    let ha      = new HarvestAgent('362f8681163cfdb38c95e6d4', 'ac531d55b6a49c9354066adb');
+    let agents = [];
+    agents.push(new HarvestAgent('184df4aac96da15b62e42280', '486a98ef1abefbee83d368bd'));
+    agents.push(new SpawnerAgent('486a98ef1abefbee83d368bd'));
 
-    sa.pre();
-    runner.pre();
-
-    if (runner.queue.length == 0)
-    {
-        sa.poll().forEach(job => runner.enqueue(job));
-        ha.poll().forEach(job => runner.enqueue(job));
-    }
-
-    runner.tick();
-    sa.tick();
-
-    runner.post();
-    sa.post();
+    agents.forEach(agent => agent.pre());
+    agents.forEach(agent => agent.tick());
+    agents.forEach(agent => agent.post());
 }

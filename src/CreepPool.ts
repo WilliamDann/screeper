@@ -8,8 +8,8 @@ export class CreepPool
 
     constructor()
     {
-        this.running = [];
-        this.queue   = [];
+        this.creepsWorking = [];
+        this.creepsIdle    = [];
     }
 
     setCreepIdle(name: string, idle: boolean=true)
@@ -29,5 +29,8 @@ export class CreepPool
         this.setCreepIdle(name, !working);
     }
 
-    
+    containsCreep(name: string): boolean
+    {
+        return this.creepsWorking.indexOf(name) != -1 || this.creepsIdle.indexOf(name) != -1;
+    }
 }

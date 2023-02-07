@@ -6,13 +6,15 @@ export interface SpawnRequest
     body: BodyPartConstant[],
 }
 
-export class SpawnerAgent implements Agent
+export class SpawnerAgent extends Agent
 {
     queue   : SpawnRequest[]; // queue of spawn requests
     spawner : string;
 
     constructor(spawner: string)
     {
+        super(`SpawnerAgent_${spawner}`);
+
         this.queue      = [];
         this.spawner    = spawner;
     }
@@ -44,11 +46,13 @@ export class SpawnerAgent implements Agent
 
     pre()
     {
-        if (!Memory['SpawnAgent'])
+        if (!Memory[this.memSignature])
             this.post();
 
-        this.queue   = Memory['SpawnAgent'].queue;
-        this.spawner = Memory['SpawnAgent'].spawner;
+        this.queue   = Memory[this.memSignature].queue;
+        this.spawner = Memory[this.memSignature].spawner;
+
+        super.pre();
     }
 
     tick()
@@ -62,23 +66,18 @@ export class SpawnerAgent implements Agent
         let res = spawner.spawnCreep(req.body, req.name);
 
         if (res != OK)
-            return console.log(res);
+            return;
 
         console.log(`spawned ${req.name}`);
         this.queue.shift();
+
+        super.tick();
     }
 
     post()
     {
-        Memory['SpawnAgent'] = {
-            queue: this.queue,
-            spawner: this.spawner
-        }
-    }
-
-    // TODO ?
-    poll()
-    {
-        return [];
+        super.post();
+        Memory[this.memSignature].queue  = this.queue;
+        Memory[this.memSignature].spawner = this.spawner;
     }
 }

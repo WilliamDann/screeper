@@ -1,5 +1,4 @@
-import { Job, JobData } from './Jobs/Job';
-import { Runnable }     from "./Runnable";
+import { JobData } from './Jobs/Job';
 
 export class JobQueue
 {
@@ -10,6 +9,15 @@ export class JobQueue
     {
         this.running = [];
         this.queue   = [];
+    }
+
+    makeId(n=15): string
+    {
+        let result     = '';
+        const possible = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        for (let i = 0; i < n; i++)
+            result += possible.charAt(Math.floor(Math.random() * possible.length));
+        return result;
     }
 
     enqueue(job: JobData): string
