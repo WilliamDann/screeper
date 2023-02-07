@@ -16,13 +16,10 @@ export function loop()
 
     let runner  = new JobRunner();
     let sa      = new SpawnerAgent('ac531d55b6a49c9354066adb');
-    let ha      = new HarvestAgent('362f8681163cfdb38c95e6d4');
+    let ha      = new HarvestAgent('362f8681163cfdb38c95e6d4', 'ac531d55b6a49c9354066adb');
 
     sa.pre();
     runner.pre();
-
-    if (runner.creepsIdle.length == 0)
-        sa.enqueue( {name: ''+Game.time, body: [WORK, CARRY, MOVE]} );
 
     if (runner.queue.length == 0)
     {
