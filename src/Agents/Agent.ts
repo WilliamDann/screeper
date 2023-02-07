@@ -2,6 +2,7 @@ import { CreepPool } from "../CreepPool";
 import { JobQueue } from "../JobQueue";
 import { Job, JobData } from "../Jobs/Job";
 import { Runnable } from "../Runnable";
+import { AgentController } from "../AgentController";
 
 export class Agent implements Runnable
 {
@@ -9,6 +10,8 @@ export class Agent implements Runnable
 
     jobQueue    : JobQueue;
     creepPool   : CreepPool;
+
+    controller : AgentController;
 
     constructor(memSignature: string)
     {

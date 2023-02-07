@@ -2,8 +2,9 @@ import { Agent } from "./Agent";
 
 export interface SpawnRequest
 {
-    name: string;
-    body: BodyPartConstant[],
+    name        : string;
+    body        : BodyPartConstant[],
+    requester   : string
 }
 
 export class SpawnerAgent extends Agent
@@ -17,6 +18,15 @@ export class SpawnerAgent extends Agent
 
         this.queue      = [];
         this.spawner    = spawner;
+    }
+
+    getRequestsFrom(requester: string): SpawnRequest[]
+    {
+        let rqs = [];
+        for (let rq of this.queue)
+            if (rq.requester == requester)
+                rqs.push(rq)
+        return rqs;
     }
 
     // TODO include extentions

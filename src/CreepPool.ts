@@ -1,6 +1,3 @@
-import { Job, JobData } from './Jobs/Job';
-import { Runnable }     from "./Runnable";
-
 export class CreepPool
 {
     creepsWorking   : string[];
@@ -32,5 +29,10 @@ export class CreepPool
     containsCreep(name: string): boolean
     {
         return this.creepsWorking.indexOf(name) != -1 || this.creepsIdle.indexOf(name) != -1;
+    }
+
+    totalCreeps(): number
+    {
+        return this.creepsWorking.length + this.creepsIdle.length;
     }
 }
