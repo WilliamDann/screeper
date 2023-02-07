@@ -1,4 +1,4 @@
-import { JobData } from './Jobs/Job';
+import { JobData } from '../Jobs/Job';
 
 export class JobQueue
 {

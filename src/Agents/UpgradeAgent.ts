@@ -1,19 +1,19 @@
-import { HarvestJob } from "../Jobs/HarvestJob";
 import { StepJob } from "../Jobs/StepJob";
-import { TransferJob } from "../Jobs/TransferJob";
+import { UpgradeJob } from "../Jobs/UpgradeJob";
+import { WithdrawJob } from "../Jobs/WithdrawJob";
 import { Agent } from "./Agent";
 import { SpawnerAgent, SpawnRequest } from "./SpawnerAgent";
 
-export class HarvestAgent extends Agent
+export class UpgradeAgent extends Agent
 {
-    source  : string; // source id
-    spawn   : string; // spawn id
+    spawner      : string;
+    controllerId : string;
 
-    constructor(source: string, spawn: string)
+    constructor(controllerId: string, spawner: string)
     {
-        super(`HarvestAgent_${source}`);
-        this.source = source;
-        this.spawn  = spawn;
+        super(`UpgradeAgent_${controllerId}`);
+        this.controllerId = controllerId;
+        this.spawner      = spawner;
     }
 
     trySpawnCreep()
@@ -30,16 +30,17 @@ export class HarvestAgent extends Agent
         }
     }
 
-    tick(): void {
+    tick()
+    {
         if (this.jobQueue.queue.length == 0)
             this.jobQueue.enqueue(
                 new StepJob([
-                    new HarvestJob(null, this.source),
-                    new TransferJob(null, this.spawn)
+                    new WithdrawJob(null, this.spawner),
+                    new UpgradeJob(null, this.controllerId)
                 ])
             );
 
-        if (this.creepPool.totalCreeps() < 3)
+        if (this.creepPool.totalCreeps() < 1)
             this.trySpawnCreep();
 
         super.tick();

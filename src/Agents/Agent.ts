@@ -1,5 +1,5 @@
-import { CreepPool } from "../CreepPool";
-import { JobQueue } from "../JobQueue";
+import { CreepPool } from "./CreepPool";
+import { JobQueue } from "./JobQueue";
 import { Job, JobData } from "../Jobs/Job";
 import { Runnable } from "../Runnable";
 import { AgentController } from "../AgentController";
@@ -33,6 +33,11 @@ export class Agent implements Runnable
     }
 
     tick(): void {
+        for (let name of this.creepPool.creepsIdle)
+            if (!Game.creeps[name])
+                delete this.creepPool.creepsIdle[name]
+        this.creepPool.creepsIdle = this.creepPool.creepsIdle.filter(x => x != undefined)
+
         for (let name of this.creepPool.creepsIdle)
             if (!this.assignNextJob(name))
                 break;
@@ -102,5 +107,10 @@ export class Agent implements Runnable
             this.creepPool.setCreepIdle(job.creep);
             this.jobQueue.dequeue(job.jobID, true);
         }
+    }
+
+    log(msg: any)
+    {
+        console.log(`${this.memSignature} @ ${Game.time}: ${msg}`);
     }
 }
