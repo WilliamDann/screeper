@@ -6,14 +6,13 @@ export interface SpawnRequest
     body: BodyPartConstant[],
 }
 
-export class SpawnerAgent extends Agent
+export class SpawnerAgent implements Agent
 {
     queue   : SpawnRequest[]; // queue of spawn requests
     spawner : string;
 
     constructor(spawner: string)
     {
-        super();
         this.queue      = [];
         this.spawner    = spawner;
     }
@@ -75,5 +74,11 @@ export class SpawnerAgent extends Agent
             queue: this.queue,
             spawner: this.spawner
         }
+    }
+
+    // TODO ?
+    poll()
+    {
+        return [];
     }
 }

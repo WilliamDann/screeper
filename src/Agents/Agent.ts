@@ -1,14 +1,7 @@
+import { Job } from "../Jobs/Job";
 import { Runnable } from "../Runnable";
 
-export class Agent implements Runnable
+export interface Agent extends Runnable
 {
-    constructor()
-    {
-
-    }
-
-    tick(): void 
-    {
-
-    }
+    poll(): Job[]; // returns jobs to complete
 }
