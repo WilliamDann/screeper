@@ -7,6 +7,8 @@ import { AgentController } from "./AgentController";
 import { UpgradeAgent } from "./Agents/UpgradeAgent";
 import { WithdrawJob } from "./Jobs/WithdrawJob";
 import { UpgradeJob } from "./Jobs/UpgradeJob";
+import { BuildJob } from "./Jobs/BuildJob";
+import { BuildAgent } from "./Agents/BuildAgent";
 
 export function loop()
 {
@@ -16,6 +18,7 @@ export function loop()
         'TransferJob'   : TransferJob.prototype,
         'WithdrawJob'   : WithdrawJob.prototype,
         'UpgradeJob'    : UpgradeJob.prototype,
+        'BuildJob'      : BuildJob.prototype,
         'StepJob'       : StepJob.prototype,
     }
 
@@ -26,7 +29,8 @@ export function loop()
     let controller = new AgentController([
         new HarvestAgent(source, spawn),
         new SpawnerAgent(spawn),
-        new UpgradeAgent(ctrl, spawn)
+        new UpgradeAgent(ctrl, spawn),
+        new BuildAgent(spawn)
     ]);
 
     controller.pre();
