@@ -26,8 +26,7 @@ export class UpgradeJob implements Job
             return JobCode.InvalidJob;
 
         let code = creep.upgradeController(target) as number;
-
-        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) != 0)
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
             return JobCode.FinishedOk;
         if (code == ERR_NOT_IN_RANGE)
             code = creep.moveTo(target);

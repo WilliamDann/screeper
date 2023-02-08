@@ -26,7 +26,6 @@ export class WithdrawJob implements Job
             return JobCode.InvalidJob;
 
         let code = creep.withdraw(target, RESOURCE_ENERGY) as number;
-
         if (creep.store.getUsedCapacity(RESOURCE_ENERGY) != 0)
             return JobCode.FinishedOk;
         if (code == ERR_NOT_IN_RANGE)
