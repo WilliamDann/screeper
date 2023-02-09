@@ -6,14 +6,13 @@ import { SpawnerAgent, SpawnRequest } from "./SpawnerAgent";
 
 export class UpgradeAgent extends Agent
 {
-    spawner      : string;
     controllerId : string;
 
-    constructor(controllerId: string, spawner: string)
+    constructor(controllerId: string, depo: string)
     {
         super(`UpgradeAgent_${controllerId}`);
-        this.controllerId = controllerId;
-        this.spawner      = spawner;
+        this.controllerId   = controllerId;
+        this.depo           = depo;
     }
 
     trySpawnCreep()
@@ -30,12 +29,20 @@ export class UpgradeAgent extends Agent
         }
     }
 
+    pre(): void {
+        super.pre();
+
+        if (!Memory[this.memSignature]['controllerId'])
+            this.post();
+        this.controllerId = Memory[this.memSignature]['controllerId'];
+    }
+
     tick()
     {
         if (this.jobQueue.queue.length == 0)
             this.jobQueue.enqueue(
                 new StepJob([
-                    new WithdrawJob(null, this.spawner),
+                    new WithdrawJob(null, this.depo),
                     new UpgradeJob(null, this.controllerId)
                 ])
             );
@@ -44,5 +51,10 @@ export class UpgradeAgent extends Agent
             this.trySpawnCreep();
 
         super.tick();
+    }
+
+    post(): void {
+        super.post();
+        Memory[this.memSignature]['controllerId'] = this.controllerId;
     }
 }

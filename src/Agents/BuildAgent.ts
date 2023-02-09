@@ -6,12 +6,10 @@ import { SpawnerAgent, SpawnRequest } from "./SpawnerAgent";
 
 export class BuildAgent extends Agent
 {
-    spawn: string;
-
     constructor(spawn: string)
     {
         super(`BuildAgent_${spawn}`);
-        this.spawn = spawn;
+        this.depo = spawn;
     }
 
     trySpawnCreep()
@@ -29,14 +27,14 @@ export class BuildAgent extends Agent
     {
         if (this.jobQueue.queue.length == 0)
         {
-            let spawnObj = Game.getObjectById(this.spawn as any) as StructureSpawn;
+            let spawnObj = Game.getObjectById(this.depo as any) as Structure;
             let site     = spawnObj.room.find(FIND_CONSTRUCTION_SITES)[0];
             if (!site)
                 return;
 
             this.jobQueue.enqueue(
                 new StepJob([
-                    new WithdrawJob(null, this.spawn),
+                    new WithdrawJob(null, this.depo),
                     new BuildJob(null, site.id)
                 ])
             );

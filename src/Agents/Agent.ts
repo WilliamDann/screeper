@@ -11,7 +11,9 @@ export class Agent implements Runnable
     jobQueue    : JobQueue;
     creepPool   : CreepPool;
 
-    controller : AgentController;
+    controller  : AgentController;
+
+    depo       ?: string; // where creep gets energy from
 
     constructor(memSignature: string)
     {
@@ -30,6 +32,8 @@ export class Agent implements Runnable
 
         this.jobQueue.running           = Memory[this.memSignature]['jobQueue']['running'];
         this.jobQueue.queue             = Memory[this.memSignature]['jobQueue']['queue'];
+
+        this.depo                       = Memory[this.memSignature]['depo'];
     }
 
     tick(): void {
@@ -55,7 +59,8 @@ export class Agent implements Runnable
     post(): void {
         Memory[this.memSignature] = {
             'jobQueue'  : this.jobQueue,
-            'creepPool' : this.creepPool
+            'creepPool' : this.creepPool,
+            'depo'      : this.depo
         }
     }
 

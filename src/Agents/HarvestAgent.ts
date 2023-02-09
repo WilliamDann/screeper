@@ -7,13 +7,12 @@ import { SpawnerAgent, SpawnRequest } from "./SpawnerAgent";
 export class HarvestAgent extends Agent
 {
     source  : string; // source id
-    spawn   : string; // spawn id
 
-    constructor(source: string, spawn: string)
+    constructor(source: string, depo: string)
     {
         super(`HarvestAgent_${source}`);
         this.source = source;
-        this.spawn  = spawn;
+        this.depo  = depo;
     }
 
     trySpawnCreep()
@@ -30,12 +29,20 @@ export class HarvestAgent extends Agent
         }
     }
 
+    pre(): void {
+        super.pre();
+
+        if (!Memory[this.memSignature]['source'])
+            this.post();
+        this.source = Memory[this.memSignature]['source'];
+    }
+    
     tick(): void {
         if (this.jobQueue.queue.length == 0)
             this.jobQueue.enqueue(
                 new StepJob([
                     new HarvestJob(null, this.source),
-                    new TransferJob(null, this.spawn)
+                    new TransferJob(null, this.depo)
                 ])
             );
 
@@ -43,5 +50,10 @@ export class HarvestAgent extends Agent
             this.trySpawnCreep();
 
         super.tick();
+    }
+
+    post(): void {
+        super.post();
+        Memory[this.memSignature]['source'] = this.source;
     }
 }
