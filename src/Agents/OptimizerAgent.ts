@@ -18,7 +18,10 @@ export class OptimizerAgent extends Agent
         {
             let agentDepo = Game.getObjectById(agent.depo as any) as Structure;
             if (!agentDepo)
+            {
+                agents.push(agent);
                 continue;
+            }
             if (agentDepo.structureType == STRUCTURE_SPAWN)
                 agents.push(agent);
         }

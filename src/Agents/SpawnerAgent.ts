@@ -1,3 +1,6 @@
+import { StepJob } from "../Jobs/StepJob";
+import { TransferJob } from "../Jobs/TransferJob";
+import { WithdrawJob } from "../Jobs/WithdrawJob";
 import { Agent } from "./Agent";
 
 export interface SpawnRequest
@@ -54,18 +57,20 @@ export class SpawnerAgent extends Agent
         return true;
     }
 
-    pre()
+    trySpawnCreep()
     {
-        if (!Memory[this.memSignature])
-            this.post();
+        if (this.creepPool.totalCreeps() < 3)
+        {
+            let name    = `${this.memSignature}_${Game.time}`
+            let body    =  [WORK, CARRY, MOVE];
 
-        this.queue   = Memory[this.memSignature].queue;
-        this.spawner = Memory[this.memSignature].spawner;
-
-        super.pre();
+            if (this.getRequestsFrom(this.memSignature).length == 0)
+                if (this.enqueue( {name: name, body: body, requester: this.memSignature} as SpawnRequest))
+                    this.creepPool.creepsIdle.push(name);
+        }
     }
 
-    tick()
+    spawnerTick()
     {
         let spawner = Game.getObjectById(this.spawner as any) as StructureSpawn;
         let req     = this.queue[0];
@@ -80,6 +85,36 @@ export class SpawnerAgent extends Agent
 
         console.log(`spawned ${req.name}`);
         this.queue.shift();
+    }
+
+    pre()
+    {
+        if (!Memory[this.memSignature])
+            this.post();
+
+        this.queue   = Memory[this.memSignature].queue;
+        this.spawner = Memory[this.memSignature].spawner;
+
+        super.pre();
+    }
+
+    tick()
+    {
+        this.spawnerTick();
+
+        if (this.depo)
+        {
+            if (this.creepPool.totalCreeps() < 1)
+                this.trySpawnCreep();
+            if (this.jobQueue.queue.length == 0)
+            {
+                // TODO fill extentions too
+                this.jobQueue.enqueue(new StepJob([
+                    new WithdrawJob(null, this.depo),
+                    new TransferJob(null, this.spawner)   
+                ]));
+            }
+        }
 
         super.tick();
     }
