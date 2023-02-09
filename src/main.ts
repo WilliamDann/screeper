@@ -9,6 +9,7 @@ import { WithdrawJob } from "./Jobs/WithdrawJob";
 import { UpgradeJob } from "./Jobs/UpgradeJob";
 import { BuildJob } from "./Jobs/BuildJob";
 import { BuildAgent } from "./Agents/BuildAgent";
+import { OptimizerAgent } from "./Agents/OptimizerAgent";
 
 export function loop()
 {
@@ -30,7 +31,8 @@ export function loop()
         new HarvestAgent(source, spawn),
         new SpawnerAgent(spawn),
         new UpgradeAgent(ctrl, spawn),
-        new BuildAgent(spawn)
+        new BuildAgent(spawn),
+        new OptimizerAgent('sim')
     ]);
 
     controller.pre();
