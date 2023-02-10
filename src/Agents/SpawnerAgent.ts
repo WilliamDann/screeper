@@ -110,10 +110,10 @@ export class SpawnerAgent extends Agent
     {
         this.spawnerTick();
 
+        if (this.creepPool.totalCreeps() < 1)
+            this.trySpawnCreep();
         if (this.depo)
         {
-            if (this.creepPool.totalCreeps() < 1)
-                this.trySpawnCreep();
             if (this.jobQueue.queue.length == 0)
             {
                 // TODO fill extentions too
