@@ -31,7 +31,7 @@ export class AgentController implements Runnable
     findAgentOfType(clss)
     {
         for (let agent of this.agents)
-            if (agent instanceof clss)
+            if (agent.constructor.name == clss)
                 return agent;
     }
 }

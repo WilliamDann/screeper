@@ -23,6 +23,14 @@ export class SpawnerAgent extends Agent
         this.spawner    = spawner;
     }
 
+    creepIsSpawning(name: string): boolean
+    {
+        for (let req of this.queue)
+            if (req.name == name)
+                return true;
+        return false;
+    }
+
     getRequestsFrom(requester: string): SpawnRequest[]
     {
         let rqs = [];
@@ -71,7 +79,7 @@ export class SpawnerAgent extends Agent
     }
 
     spawnerTick()
-    {
+    {      
         let spawner = Game.getObjectById(this.spawner as any) as StructureSpawn;
         let req     = this.queue[0];
 

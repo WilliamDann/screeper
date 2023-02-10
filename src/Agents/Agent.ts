@@ -63,15 +63,25 @@ export class Agent implements Runnable
 
     validateCreepPools()
     {
+        let spawner = this.controller.findAgentOfType("SpawnerAgent") as any;
         for (let i = 0; i < this.creepPool.creepsIdle.length; i++)
-            if (!Game.creeps[this.creepPool.creepsIdle[i]])
+        {
+            let name  = this.creepPool.creepsIdle[i]
+            let creep = Game.creeps[name];
+            if (!creep && !spawner.creepIsSpawning(name))
                 delete this.creepPool.creepsIdle[i];
+        }
         this.creepPool.creepsIdle = this.creepPool.creepsIdle.filter(x => x != undefined);
-        
-        for (let i = 0; i < this.creepPool.creepsWorking.length; i++)
-            if (!Game.creeps[this.creepPool.creepsWorking[i]])
-                delete this.creepPool.creepsWorking[i];
-        this.creepPool.creepsWorking = this.creepPool.creepsWorking.filter(x => x != undefined);
+
+        for (let i = 0; i < this.creepPool.creepsIdle.length; i++)
+        {
+            let name  = this.creepPool.creepsIdle[i]
+            let creep = Game.creeps[name];
+            if (!creep && !spawner.creepIsSpawning(name))
+                delete this.creepPool.creepsIdle[i];
+        }
+        this.creepPool.creepsIdle = this.creepPool.creepsIdle.filter(x => x != undefined);
+
     }
 
     assignNextJob(creep: string): boolean
