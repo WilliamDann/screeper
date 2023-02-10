@@ -27,7 +27,7 @@ export class RepairJob implements Job
 
         let code = creep.repair(target as any) as number;
 
-        if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
             return JobCode.FinishedOk;
         if (code == ERR_NOT_IN_RANGE)
             code = creep.moveTo(target);
