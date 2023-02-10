@@ -39,6 +39,9 @@ export class UpgradeAgent extends Agent
 
     tick()
     {
+        if (!this.depo)
+            return;
+
         if (this.jobQueue.queue.length == 0)
             this.jobQueue.enqueue(
                 new StepJob([

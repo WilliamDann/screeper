@@ -30,7 +30,7 @@ export function loop()
     let controller = new AgentController([
         new HarvestAgent(source, spawn),
         new SpawnerAgent(spawn),
-        new UpgradeAgent(ctrl, spawn),
+        new UpgradeAgent(ctrl, undefined),
         new BuildAgent(spawn),
         new OptimizerAgent('sim')
     ]);
