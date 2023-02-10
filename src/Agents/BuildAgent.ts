@@ -1,4 +1,5 @@
 import { BuildJob } from "../Jobs/BuildJob";
+import { RepairJob } from "../Jobs/RepairJob";
 import { StepJob } from "../Jobs/StepJob";
 import { WithdrawJob } from "../Jobs/WithdrawJob";
 import { Agent } from "./Agent";
@@ -22,22 +23,39 @@ export class BuildAgent extends Agent
             if (spawner.enqueue( {name: name, body: body, requester: this.memSignature} as SpawnRequest))
                 this.creepPool.creepsIdle.push(name);
     }
-    
-    tick()
-    {
-        if (this.jobQueue.queue.length == 0)
-        {
-            let spawnObj = Game.getObjectById(this.depo as any) as Structure;
-            let site     = spawnObj.room.find(FIND_CONSTRUCTION_SITES)[0];
-            if (!site)
-                return;
 
+    createBuildJobs(depo: Structure)
+    {
+        for (let site of depo.room.find(FIND_CONSTRUCTION_SITES))
             this.jobQueue.enqueue(
                 new StepJob([
                     new WithdrawJob(null, this.depo),
                     new BuildJob(null, site.id)
                 ])
             );
+    }
+
+    createRepairJobs(depo: Structure)
+    {
+        for (let site of depo.room.find(FIND_STRUCTURES, { filter: x => x.hits != x.hitsMax }))
+        {
+            this.jobQueue.enqueue(
+                new StepJob([
+                    new WithdrawJob(null, this.depo),
+                    new RepairJob(null, site.id)
+                ])
+            );
+        }
+    }
+
+    tick()
+    {
+        let depoObj = Game.getObjectById(this.depo as any) as Structure;
+
+        if (this.jobQueue.queue.length == 0)
+        {
+            this.createBuildJobs(depoObj);
+            this.createRepairJobs(depoObj);
         }
 
         if (this.creepPool.totalCreeps() < 1)

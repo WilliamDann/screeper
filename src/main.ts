@@ -10,6 +10,7 @@ import { UpgradeJob } from "./Jobs/UpgradeJob";
 import { BuildJob } from "./Jobs/BuildJob";
 import { BuildAgent } from "./Agents/BuildAgent";
 import { OptimizerAgent } from "./Agents/OptimizerAgent";
+import { RepairJob } from "./Jobs/RepairJob";
 
 export function loop()
 {
@@ -20,6 +21,7 @@ export function loop()
         'WithdrawJob'   : WithdrawJob.prototype,
         'UpgradeJob'    : UpgradeJob.prototype,
         'BuildJob'      : BuildJob.prototype,
+        'RepairJob'     : RepairJob.prototype,
         'StepJob'       : StepJob.prototype,
     }
 
