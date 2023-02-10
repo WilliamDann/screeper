@@ -37,10 +37,7 @@ export class Agent implements Runnable
     }
 
     tick(): void {
-        for (let name of this.creepPool.creepsIdle)
-            if (!Game.creeps[name])
-                delete this.creepPool.creepsIdle[name]
-        this.creepPool.creepsIdle = this.creepPool.creepsIdle.filter(x => x != undefined)
+        this.validateCreepPools();
 
         for (let name of this.creepPool.creepsIdle)
             if (!this.assignNextJob(name))
@@ -62,6 +59,19 @@ export class Agent implements Runnable
             'creepPool' : this.creepPool,
             'depo'      : this.depo
         }
+    }
+
+    validateCreepPools()
+    {
+        for (let i = 0; i < this.creepPool.creepsIdle.length; i++)
+            if (!Game.creeps[this.creepPool.creepsIdle[i]])
+                delete this.creepPool.creepsIdle[i];
+        this.creepPool.creepsIdle = this.creepPool.creepsIdle.filter(x => x != undefined);
+        
+        for (let i = 0; i < this.creepPool.creepsWorking.length; i++)
+            if (!Game.creeps[this.creepPool.creepsWorking[i]])
+                delete this.creepPool.creepsWorking[i];
+        this.creepPool.creepsWorking = this.creepPool.creepsWorking.filter(x => x != undefined);
     }
 
     assignNextJob(creep: string): boolean
