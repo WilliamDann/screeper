@@ -20,8 +20,11 @@ export class JobQueue
         return result;
     }
 
-    enqueue(job: Job): string
+    enqueue(job: Job, limit=1): string
     {
+        if (limit > 0 && this.getFromAssigned(job.assigner).length >= limit)
+            return null;
+
         let id = this.makeId(15);
 
         job.jobID = id;

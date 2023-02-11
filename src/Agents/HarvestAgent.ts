@@ -41,29 +41,24 @@ export class HarvestAgent extends Agent
     }
 
     tick(): void {
+        const makeHarvestJob  = (src, to)  => new StepJob([ new HarvestJob(null, src), new TransferJob(null, to) ], this.constructor.name);
+        const makeBuildJob    = (src, to)  => new StepJob([ new HarvestJob(null, src), new BuildJob(null, to) ],    this.constructor.name);
+
         let depo = Game.getObjectById(this.depo as any) as any;
         if (depo.progress != undefined)
             this.stage = 1
         else if (depo.structureType == STRUCTURE_CONTAINER)
             this.stage = 2
-        this.log(this.stage);
+
         switch (this.stage)
         {
             case 0:
                 this.constructDepo()
             case 1:
-                if (this.jobQueue.queue.length == 0)
-                    this.jobQueue.enqueue(new StepJob([
-                        new HarvestJob(null, this.source),
-                        new BuildJob(null, this.depo)
-                    ]));
+                this.jobQueue.enqueue(makeBuildJob(this.source, this.depo), 1);
                 break;
             case 2:
-                if (this.jobQueue.queue.length == 0)
-                    this.jobQueue.enqueue(new StepJob([
-                        new HarvestJob(null, this.source),
-                        new TransferJob(null, this.depo)
-                    ]));
+                this.jobQueue.enqueue(makeHarvestJob(this.source, this.depo), 1);
                 break;
         }
 

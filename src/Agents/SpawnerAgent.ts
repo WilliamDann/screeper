@@ -86,24 +86,20 @@ export class SpawnerAgent extends Agent
 
     tick()
     {
+        const makeWithdrawJob = (depo, spawner) => new StepJob([ new WithdrawJob(null, depo), new TransferJob(null, spawner) ], this.constructor.name);
+        const makeHarvestJob  = (src, spawner)  => new StepJob([ new HarvestJob(null, src),   new TransferJob(null, spawner) ], this.constructor.name);
+
         this.spawnerTick();
 
         let harvester = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
         if (harvester.stage >= 2)
         {
             if (this.jobQueue.queue.length == 0)
-                // TODO fill extentions too
-                this.jobQueue.enqueue(new StepJob([
-                    new WithdrawJob(null, this.depo),
-                    new TransferJob(null, this.spawner)   
-                ]));
+                this.jobQueue.enqueue(makeWithdrawJob(this.depo, this.spawner), 1);
         }
         else
             if (this.queue.length != 0 && this.jobQueue.getFromAssigned(this.constructor.name).length == 0)
-                harvester.jobQueue.enqueue(new StepJob([
-                    new HarvestJob(null, harvester.source),
-                    new TransferJob(null, this.spawner)
-                ], this.constructor.name));
+                harvester.jobQueue.enqueue(makeHarvestJob(harvester.source, this.spawner), 1);
 
         super.tick();
     }

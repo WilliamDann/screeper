@@ -20,7 +20,7 @@ export class BuildAgent extends Agent
                 new StepJob([
                     new WithdrawJob(null, this.depo),
                     new BuildJob(null, site.id)
-                ])
+                ], this.constructor.name)
             );
     }
 
@@ -32,7 +32,7 @@ export class BuildAgent extends Agent
                 new StepJob([
                     new WithdrawJob(null, this.depo),
                     new RepairJob(null, site.id)
-                ])
+                ], this.constructor.name)
             );
         }
     }

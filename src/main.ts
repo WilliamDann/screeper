@@ -9,7 +9,6 @@ import { WithdrawJob } from "./Jobs/WithdrawJob";
 import { UpgradeJob } from "./Jobs/UpgradeJob";
 import { BuildJob } from "./Jobs/BuildJob";
 import { BuildAgent } from "./Agents/BuildAgent";
-import { OptimizerAgent } from "./Agents/OptimizerAgent";
 import { RepairJob } from "./Jobs/RepairJob";
 import { MemoryDump } from "./MemoryDump";
 import { CreepPool } from "./Agents/CreepPool";
@@ -26,7 +25,6 @@ export function loop()
         //agents
         'BuildAgent'        : BuildAgent.prototype,
         'HarvestAgent'      : HarvestAgent.prototype,
-        'OptimizerAgent'    : OptimizerAgent.prototype,
         'SpawnerAgent'      : SpawnerAgent.prototype,
         'UpgradeAgent'      : UpgradeAgent.prototype,
 

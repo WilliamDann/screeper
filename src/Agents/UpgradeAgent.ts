@@ -16,17 +16,12 @@ export class UpgradeAgent extends Agent
 
     tick()
     {
+        const makeJob = (depo, ctrl) => new StepJob([ new WithdrawJob(null, depo), new UpgradeJob(null, ctrl) ], this.constructor.name);
+
         if (!this.depo)
             return;
 
-        if (this.jobQueue.queue.length == 0)
-            this.jobQueue.enqueue(
-                new StepJob([
-                    new WithdrawJob(null, this.depo),
-                    new UpgradeJob(null, this.controllerId)
-                ])
-            );
-
+        this.jobQueue.enqueue(makeJob(this.depo, this.controllerId), 1);
         super.tick();
     }
 }
