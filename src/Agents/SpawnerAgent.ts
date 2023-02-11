@@ -65,19 +65,6 @@ export class SpawnerAgent extends Agent
         return true;
     }
 
-    trySpawnCreep()
-    {
-        if (this.creepPool.totalCreeps() < 3)
-        {
-            let name    = `${this.memSignature}_${Game.time}`
-            let body    =  [WORK, CARRY, MOVE];
-
-            if (this.getRequestsFrom(this.memSignature).length == 0)
-                if (this.enqueue( {name: name, body: body, requester: this.memSignature} as SpawnRequest))
-                    this.creepPool.creepsIdle.push(name);
-        }
-    }
-
     spawnerTick()
     {      
         let spawner = Game.getObjectById(this.spawner as any) as StructureSpawn;
@@ -100,7 +87,7 @@ export class SpawnerAgent extends Agent
         this.spawnerTick();
 
         if (this.creepPool.totalCreeps() < 1)
-            this.trySpawnCreep();
+            this.spawnCreep();
         if (this.depo)
         {
             if (this.jobQueue.queue.length == 0)

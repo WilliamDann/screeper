@@ -13,17 +13,6 @@ export class BuildAgent extends Agent
         this.depo = spawn;
     }
 
-    trySpawnCreep()
-    {
-        let name    = `${this.memSignature}_${Game.time}`
-        let body    =  [WORK, CARRY, MOVE];
-
-        let spawner = this.controller.findAgentOfType("SpawnerAgent") as SpawnerAgent;
-        if (spawner.getRequestsFrom(this.memSignature).length == 0)
-            if (spawner.enqueue( {name: name, body: body, requester: this.memSignature} as SpawnRequest))
-                this.creepPool.creepsIdle.push(name);
-    }
-
     createBuildJobs(depo: Structure)
     {
         for (let site of depo.room.find(FIND_CONSTRUCTION_SITES))
@@ -59,7 +48,7 @@ export class BuildAgent extends Agent
         }
 
         if (this.creepPool.totalCreeps() < 1)
-            this.trySpawnCreep();
+            this.spawnCreep();
 
         super.tick();
     }

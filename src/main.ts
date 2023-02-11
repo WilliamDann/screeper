@@ -56,10 +56,10 @@ export function loop()
     {
         let obj = md.load(Memory['controller']);
         Object.assign(controller, obj);
-        
+
         for (let child of controller.agents) // TODO removed because of circular, fix?
             child.controller = controller;
-        
+
         controller.pre();
         controller.tick();
         controller.post();
