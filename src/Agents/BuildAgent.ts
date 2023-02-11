@@ -47,9 +47,6 @@ export class BuildAgent extends Agent
             this.createRepairJobs(depoObj);
         }
 
-        if (this.creepPool.totalCreeps() < 1)
-            this.spawnCreep();
-
         super.tick();
     }
 }

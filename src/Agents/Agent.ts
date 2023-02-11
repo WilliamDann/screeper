@@ -12,11 +12,14 @@ export class Agent implements Runnable
     controller  : AgentController;
 
     depo       ?: string; // where creep gets energy from
+    creepTarget : number;
 
     constructor()
     {
         this.jobQueue   = new JobQueue();
         this.creepPool  = new CreepPool();
+
+        this.creepTarget = 0;
     }
 
     pre(): void 
@@ -25,6 +28,8 @@ export class Agent implements Runnable
 
     tick(): void {
         this.validateCreepPools();
+        if (this.creepPool.totalCreeps() < this.creepTarget)
+            this.spawnCreep()
 
         for (let name of this.creepPool.creepsIdle)
             if (!this.assignNextJob(name))

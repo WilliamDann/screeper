@@ -1,5 +1,4 @@
 import { Agent } from "./Agents/Agent";
-import { JobData } from "./Jobs/Job";
 import { Runnable } from "./Runnable";
 
 export class AgentController implements Runnable

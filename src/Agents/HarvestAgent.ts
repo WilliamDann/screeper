@@ -41,9 +41,6 @@ export class HarvestAgent extends Agent
     }
 
     tick(): void {
-        if (this.creepPool.totalCreeps() < 3)
-            this.spawnCreep();
-
         let depo = Game.getObjectById(this.depo as any) as any;
         if (depo.progress != undefined)
             this.stage = 1

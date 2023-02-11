@@ -27,9 +27,6 @@ export class UpgradeAgent extends Agent
                 ])
             );
 
-        if (this.creepPool.totalCreeps() < 1)
-            this.spawnCreep();
-
         super.tick();
     }
 }
