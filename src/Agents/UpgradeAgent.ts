@@ -29,14 +29,6 @@ export class UpgradeAgent extends Agent
         }
     }
 
-    pre(): void {
-        super.pre();
-
-        if (!Memory[this.memSignature]['controllerId'])
-            this.post();
-        this.controllerId = Memory[this.memSignature]['controllerId'];
-    }
-
     tick()
     {
         if (!this.depo)
@@ -54,10 +46,5 @@ export class UpgradeAgent extends Agent
             this.trySpawnCreep();
 
         super.tick();
-    }
-
-    post(): void {
-        super.post();
-        Memory[this.memSignature]['controllerId'] = this.controllerId;
     }
 }

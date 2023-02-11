@@ -1,9 +1,9 @@
-import { JobData } from '../Jobs/Job';
+import { Job } from '../Jobs/Job';
 
 export class JobQueue
 {
-    running         : JobData[]; // TODO linked list instead of []
-    queue           : JobData[]; // TODO linked list instead of []
+    running         : Job[]; // TODO linked list instead of []
+    queue           : Job[]; // TODO linked list instead of []
 
     constructor()
     {
@@ -20,7 +20,7 @@ export class JobQueue
         return result;
     }
 
-    enqueue(job: JobData): string
+    enqueue(job: Job): string
     {
         let id = this.makeId(15);
 
@@ -37,7 +37,7 @@ export class JobQueue
             this.running = this.running.filter(x => x.jobID != id);
     }
 
-    get(id: string): JobData
+    get(id: string): Job
     {
         for (let job of this.queue)
             if (job.jobID == id)

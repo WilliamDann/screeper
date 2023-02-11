@@ -5,7 +5,7 @@ export class StepJob implements Job
     jobCode : string;
     creep   : string;
 
-    steps   : JobData[];
+    steps   : Job[];
     step    : number;
 
     constructor(jobs: Job[]|null=null)
@@ -20,24 +20,11 @@ export class StepJob implements Job
 
     run()
     {
-        function loadJob(dataObj: JobData): (Job|null)
-        {
-            let jobClass = globalThis.jobs[dataObj.jobCode];
-            if (!jobClass)
-                return null;
-
-            let obj = { run: jobClass.run } as Job;
-            for (let name in dataObj)
-                obj[name] = dataObj[name];
-
-            return obj as Job;
-        }
-
         if (this.step >= this.steps.length)
             return JobCode.FinishedOk;
 
-        let job = loadJob(this.steps[this.step]);
-        if (job == null)
+        let job = this.steps[this.step];
+        if (!job)
             return JobCode.InvalidJob;
         job.creep = this.creep;
 

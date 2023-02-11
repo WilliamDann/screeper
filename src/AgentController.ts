@@ -8,6 +8,8 @@ export class AgentController implements Runnable
 
     constructor(agents)
     {
+        if (!agents)
+            agents = []
         this.agents     = agents;
         for (let agent of this.agents)
             agent.controller = this;

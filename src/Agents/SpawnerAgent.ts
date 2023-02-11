@@ -95,17 +95,6 @@ export class SpawnerAgent extends Agent
         this.queue.shift();
     }
 
-    pre()
-    {
-        if (!Memory[this.memSignature])
-            this.post();
-
-        this.queue   = Memory[this.memSignature].queue;
-        this.spawner = Memory[this.memSignature].spawner;
-
-        super.pre();
-    }
-
     tick()
     {
         this.spawnerTick();
@@ -125,12 +114,5 @@ export class SpawnerAgent extends Agent
         }
 
         super.tick();
-    }
-
-    post()
-    {
-        super.post();
-        Memory[this.memSignature].queue  = this.queue;
-        Memory[this.memSignature].spawner = this.spawner;
     }
 }

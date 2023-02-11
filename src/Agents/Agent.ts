@@ -26,14 +26,6 @@ export class Agent implements Runnable
     pre(): void {
         if (!Memory[this.memSignature])
             this.post();
-
-        this.creepPool.creepsWorking    = Memory[this.memSignature]['creepPool']['creepsWorking'];
-        this.creepPool.creepsIdle       = Memory[this.memSignature]['creepPool']['creepsIdle'];
-
-        this.jobQueue.running           = Memory[this.memSignature]['jobQueue']['running'];
-        this.jobQueue.queue             = Memory[this.memSignature]['jobQueue']['queue'];
-
-        this.depo                       = Memory[this.memSignature]['depo'];
     }
 
     tick(): void {
@@ -54,11 +46,6 @@ export class Agent implements Runnable
     }
 
     post(): void {
-        Memory[this.memSignature] = {
-            'jobQueue'  : this.jobQueue,
-            'creepPool' : this.creepPool,
-            'depo'      : this.depo
-        }
     }
 
     validateCreepPools()
@@ -98,35 +85,16 @@ export class Agent implements Runnable
         return true;
     }
 
-    loadJob(dataObj: JobData): (Job|null)
+    runJob(job: Job)
     {
-        let jobClass = globalThis.jobs[dataObj.jobCode];
-        if (!jobClass)
-            return null;
-
-        let obj = { run: jobClass.run };
-        for (let name in dataObj)
-            obj[name] = dataObj[name];
-
-        return obj as Job;
-    }
-
-    runJob(job: JobData)
-    {
-        let loadedJob = this.loadJob(job);
-        if (loadedJob == null)
+        if (!job)
         {
             this.creepPool.setCreepIdle(job.creep);
             this.jobQueue.dequeue(job.jobID, true);
             return;
         }
 
-        let status = loadedJob.run();
-
-        // copy state to stored job
-        for (let name in job)
-            job[name] = loadedJob[name];
-
+        let status = job.run();
         if (status >= 200)
         {
             this.creepPool.setCreepIdle(job.creep);

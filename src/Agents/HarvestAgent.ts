@@ -28,14 +28,6 @@ export class HarvestAgent extends Agent
                     this.creepPool.creepsIdle.push(name);
         }
     }
-
-    pre(): void {
-        super.pre();
-
-        if (!Memory[this.memSignature]['source'])
-            this.post();
-        this.source = Memory[this.memSignature]['source'];
-    }
     
     tick(): void {
         if (this.jobQueue.queue.length == 0)
@@ -50,10 +42,5 @@ export class HarvestAgent extends Agent
             this.trySpawnCreep();
 
         super.tick();
-    }
-
-    post(): void {
-        super.post();
-        Memory[this.memSignature]['source'] = this.source;
     }
 }
