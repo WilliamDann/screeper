@@ -5,7 +5,7 @@ export class GeneralAgent extends Agent
 {
     constructor(spawn: string)
     {
-        super(`GeneralAgent_${spawn}`);
+        super();
         this.depo = spawn;
     }
 

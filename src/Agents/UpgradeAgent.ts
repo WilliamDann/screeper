@@ -2,7 +2,6 @@ import { StepJob } from "../Jobs/StepJob";
 import { UpgradeJob } from "../Jobs/UpgradeJob";
 import { WithdrawJob } from "../Jobs/WithdrawJob";
 import { Agent } from "./Agent";
-import { SpawnerAgent, SpawnRequest } from "./SpawnerAgent";
 
 export class UpgradeAgent extends Agent
 {
@@ -10,7 +9,7 @@ export class UpgradeAgent extends Agent
 
     constructor(controllerId: string, depo: string)
     {
-        super(`UpgradeAgent_${controllerId}`);
+        super();
         this.controllerId   = controllerId;
         this.depo           = depo;
     }

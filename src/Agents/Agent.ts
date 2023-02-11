@@ -6,8 +6,6 @@ import { AgentController } from "../AgentController";
 
 export class Agent implements Runnable
 {
-    memSignature: string;
-
     jobQueue    : JobQueue;
     creepPool   : CreepPool;
 
@@ -15,12 +13,10 @@ export class Agent implements Runnable
 
     depo       ?: string; // where creep gets energy from
 
-    constructor(memSignature: string)
+    constructor()
     {
         this.jobQueue   = new JobQueue();
         this.creepPool  = new CreepPool();
-
-        this.memSignature = memSignature;
     }
 
     pre(): void 
@@ -50,12 +46,12 @@ export class Agent implements Runnable
 
     spawnCreep()
     {
-        let name    = `${this.memSignature}_${Game.time}`
+        let name    = `${this.constructor.name}_${Game.time}`
         let body    =  [WORK, CARRY, MOVE];
 
-        let spawner = this.controller.findAgentOfType("SpawnerAgent") as SpawnerAgent;
-        if (spawner.getRequestsFrom(this.memSignature).length == 0)
-            if (spawner.enqueue( {name: name, body: body, requester: this.memSignature} as SpawnRequest))
+        let spawner = this.controller.findAgentOfType("SpawnerAgent") as any;
+        if (spawner.getRequestsFrom(this.constructor.name).length == 0)
+            if (spawner.enqueue( {name: name, body: body, requester: this.constructor.name}))
                 this.creepPool.creepsIdle.push(name);
     }
 
@@ -115,6 +111,6 @@ export class Agent implements Runnable
 
     log(msg: any)
     {
-        console.log(`${this.memSignature} @ ${Game.time}: ${msg}`);
+        console.log(`${this.constructor.name} @ ${Game.time}: ${msg}`);
     }
 }

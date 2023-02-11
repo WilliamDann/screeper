@@ -17,7 +17,7 @@ export class SpawnerAgent extends Agent
 
     constructor(spawner: string)
     {
-        super(`SpawnerAgent_${spawner}`);
+        super();
 
         this.queue      = [];
         this.spawner    = spawner;

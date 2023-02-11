@@ -9,7 +9,7 @@ export class BuildAgent extends Agent
 {
     constructor(spawn: string)
     {
-        super(`BuildAgent_${spawn}`);
+        super();
         this.depo = spawn;
     }
 

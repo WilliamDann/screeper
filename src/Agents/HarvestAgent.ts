@@ -10,7 +10,7 @@ export class HarvestAgent extends Agent
 
     constructor(source: string, depo: string)
     {
-        super(`HarvestAgent_${source}`);
+        super();
         this.source = source;
         this.depo  = depo;
     }

@@ -7,7 +7,7 @@ export class OptimizerAgent extends Agent
     room: string;
     constructor(room: string)
     {
-        super(`OptimizerAgent_${room}`);
+        super();
         this.room = room;
     }
 
