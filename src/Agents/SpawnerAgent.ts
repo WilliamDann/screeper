@@ -1,7 +1,9 @@
+import { HarvestJob } from "../Jobs/HarvestJob";
 import { StepJob } from "../Jobs/StepJob";
 import { TransferJob } from "../Jobs/TransferJob";
 import { WithdrawJob } from "../Jobs/WithdrawJob";
 import { Agent } from "./Agent";
+import { HarvestAgent } from "./HarvestAgent";
 
 export interface SpawnRequest
 {
@@ -60,13 +62,13 @@ export class SpawnerAgent extends Agent
             return false;
         if (Game.creeps[req.name])
             return false;
-        
+
         this.queue.push(req);
         return true;
     }
 
     spawnerTick()
-    {      
+    {
         let spawner = Game.getObjectById(this.spawner as any) as StructureSpawn;
         let req     = this.queue[0];
 
@@ -86,19 +88,22 @@ export class SpawnerAgent extends Agent
     {
         this.spawnerTick();
 
-        if (this.creepPool.totalCreeps() < 1)
-            this.spawnCreep();
-        if (this.depo)
+        let harvester = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
+        if (harvester.stage >= 2)
         {
             if (this.jobQueue.queue.length == 0)
-            {
                 // TODO fill extentions too
                 this.jobQueue.enqueue(new StepJob([
                     new WithdrawJob(null, this.depo),
                     new TransferJob(null, this.spawner)   
                 ]));
-            }
         }
+        else
+            if (this.queue.length != 0 && this.jobQueue.getFromAssigned(this.constructor.name).length == 0)
+                harvester.jobQueue.enqueue(new StepJob([
+                    new HarvestJob(null, harvester.source),
+                    new TransferJob(null, this.spawner)
+                ], this.constructor.name));
 
         super.tick();
     }

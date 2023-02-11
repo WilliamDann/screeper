@@ -8,14 +8,17 @@ export class StepJob implements Job
     steps   : Job[];
     step    : number;
 
-    constructor(jobs: Job[]|null=null)
+    assigner: string;
+
+    constructor(jobs: Job[]|null=null, assigner?: string)
     {
         if (jobs)
             this.steps = jobs;
         else
             this.steps = [];
         this.step = 0;
-        this.jobCode = "StepJob";
+        this.jobCode  = "StepJob";
+        this.assigner = assigner; 
     }
 
     run()

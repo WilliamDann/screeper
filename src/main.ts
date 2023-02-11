@@ -48,8 +48,6 @@ export function loop()
         new HarvestAgent(source, spawn),
         new SpawnerAgent(spawn),
         new UpgradeAgent(ctrl, undefined),
-        new BuildAgent(spawn),
-        new OptimizerAgent('sim')
     ]);
 
     if (Memory['controller'])

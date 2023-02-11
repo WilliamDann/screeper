@@ -49,4 +49,16 @@ export class JobQueue
 
         return null;
     }
+
+    getFromAssigned(assigner: string): Job[]
+    {
+        let jobs = [];
+        for (let job of this.queue)
+            if (job.assigner == assigner)
+                jobs.push(job)
+        for (let job of this.running)
+            if (job.assigner == assigner)
+                jobs.push(job)
+        return jobs;
+    }
 }

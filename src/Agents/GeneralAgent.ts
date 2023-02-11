@@ -1,5 +1,4 @@
 import { Agent }                        from "./Agent";
-import { SpawnerAgent, SpawnRequest }   from "./SpawnerAgent";
 
 export class GeneralAgent extends Agent
 {

@@ -4,6 +4,7 @@ export interface JobData
     jobID?          : string;
     jobCode         : string;
     creep           : string;
+    assigner?       : string;
 
     // stats
     queueTime?      : number; // time until task was started in game ticks
