@@ -16,6 +16,10 @@ import { JobQueue } from "./Agents/JobQueue";
 
 export function loop()
 {
+    for (let name in Memory.creeps)
+        if (!Game.creeps[name])
+            delete Memory.creeps[name]
+
     let md = new MemoryDump({
         // helpers
         'AgentController'   : AgentController.prototype,

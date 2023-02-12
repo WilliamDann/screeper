@@ -22,7 +22,11 @@ export class AgentController implements Runnable
     tick()
     {
         let harv = this.findAgentOfType("HarvestAgent");
-        if (harv['stage'] == 2)
+
+        if (harv['stage'] < 2)
+            harv.creepTarget = 3;
+
+            if (harv['stage'] == 2)
         {
             let upgrade = this.findAgentOfType("UpgradeAgent");
             upgrade.depo = harv.depo;

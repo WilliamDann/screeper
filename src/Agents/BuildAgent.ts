@@ -3,7 +3,6 @@ import { RepairJob } from "../Jobs/RepairJob";
 import { StepJob } from "../Jobs/StepJob";
 import { WithdrawJob } from "../Jobs/WithdrawJob";
 import { Agent } from "./Agent";
-import { SpawnerAgent, SpawnRequest } from "./SpawnerAgent";
 
 export class BuildAgent extends Agent
 {
@@ -25,7 +24,7 @@ export class BuildAgent extends Agent
 
     createRepairJobs(depo: Structure)
     {
-        for (let site of depo.room.find(FIND_STRUCTURES, { filter: x => x.hits != x.hitsMax }))
+        for (let site of depo.room.find(FIND_STRUCTURES, { filter: x => x.hits != x.hitsMax && x.structureType != STRUCTURE_WALL }))
         {
             this.jobQueue.enqueue(
                 new StepJob([
