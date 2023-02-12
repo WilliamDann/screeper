@@ -13,6 +13,7 @@ export class Agent implements Runnable
 
     depo       ?: string; // where creep gets energy from
     creepTarget : number;
+    stage       : number; // progress of the agent
 
     constructor()
     {

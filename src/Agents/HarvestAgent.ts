@@ -9,15 +9,11 @@ export class HarvestAgent extends Agent
 {
     source  : string; // source id
 
-    stage  : number;
-
-    constructor(source: string, depo: string)
+    constructor(source: string)
     {
         super();
         this.source = source;
-        this.depo  = depo;
-
-        this.stage = 0;
+        this.stage  = 0;
     }
 
     constructDepo()
@@ -45,7 +41,9 @@ export class HarvestAgent extends Agent
         const makeBuildJob    = (src, to)  => new StepJob([ new HarvestJob(null, src), new BuildJob(null, to) ],    this.constructor.name);
 
         let depo = Game.getObjectById(this.depo as any) as any;
-        if (depo.progress != undefined)
+        if (!depo)
+            this.stage = 0
+        else if (depo.progress != undefined)
             this.stage = 1
         else if (depo.structureType == STRUCTURE_CONTAINER)
             this.stage = 2

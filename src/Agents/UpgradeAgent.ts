@@ -7,11 +7,10 @@ export class UpgradeAgent extends Agent
 {
     controllerId : string;
 
-    constructor(controllerId: string, depo: string)
+    constructor(controllerId: string)
     {
         super();
         this.controllerId   = controllerId;
-        this.depo           = depo;
     }
 
     tick()

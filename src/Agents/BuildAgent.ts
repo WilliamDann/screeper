@@ -7,10 +7,9 @@ import { SpawnerAgent, SpawnRequest } from "./SpawnerAgent";
 
 export class BuildAgent extends Agent
 {
-    constructor(spawn: string)
+    constructor()
     {
         super();
-        this.depo = spawn;
     }
 
     createBuildJobs(depo: Structure)
@@ -41,6 +40,9 @@ export class BuildAgent extends Agent
     {
         let depoObj = Game.getObjectById(this.depo as any) as Structure;
 
+        if (!depoObj)
+            return;
+        
         if (this.jobQueue.queue.length == 0)
         {
             this.createBuildJobs(depoObj);

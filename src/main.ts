@@ -38,14 +38,16 @@ export function loop()
         'StepJob'           : StepJob.prototype,
     });
 
-    let source = Game.rooms.sim.find(FIND_SOURCES)[0].id;
+    let room   = Object.keys(Game.rooms)[0]
+    let source = Game.rooms[room].find(FIND_SOURCES)[0].id;
     let spawn  = Game.spawns.Spawn1.id;
-    let ctrl   = Game.rooms.sim.controller.id;
+    let ctrl   = Game.rooms[room].controller.id;
 
     let controller = new AgentController([
-        new HarvestAgent(source, spawn),
+        new HarvestAgent(source),
         new SpawnerAgent(spawn),
-        new UpgradeAgent(ctrl, undefined),
+        new UpgradeAgent(ctrl),
+        new BuildAgent()
     ]);
 
     if (Memory['controller'])
