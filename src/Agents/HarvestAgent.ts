@@ -1,3 +1,4 @@
+import _ = require("lodash");
 import { BuildJob } from "../Jobs/BuildJob";
 import { HarvestJob } from "../Jobs/HarvestJob";
 import { StepJob } from "../Jobs/StepJob";
@@ -36,17 +37,28 @@ export class HarvestAgent extends Agent
         }
     }
 
+    findDepo()
+    {
+        let source     = Game.getObjectById(this.source as any) as Source
+        let containers = source.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_CONTAINER })
+    
+        return _.sortBy(containers, x => source.pos.findPathTo(x).length)[0];
+    }
+
     tick(): void {
         const makeHarvestJob  = (src, to)  => new StepJob([ new HarvestJob(null, src), new TransferJob(null, to) ], this.constructor.name);
         const makeBuildJob    = (src, to)  => new StepJob([ new HarvestJob(null, src), new BuildJob(null, to) ],    this.constructor.name);
 
         let depo = Game.getObjectById(this.depo as any) as any;
-        if (!depo)
+        if (this.depo == undefined)
             this.stage = 0
-        else if (depo.progress != undefined)
+        if (depo && depo.progress != undefined)
             this.stage = 1
-        else if (depo.structureType == STRUCTURE_CONTAINER)
+        else
+        {
+            this.depo = this.findDepo().id;
             this.stage = 2
+        }
 
         switch (this.stage)
         {
@@ -56,7 +68,7 @@ export class HarvestAgent extends Agent
                 this.jobQueue.enqueue(makeBuildJob(this.source, this.depo), 1);
                 break;
             case 2:
-                this.jobQueue.enqueue(makeHarvestJob(this.source, this.depo), 1);
+                this.jobQueue.enqueue(makeHarvestJob(this.source, this.depo), 3);
                 break;
         }
 

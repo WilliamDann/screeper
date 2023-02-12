@@ -42,7 +42,7 @@ module.exports = function(grunt) {
             }],
             options: {
               process: function (content, srcpath) {
-                let reqs = content.matchAll(/require\(\"(.*?)\"\);?/g);
+                let reqs = content.matchAll(/require\(\"\.(.*?)\"\);?/g);
                 for (let req of reqs)
                 {
                   let names = req[0].split('/');
