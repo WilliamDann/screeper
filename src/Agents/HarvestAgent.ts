@@ -1,4 +1,3 @@
-import _ = require("lodash");
 import { BuildJob } from "../Jobs/BuildJob";
 import { HarvestJob } from "../Jobs/HarvestJob";
 import { StepJob } from "../Jobs/StepJob";
@@ -41,8 +40,8 @@ export class HarvestAgent extends Agent
     {
         let source     = Game.getObjectById(this.source as any) as Source
         let containers = source.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_CONTAINER })
-    
-        return _.sortBy(containers, x => source.pos.findPathTo(x).length)[0];
+        
+        return containers.sort((a, b) => source.pos.getRangeTo(a) - source.pos.getDirectionTo(b))[0];
     }
 
     tick(): void {

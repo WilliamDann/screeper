@@ -20,14 +20,14 @@ export class RepairJob implements Job
     run()
     {
         let creep  = Game.creeps[this.creep];
-        let target = Game.getObjectById(this.target as any) as Source;
+        let target = Game.getObjectById(this.target as any) as Structure;
 
         if (!creep || !target)
             return JobCode.InvalidJob;
 
         let code = creep.repair(target as any) as number;
 
-        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || target.hits == target.hitsMax)
             return JobCode.FinishedOk;
         if (code == ERR_NOT_IN_RANGE)
             code = creep.moveTo(target);
