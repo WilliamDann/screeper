@@ -2,5 +2,9 @@
 ☐ Multiple HarvestAgents for sources in the room
 ☐ Build and Utilize Extentions
 ☐ Configure Agents to utilize avalible resources. i.e. More to build when building need to be done
+    ☐ Build
+    ☐ Utilize @started(23-02-12 17:46)
 ☐ Defense Agent
 ☐ Have MemoryDump better handle circular refs
+☐ Cannot add new agents because old data overwrites
+✔ Sync Stages between agents @done(23-02-12 17:46)

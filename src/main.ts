@@ -13,6 +13,7 @@ import { RepairJob } from "./Jobs/RepairJob";
 import { MemoryDump } from "./MemoryDump";
 import { CreepPool } from "./Agents/CreepPool";
 import { JobQueue } from "./Agents/JobQueue";
+import { ScalingAgent } from "./Agents/ScalingAgent";
 
 export function loop()
 {
@@ -31,6 +32,7 @@ export function loop()
         'HarvestAgent'      : HarvestAgent.prototype,
         'SpawnerAgent'      : SpawnerAgent.prototype,
         'UpgradeAgent'      : UpgradeAgent.prototype,
+        'ScalingAgent'      : ScalingAgent.prototype,
 
         // jobs
         'HarvestJob'        : HarvestJob.prototype,
@@ -48,10 +50,11 @@ export function loop()
     let ctrl   = Game.rooms[room].controller.id;
 
     let controller = new AgentController([
+        new ScalingAgent(),
         new HarvestAgent(source),
         new SpawnerAgent(spawn),
         new UpgradeAgent(ctrl),
-        new BuildAgent()
+        new BuildAgent(),
     ]);
 
     if (Memory['controller'])

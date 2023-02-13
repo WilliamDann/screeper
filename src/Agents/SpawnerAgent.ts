@@ -66,7 +66,7 @@ export class SpawnerAgent extends Agent
         return true;
     }
 
-    spawnerTick()
+    private spawnerTick()
     {
         let spawner = Game.getObjectById(this.spawner as any) as StructureSpawn;
         let req     = this.queue[0];
@@ -83,12 +83,10 @@ export class SpawnerAgent extends Agent
         this.queue.shift();
     }
 
-    tick()
+    private energyTick()
     {
         const makeWithdrawJob = (depo, spawner) => new StepJob([ new WithdrawJob(null, depo), new TransferJob(null, spawner) ], this.constructor.name);
         const makeHarvestJob  = (src, spawner)  => new StepJob([ new HarvestJob(null, src),   new TransferJob(null, spawner) ], this.constructor.name);
-
-        this.spawnerTick();
 
         let harvester = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
         if (harvester.stage >= 2)
@@ -99,6 +97,12 @@ export class SpawnerAgent extends Agent
         else
             if (this.queue.length != 0 && this.jobQueue.getFromAssigned(this.constructor.name).length == 0)
                 harvester.jobQueue.enqueue(makeHarvestJob(harvester.source, this.spawner), 1);
+    }
+
+    tick()
+    {
+        this.spawnerTick();
+        this.energyTick();
 
         super.tick();
     }
