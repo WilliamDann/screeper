@@ -1,0 +1,6 @@
+# TODO List
+☐ Multiple HarvestAgents for sources in the room
+☐ Build and Utilize Extentions
+☐ Configure Agents to utilize avalible resources. i.e. More to build when building need to be done
+☐ Defense Agent
+☐ Have MemoryDump better handle circular refs
