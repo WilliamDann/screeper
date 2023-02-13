@@ -3,8 +3,11 @@
 ☐ Build and Utilize Extentions
 ☐ Configure Agents to utilize avalible resources. i.e. More to build when building need to be done
     ☐ Build
-    ☐ Utilize @started(23-02-12 17:46)
+    ✔ Utilize @started(23-02-12 17:46) @done(23-02-12 18:13) @lasted(27m13s)
 ☐ Defense Agent
 ☐ Have MemoryDump better handle circular refs
-☐ Cannot add new agents because old data overwrites
 ✔ Sync Stages between agents @done(23-02-12 17:46)
+
+# Bugs
+☐ Cannot add new agents because old data overwrites
+☐ Throws error where there is no container in the room?

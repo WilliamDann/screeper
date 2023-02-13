@@ -88,11 +88,19 @@ export class SpawnerAgent extends Agent
         const makeWithdrawJob = (depo, spawner) => new StepJob([ new WithdrawJob(null, depo), new TransferJob(null, spawner) ], this.constructor.name);
         const makeHarvestJob  = (src, spawner)  => new StepJob([ new HarvestJob(null, src),   new TransferJob(null, spawner) ], this.constructor.name);
 
-        let harvester = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
-        if (harvester.stage >= 2)
+        let spawner = Game.getObjectById(this.spawner as any) as Structure;
+
+        let harvester  = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
+        let extensions = spawner.room.find(FIND_STRUCTURES, {filter: x => x.structureType == STRUCTURE_EXTENSION && x.store.getFreeCapacity(RESOURCE_ENERGY) != 0})
+
+        if (this.stage >= 1)
         {
             if (this.jobQueue.queue.length == 0)
-                this.jobQueue.enqueue(makeWithdrawJob(this.depo, this.spawner), 1);
+            {
+                this.jobQueue.enqueue(makeWithdrawJob(this.depo, this.spawner), -1);
+                for (let extension of extensions)
+                    this.jobQueue.enqueue(makeWithdrawJob(this.depo, extension.id), -1);
+            }
         }
         else
             if (this.queue.length != 0 && this.jobQueue.getFromAssigned(this.constructor.name).length == 0)

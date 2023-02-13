@@ -46,6 +46,10 @@ export class ScalingAgent extends Agent
 
                 spwn.stage = 1;
 
+                spwn.depo  = harv.depo; 
+                upgr.depo  = harv.depo;
+                buil.depo  = harv.depo;
+
                 // TODO what is the next stage?
 
                 break;
