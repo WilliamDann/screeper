@@ -13,6 +13,7 @@ export class Agent implements Runnable
 
     depo       ?: string; // where creep gets energy from
     creepTarget : number;
+    bodyTarget  : BodyPartConstant[];
     stage       : number; // progress of the agent
 
     constructor()
@@ -21,6 +22,7 @@ export class Agent implements Runnable
         this.creepPool  = new CreepPool();
 
         this.creepTarget = 0;
+        this.bodyTarget  = [WORK, CARRY, MOVE]; 
     }
 
     pre(): void 
@@ -53,11 +55,10 @@ export class Agent implements Runnable
     spawnCreep()
     {
         let name    = `${this.constructor.name}_${Game.time}`
-        let body    =  [WORK, CARRY, MOVE];
 
         let spawner = this.controller.findAgentOfType("SpawnerAgent") as any;
         if (spawner.getRequestsFrom(this.constructor.name).length == 0)
-            if (spawner.enqueue( {name: name, body: body, requester: this.constructor.name}))
+            if (spawner.enqueue( {name: name, body: this.bodyTarget, requester: this.constructor.name}))
                 this.creepPool.creepsIdle.push(name);
     }
 

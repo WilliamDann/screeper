@@ -19,7 +19,7 @@ export class BuildAgent extends Agent
                     new WithdrawJob(null, this.depo),
                     new BuildJob(null, site.id)
                 ], this.constructor.name)
-            );
+            , -1);
     }
 
     createRepairJobs(depo: Structure)
@@ -31,7 +31,7 @@ export class BuildAgent extends Agent
                     new WithdrawJob(null, this.depo),
                     new RepairJob(null, site.id)
                 ], this.constructor.name)
-            );
+            , -1);
         }
     }
 

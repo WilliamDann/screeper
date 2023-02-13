@@ -45,7 +45,7 @@ export class SpawnerAgent extends Agent
     getTotalEnergyCapacity(): number
     {
         let spawner = Game.getObjectById(this.spawner as any) as StructureSpawn;
-        return spawner.store.getCapacity(RESOURCE_ENERGY);
+        return spawner.room.energyCapacityAvailable;
     }
 
     getCreepCost(req: SpawnRequest): number
@@ -55,7 +55,8 @@ export class SpawnerAgent extends Agent
 
     enqueue(req: SpawnRequest): boolean
     {
-        let spawner = Game.getObjectById(this.spawner as any) as StructureSpawn;
+        this.log(this.getCreepCost(req))
+        this.log(this.getTotalEnergyCapacity())
 
         if (this.getCreepCost(req) > this.getTotalEnergyCapacity())
             return false;
@@ -76,8 +77,12 @@ export class SpawnerAgent extends Agent
 
         let res = spawner.spawnCreep(req.body, req.name);
 
-        if (res != OK)
+        if (res != OK && res != -4 && res != -6)
+        {
+            this.queue.shift();
+            console.log(`failed to spawn ${req.name}: ${res}`);
             return;
+        }
 
         console.log(`spawned ${req.name}`);
         this.queue.shift();
