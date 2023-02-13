@@ -42,7 +42,6 @@ export class SpawnerAgent extends Agent
         return rqs;
     }
 
-    // TODO include extentions
     getTotalEnergyCapacity(): number
     {
         let spawner = Game.getObjectById(this.spawner as any) as StructureSpawn;

@@ -2,8 +2,8 @@ import { Job } from '../Jobs/Job';
 
 export class JobQueue
 {
-    running         : Job[]; // TODO linked list instead of []
-    queue           : Job[]; // TODO linked list instead of []
+    running         : Job[];
+    queue           : Job[];
 
     constructor()
     {
