@@ -1,17 +1,15 @@
-export interface JobData
+export interface Job
 {
     // job info
     jobID?          : string;
     jobCode         : string;
     creep           : string;
     assigner?       : string;
-
+    
     // stats
     queueTime?      : number; // time until task was started in game ticks
     runTime?        : number; // time until task was running in game ticks
-}
-export interface Job extends JobData
-{
+
     run() : JobCode;
 }
 

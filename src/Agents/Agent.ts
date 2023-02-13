@@ -1,6 +1,6 @@
 import { CreepPool } from "./CreepPool";
 import { JobQueue } from "./JobQueue";
-import { Job, JobData } from "../Jobs/Job";
+import { Job } from "../Jobs/Job";
 import { Runnable } from "../Runnable";
 import { AgentController } from "../AgentController";
 

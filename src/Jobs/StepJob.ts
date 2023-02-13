@@ -1,4 +1,4 @@
-import {Job, JobCode, JobData}  from "./Job"
+import {Job, JobCode}  from "./Job"
 
 export class StepJob implements Job
 {
