@@ -95,7 +95,8 @@ export class SpawnerAgent extends Agent
         let spawner = Game.getObjectById(this.spawner as any) as Structure;
 
         let harvester  = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
-        let extensions = spawner.room.find(FIND_STRUCTURES, {filter: x => x.structureType == STRUCTURE_EXTENSION && x.store.getFreeCapacity(RESOURCE_ENERGY) != 0})
+        let extensions = spawner.room.find(FIND_STRUCTURES, {filter: x => x.structureType == STRUCTURE_EXTENSION && x.store.getFreeCapacity(RESOURCE_ENERGY) != 0});
+        let towers     = spawner.room.find(FIND_MY_STRUCTURES, {filter: x => x.structureType == STRUCTURE_TOWER && x.store.getFreeCapacity(RESOURCE_ENERGY) != 0});
 
         if (this.stage >= 1)
         {
@@ -104,11 +105,13 @@ export class SpawnerAgent extends Agent
                 this.jobPool.add(makeWithdrawJob(this.depo, this.spawner));
                 for (let extension of extensions)
                     this.jobPool.add(makeWithdrawJob(this.depo, extension.id));
+                for (let tower of towers)
+                    this.jobPool.add(makeWithdrawJob(this.depo, tower.id));
             }
         }
-        // else
-        //     if (this.queue.length != 0 && this.getJobsAssignedBy(this.constructor.name).length == 0)
-        //         harvester.jobPool.add(makeHarvestJob(harvester.source, this.spawner));
+        else
+            if (this.queue.length != 0 && this.getJobsAssignedBy(this.constructor.name).length == 0)
+                harvester.jobPool.add(makeHarvestJob(harvester.source, this.spawner));
     }
 
     tick()
