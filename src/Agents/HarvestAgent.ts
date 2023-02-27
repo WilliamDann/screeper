@@ -40,7 +40,7 @@ export class HarvestAgent extends Agent
     {
         let source     = Game.getObjectById(this.source as any) as Source
         let containers = source.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_CONTAINER })
-        
+
         return containers.sort((a, b) => source.pos.getRangeTo(a) - source.pos.getDirectionTo(b))[0];
     }
 
@@ -55,8 +55,12 @@ export class HarvestAgent extends Agent
             this.stage = 1
         else
         {
-            this.depo = this.findDepo().id;
-            this.stage = 2
+            depo = this.findDepo();
+            if (depo)
+            {
+                this.depo = depo.id;
+                this.stage = 2
+            }
         }
 
         switch (this.stage)
@@ -72,7 +76,6 @@ export class HarvestAgent extends Agent
                     this.jobPool.add(makeHarvestJob(this.source, this.depo));
                 break;
         }
-
         super.tick();
     }
 }

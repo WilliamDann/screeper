@@ -11,7 +11,7 @@ export class Pool<T>
 
     add(item: T): T
     {
-        this.used.push(item);
+        this.free.push(item);
         return item;
     }
 

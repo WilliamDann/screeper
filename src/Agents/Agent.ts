@@ -100,10 +100,10 @@ export class Agent implements Runnable
 
     getJobsAssignedBy(name: string): Job[]
     {
-        return [].push.apply(
-            this.jobPool.used.filter(x => x.assigner == name),
-            this.jobPool.free.filter(x => x.assigner == name)
-        );
+        return [
+            ...this.jobPool.used.filter(x => x.assigner == name),
+            ...this.jobPool.free.filter(x => x.assigner == name)
+        ];
     }
 
     runJob(job: Job)

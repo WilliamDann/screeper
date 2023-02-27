@@ -55,9 +55,6 @@ export class SpawnerAgent extends Agent
 
     enqueue(req: SpawnRequest): boolean
     {
-        this.log(this.getCreepCost(req))
-        this.log(this.getTotalEnergyCapacity())
-
         if (this.getCreepCost(req) > this.getTotalEnergyCapacity())
             return false;
         if (Game.creeps[req.name])
@@ -76,7 +73,6 @@ export class SpawnerAgent extends Agent
             return;
 
         let res = spawner.spawnCreep(req.body, req.name);
-
         if (res != OK && res != -4 && res != -6)
         {
             this.queue.shift();
@@ -84,8 +80,11 @@ export class SpawnerAgent extends Agent
             return;
         }
 
-        console.log(`spawned ${req.name}`);
-        this.queue.shift();
+        if (res != -4 && res != -6)
+        {
+            console.log(`spawned ${req.name}`);
+            this.queue.shift();
+        }
     }
 
     private energyTick()
@@ -107,9 +106,9 @@ export class SpawnerAgent extends Agent
                     this.jobPool.add(makeWithdrawJob(this.depo, extension.id));
             }
         }
-        else
-            if (this.queue.length != 0 && this.getJobsAssignedBy(this.constructor.name).length == 0)
-                harvester.jobPool.add(makeHarvestJob(harvester.source, this.spawner));
+        // else
+        //     if (this.queue.length != 0 && this.getJobsAssignedBy(this.constructor.name).length == 0)
+        //         harvester.jobPool.add(makeHarvestJob(harvester.source, this.spawner));
     }
 
     tick()
