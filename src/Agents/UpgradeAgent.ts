@@ -19,8 +19,9 @@ export class UpgradeAgent extends Agent
 
         if (!this.depo)
             return;
+        if (this.getJobsAssignedBy(this.constructor.name).length <= 1)
+            this.jobPool.add(makeJob(this.depo, this.controllerId));
 
-        this.jobQueue.enqueue(makeJob(this.depo, this.controllerId), 1);
         super.tick();
     }
 }

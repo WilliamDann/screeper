@@ -64,10 +64,12 @@ export class HarvestAgent extends Agent
             case 0:
                 this.constructDepo()
             case 1:
-                this.jobQueue.enqueue(makeBuildJob(this.source, this.depo), 1);
+                if (this.getJobsAssignedBy(this.constructor.name).length <= 1)
+                    this.jobPool.add(makeBuildJob(this.source, this.depo));
                 break;
             case 2:
-                this.jobQueue.enqueue(makeHarvestJob(this.source, this.depo), 3);
+                if (this.getJobsAssignedBy(this.constructor.name).length <= 3)
+                    this.jobPool.add(makeHarvestJob(this.source, this.depo));
                 break;
         }
 

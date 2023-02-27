@@ -1,19 +1,18 @@
-import { StepJob }      from "./Jobs/StepJob";
-import { HarvestJob }   from "./Jobs/HarvestJob";
-import { TransferJob }  from "./Jobs/TransferJob";
-import { SpawnerAgent } from "./Agents/SpawnerAgent";
-import { HarvestAgent } from "./Agents/HarvestAgent";
-import { AgentController } from "./AgentController";
-import { UpgradeAgent } from "./Agents/UpgradeAgent";
-import { WithdrawJob } from "./Jobs/WithdrawJob";
-import { UpgradeJob } from "./Jobs/UpgradeJob";
-import { BuildJob } from "./Jobs/BuildJob";
-import { BuildAgent } from "./Agents/BuildAgent";
-import { RepairJob } from "./Jobs/RepairJob";
-import { MemoryDump } from "./MemoryDump";
-import { CreepPool } from "./Agents/CreepPool";
-import { JobQueue } from "./Agents/JobQueue";
-import { ScalingAgent } from "./Agents/ScalingAgent";
+import { StepJob }          from "./Jobs/StepJob";
+import { HarvestJob }       from "./Jobs/HarvestJob";
+import { TransferJob }      from "./Jobs/TransferJob";
+import { SpawnerAgent }     from "./Agents/SpawnerAgent";
+import { HarvestAgent }     from "./Agents/HarvestAgent";
+import { AgentController }  from "./AgentController";
+import { UpgradeAgent }     from "./Agents/UpgradeAgent";
+import { WithdrawJob }      from "./Jobs/WithdrawJob";
+import { UpgradeJob }       from "./Jobs/UpgradeJob";
+import { BuildJob }         from "./Jobs/BuildJob";
+import { BuildAgent }       from "./Agents/BuildAgent";
+import { RepairJob }        from "./Jobs/RepairJob";
+import { MemoryDump }       from "./MemoryDump";
+import { ScalingAgent }     from "./Agents/ScalingAgent";
+import { Pool }             from "./util/Pool"
 
 export function loop()
 {
@@ -24,8 +23,7 @@ export function loop()
     let md = new MemoryDump({
         // helpers
         'AgentController'   : AgentController.prototype,
-        'CreepPool'         : CreepPool.prototype,
-        'JobQueue'          : JobQueue.prototype,
+        'Pool'              : Pool.prototype,
 
         //agents
         'BuildAgent'        : BuildAgent.prototype,

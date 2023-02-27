@@ -100,16 +100,16 @@ export class SpawnerAgent extends Agent
 
         if (this.stage >= 1)
         {
-            if (this.jobQueue.queue.length == 0)
+            if (this.jobPool.free.length == 0)
             {
-                this.jobQueue.enqueue(makeWithdrawJob(this.depo, this.spawner), -1);
+                this.jobPool.add(makeWithdrawJob(this.depo, this.spawner));
                 for (let extension of extensions)
-                    this.jobQueue.enqueue(makeWithdrawJob(this.depo, extension.id), -1);
+                    this.jobPool.add(makeWithdrawJob(this.depo, extension.id));
             }
         }
         else
-            if (this.queue.length != 0 && this.jobQueue.getFromAssigned(this.constructor.name).length == 0)
-                harvester.jobQueue.enqueue(makeHarvestJob(harvester.source, this.spawner), 1);
+            if (this.queue.length != 0 && this.getJobsAssignedBy(this.constructor.name).length == 0)
+                harvester.jobPool.add(makeHarvestJob(harvester.source, this.spawner));
     }
 
     tick()
