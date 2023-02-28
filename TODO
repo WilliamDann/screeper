@@ -1,14 +1,19 @@
 # TODO List
-☐ Multiple HarvestAgents for sources in the room
-☐ Build and Utilize Extentions
-☐ Configure Agents to utilize avalible resources. i.e. More to build when building need to be done
-    ☐ Build
-    ✔ Utilize @started(23-02-12 17:46) @done(23-02-12 18:13) @lasted(27m13s)
-☐ Defense Agent
-☐ Have MemoryDump better handle circular refs
-✔ Sync Stages between agents @done(23-02-12 17:46)
-☐ Spawn custom creep bodies
+High:
+    ☐ Defense Agent
+        ✔ Tower fires on hostile creeps @started(23-02-27 23:22) @done(23-02-27 23:36) @lasted(14m57s)
+        ☐ Secure Entrances
+        ☐ Defensive Ramparts
+        ☐ Spawn defense forces if needed
+Med:
+    ☐ Auto Build
+        ☐ Extention Hive
+        ☐ Roads
 
-# Bugs
-☐ Cannot add new agents because old data overwrites
-☐ Throws error where there is no container in the room?
+    ☐ Utilize All Sources
+
+    ☐ Improved Optimizer
+        ☐ Road Lottery
+        ☐ Creep Bodies
+        ☐ Container far objectives (logistics agent?)
+Low:

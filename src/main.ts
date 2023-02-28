@@ -13,6 +13,7 @@ import { RepairJob }        from "./Jobs/RepairJob";
 import { MemoryDump }       from "./MemoryDump";
 import { ScalingAgent }     from "./Agents/ScalingAgent";
 import { Pool }             from "./util/Pool"
+import { DefenseAgent } from "./Agents/DefenseAgent";
 
 export function loop()
 {
@@ -26,6 +27,7 @@ export function loop()
         'Pool'              : Pool.prototype,
 
         //agents
+        'DefenseAgent'      : DefenseAgent.prototype,
         'BuildAgent'        : BuildAgent.prototype,
         'HarvestAgent'      : HarvestAgent.prototype,
         'SpawnerAgent'      : SpawnerAgent.prototype,
@@ -49,6 +51,7 @@ export function loop()
 
     let controller = new AgentController([
         new ScalingAgent(),
+        new DefenseAgent(),
         new HarvestAgent(source),
         new SpawnerAgent(spawn),
         new UpgradeAgent(ctrl),
