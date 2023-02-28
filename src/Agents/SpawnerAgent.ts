@@ -55,9 +55,6 @@ export class SpawnerAgent extends Agent
 
     enqueue(req: SpawnRequest): boolean
     {
-        this.log(this.getCreepCost(req))
-        this.log(this.getTotalEnergyCapacity())
-
         if (this.getCreepCost(req) > this.getTotalEnergyCapacity())
             return false;
         if (Game.creeps[req.name])
@@ -76,7 +73,6 @@ export class SpawnerAgent extends Agent
             return;
 
         let res = spawner.spawnCreep(req.body, req.name);
-
         if (res != OK && res != -4 && res != -6)
         {
             this.queue.shift();
@@ -84,8 +80,11 @@ export class SpawnerAgent extends Agent
             return;
         }
 
-        console.log(`spawned ${req.name}`);
-        this.queue.shift();
+        if (res != -4 && res != -6)
+        {
+            console.log(`spawned ${req.name}`);
+            this.queue.shift();
+        }
     }
 
     private energyTick()
@@ -96,20 +95,23 @@ export class SpawnerAgent extends Agent
         let spawner = Game.getObjectById(this.spawner as any) as Structure;
 
         let harvester  = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
-        let extensions = spawner.room.find(FIND_STRUCTURES, {filter: x => x.structureType == STRUCTURE_EXTENSION && x.store.getFreeCapacity(RESOURCE_ENERGY) != 0})
+        let extensions = spawner.room.find(FIND_STRUCTURES, {filter: x => x.structureType == STRUCTURE_EXTENSION && x.store.getFreeCapacity(RESOURCE_ENERGY) != 0});
+        let towers     = spawner.room.find(FIND_MY_STRUCTURES, {filter: x => x.structureType == STRUCTURE_TOWER && x.store.getFreeCapacity(RESOURCE_ENERGY) != 0});
 
         if (this.stage >= 1)
         {
-            if (this.jobQueue.queue.length == 0)
+            if (this.jobPool.free.length == 0)
             {
-                this.jobQueue.enqueue(makeWithdrawJob(this.depo, this.spawner), -1);
+                this.jobPool.add(makeWithdrawJob(this.depo, this.spawner));
                 for (let extension of extensions)
-                    this.jobQueue.enqueue(makeWithdrawJob(this.depo, extension.id), -1);
+                    this.jobPool.add(makeWithdrawJob(this.depo, extension.id));
+                for (let tower of towers)
+                    this.jobPool.add(makeWithdrawJob(this.depo, tower.id));
             }
         }
         else
-            if (this.queue.length != 0 && this.jobQueue.getFromAssigned(this.constructor.name).length == 0)
-                harvester.jobQueue.enqueue(makeHarvestJob(harvester.source, this.spawner), 1);
+            if (this.queue.length != 0 && this.getJobsAssignedBy(this.constructor.name).length == 0)
+                harvester.jobPool.add(makeHarvestJob(harvester.source, this.spawner));
     }
 
     tick()
