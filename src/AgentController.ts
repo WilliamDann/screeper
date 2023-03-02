@@ -1,7 +1,6 @@
 import { Agent } from "./Agents/Agent";
-import { Runnable } from "./Runnable";
 
-export class AgentController implements Runnable
+export class AgentController
 {
     agents : Agent[];
 
