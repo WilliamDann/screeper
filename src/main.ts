@@ -3,7 +3,6 @@ import { HarvestJob }       from "./Jobs/HarvestJob";
 import { TransferJob }      from "./Jobs/TransferJob";
 import { SpawnerAgent }     from "./Agents/SpawnerAgent";
 import { HarvestAgent }     from "./Agents/HarvestAgent";
-import { AgentController }  from "./AgentController";
 import { UpgradeAgent }     from "./Agents/UpgradeAgent";
 import { WithdrawJob }      from "./Jobs/WithdrawJob";
 import { UpgradeJob }       from "./Jobs/UpgradeJob";
@@ -13,20 +12,67 @@ import { RepairJob }        from "./Jobs/RepairJob";
 import { MemoryDump }       from "./MemoryDump";
 import { ScalingAgent }     from "./Agents/ScalingAgent";
 import { Pool }             from "./util/Pool"
-import { DefenseAgent } from "./Agents/DefenseAgent";
+import { DefenseAgent }     from "./Agents/DefenseAgent";
+import { RoomAgent }        from "./Agents/RoomAgent";
+import { Agent }            from "./Agents/Agent";
+import { Graph, Node }            from "./util/Graph";
+import { Queue }            from "./util/Queue";
+
+const MEM_DEBUG = false;
+const MEM_RESET = false;
+
+function cleanGameMemory(clean=['creeps', 'rooms', 'spawns', 'flags', 'powerCreeps'])
+{
+    for (let item in Memory)
+        if (clean.indexOf(item) != -1)
+            for (let name in Memory[item])
+                if (!Game[item][name])
+                    delete Game[item][name];
+}
+
+function createMemory(md: MemoryDump)
+{
+    let graph  = new Graph<Agent>();
+    for (let name in Game.rooms)
+        graph.addVertex(new RoomAgent(name))
+
+    dumpMemory(md);
+}
+
+function loadMemory(md: MemoryDump)
+{
+    let graph   = new Graph<Agent>();
+    graph.nodes = new Map(md.load(MemoryDump['AgentGraph']));
+    globalThis.AgentGraph = graph;
+}
+
+function dumpMemory(md: MemoryDump) {
+    Memory['AgentGraph'] = md.dump(globalThis.AgentGraph.nodes.entries());
+}
+
+function runAgents()
+{
+    for (let agent of globalThis.AgentGraph.nodes.values())
+    {
+        agent.pre();
+        agent.tick();
+        agent.post();
+    }
+}
 
 export function loop()
 {
-    for (let name in Memory.creeps)
-        if (!Game.creeps[name])
-            delete Memory.creeps[name]
-
     let md = new MemoryDump({
         // helpers
-        'AgentController'   : AgentController.prototype,
+        'Map'               : Map.prototype,
+        'Agent'             : Agent.prototype,
+        'Graph'             : Graph.prototype,
+        'Node'              : Node.prototype,
+        'Queue'             : Queue.prototype,
         'Pool'              : Pool.prototype,
 
         //agents
+        'RoomAgent'         : RoomAgent.prototype,
         'DefenseAgent'      : DefenseAgent.prototype,
         'BuildAgent'        : BuildAgent.prototype,
         'HarvestAgent'      : HarvestAgent.prototype,
@@ -44,32 +90,16 @@ export function loop()
         'StepJob'           : StepJob.prototype,
     });
 
-    let room   = Object.keys(Game.rooms)[0]
-    let source = Game.rooms[room].find(FIND_SOURCES)[0].id;
-    let spawn  = Game.spawns.Spawn1.id;
-    let ctrl   = Game.rooms[room].controller.id;
+    if (MEM_RESET)
+        delete Memory['AgentGraph'];
+    if (MEM_DEBUG)
+        return;
 
-    let controller = new AgentController([
-        new ScalingAgent(),
-        new DefenseAgent(),
-        new HarvestAgent(source),
-        new SpawnerAgent(spawn),
-        new UpgradeAgent(ctrl),
-        new BuildAgent(),
-    ]);
+    cleanGameMemory();
 
-    if (Memory['controller'])
-    {
-        let obj = md.load(Memory['controller']);
-        Object.assign(controller, obj);
-
-        for (let child of controller.agents) // TODO removed because of circular, fix?
-            child.controller = controller;
-
-        controller.pre();
-        controller.tick();
-        controller.post();
-    }
-
-    Memory['controller'] = md.dump(controller, []);
+    if (!Memory['AgentGraph'])
+        createMemory(md);
+    loadMemory(md)
+    runAgents();
+    dumpMemory(md);
 }

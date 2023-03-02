@@ -1,6 +1,6 @@
 export class MemoryDump
 {
-    defs: {} // {protoName: class prototype}
+    defs    : {} // {protoName: class prototype}
 
     constructor(defs: {})
     {
@@ -75,8 +75,10 @@ export class MemoryDump
         return data;
     }
 
-    dump(obj: any, seen: any[]): any
+    dump(obj: any, seen: any[]=null): any
     {
+        if (!seen)
+            seen = [];
         if (obj == undefined)
             return undefined;
         else if (this.isArray(obj))

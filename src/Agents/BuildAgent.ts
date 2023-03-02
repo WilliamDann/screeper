@@ -41,7 +41,7 @@ export class BuildAgent extends Agent
 
         if (!depoObj)
             return;
-        
+
         if (this.jobPool.free.length == 0)
         {
             this.createBuildJobs(depoObj);

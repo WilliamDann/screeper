@@ -1,13 +1,10 @@
-import { Pool }             from "../util/Pool"
-import { Job }              from "../Jobs/Job";
-import { AgentController }  from "../AgentController";
+import { Pool } from "../util/Pool"
+import { Job }  from "../Jobs/Job";
 
 export class Agent
 {
     jobPool     : Pool<Job>;
     creepPool   : Pool<string>;
-
-    controller  : AgentController;
 
     depo       ?: string; // where creep gets energy from
     creepTarget : number;
@@ -50,11 +47,22 @@ export class Agent
     {
     }
 
+    findAgentWithClassName(className: string): Agent
+    {
+        let node = globalThis.AgentGraph.nodes.get(this);
+        if (!node)
+            throw new Error(`Node ${this} not in AgentGraph`);
+
+        for (let step of globalThis.AgentGraph.bfs(node))
+            if (step.val.constructor.name == className)
+                return step.val;
+    }
+
     spawnCreep()
     {
         let name    = `${this.constructor.name}_${Game.time}`
 
-        let spawner = this.controller.findAgentOfType("SpawnerAgent") as any;
+        let spawner = this.findAgentWithClassName("SpawnerAgent") as any;
         if (spawner.getRequestsFrom(this.constructor.name).length == 0)
             if (spawner.enqueue( {name: name, body: this.bodyTarget, requester: this.constructor.name}))
                 this.creepPool.free.push(name);
@@ -62,7 +70,7 @@ export class Agent
 
     validateCreepPools()
     {
-        let spawner = this.controller.findAgentOfType("SpawnerAgent") as any;
+        let spawner = this.findAgentWithClassName("SpawnerAgent") as any;
         for (let i = 0; i < this.creepPool.free.length; i++)
         {
             let name  = this.creepPool.free[i]
