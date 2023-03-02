@@ -33,7 +33,7 @@ export class Pool<T>
     {
         let i = this.free.indexOf(item);
         if (i == -1)
-            throw new Error(`Item ${item} not in free.`);
+            return;
 
         let rem = this.free.splice(i, 1);
         this.used.push(rem[0]);
@@ -43,7 +43,7 @@ export class Pool<T>
     {
         let i = this.used.indexOf(item);
         if (i == -1)
-            throw new Error(`Item ${item} not in used.`);
+            return;
 
         let rem = this.used.splice(i, 1);
         this.free.push(rem[0]);
