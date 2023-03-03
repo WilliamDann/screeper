@@ -5,7 +5,9 @@ export interface Job
     jobCode         : string;
     creep           : string;
     assigner?       : string;
-    
+
+    role?           : boolean;
+
     // stats
     queueTime?      : number; // time until task was started in game ticks
     runTime?        : number; // time until task was running in game ticks

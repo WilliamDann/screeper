@@ -120,6 +120,11 @@ export class Agent implements Runnable
         {
             this.creepPool.setFree(job.creep);
             this.jobPool.remove(job);
+            if (job.role)
+            {
+                delete job.creep;
+                this.jobPool.add(job);
+            }
         }
     }
 
