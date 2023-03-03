@@ -1,13 +1,7 @@
 import { Pool } from "../util/Pool"
-<<<<<<< HEAD
 import { Job }  from "../Jobs/Job";
-=======
-import { Job } from "../Jobs/Job";
-import { Runnable } from "../Runnable";
-import { AgentController } from "../AgentController";
->>>>>>> parent of 4695731... removed Runnable interface
 
-export class Agent implements Runnable
+export class Agent
 {
     jobPool     : Pool<Job>;
     creepPool   : Pool<string>;

@@ -15,7 +15,7 @@ import { Pool }             from "./util/Pool"
 import { DefenseAgent }     from "./Agents/DefenseAgent";
 import { RoomAgent }        from "./Agents/RoomAgent";
 import { Agent }            from "./Agents/Agent";
-import { Graph, Node }      from "./util/Graph";
+import { Graph, Node }            from "./util/Graph";
 import { Queue }            from "./util/Queue";
 
 const MEM_DEBUG = false;
@@ -30,12 +30,24 @@ function cleanGameMemory(clean=['creeps', 'rooms', 'spawns', 'flags', 'powerCree
                     delete Game[item][name];
 }
 
-function createAgentGraph()
+function createMemory(md: MemoryDump)
 {
-    let graph = new Graph<Agent>();
-    for (let room in Game.rooms)
-        graph.addVertex(new RoomAgent(room));
-    globalThis.agentGraph = graph;
+    let graph  = new Graph<Agent>();
+    for (let name in Game.rooms)
+        graph.addVertex(new RoomAgent(name))
+
+    dumpMemory(md);
+}
+
+function loadMemory(md: MemoryDump)
+{
+    let graph   = new Graph<Agent>();
+    graph.nodes = new Map(md.load(MemoryDump['AgentGraph']));
+    globalThis.AgentGraph = graph;
+}
+
+function dumpMemory(md: MemoryDump) {
+    Memory['AgentGraph'] = md.dump(globalThis.AgentGraph.nodes.entries());
 }
 
 function runAgents()
@@ -85,5 +97,9 @@ export function loop()
 
     cleanGameMemory();
 
-
+    if (!Memory['AgentGraph'])
+        createMemory(md);
+    loadMemory(md)
+    runAgents();
+    dumpMemory(md);
 }

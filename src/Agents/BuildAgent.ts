@@ -1,8 +1,8 @@
-import { BuildJob } from "../Jobs/BuildJob";
-import { RepairJob } from "../Jobs/RepairJob";
-import { StepJob } from "../Jobs/StepJob";
-import { WithdrawJob } from "../Jobs/WithdrawJob";
-import { Agent } from "./Agent";
+import { BuildJob }     from "../Jobs/BuildJob";
+import { RepairJob }    from "../Jobs/RepairJob";
+import { StepJob }      from "../Jobs/StepJob";
+import { WithdrawJob }  from "../Jobs/WithdrawJob";
+import { Agent }        from "./Agent";
 
 export class BuildAgent extends Agent
 {
