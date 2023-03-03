@@ -1,8 +1,9 @@
-import { Pool }             from "../util/Pool"
-import { Job }              from "../Jobs/Job";
-import { AgentController }  from "../AgentController";
+import { Pool } from "../util/Pool"
+import { Job } from "../Jobs/Job";
+import { Runnable } from "../Runnable";
+import { AgentController } from "../AgentController";
 
-export class Agent
+export class Agent implements Runnable
 {
     jobPool     : Pool<Job>;
     creepPool   : Pool<string>;
