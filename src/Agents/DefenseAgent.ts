@@ -13,7 +13,7 @@ export class DefenseAgent extends Agent
 
     tick()
     {
-        let spawnAgent  = this.findAgentWithClassName("SpawnerAgent") as SpawnerAgent;
+        let spawnAgent  = this.controller.findAgentOfType("SpawnerAgent") as SpawnerAgent;
         let spawner     = Game.getObjectById(spawnAgent.spawner as any) as StructureSpawn;
 
         let towers      = spawner.room.find(FIND_MY_STRUCTURES, {filter: x => x.structureType == STRUCTURE_TOWER}) as StructureTower[];

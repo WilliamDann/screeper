@@ -94,7 +94,7 @@ export class SpawnerAgent extends Agent
 
         let spawner = Game.getObjectById(this.spawner as any) as Structure;
 
-        let harvester  = this.findAgentWithClassName("HarvestAgent") as HarvestAgent;
+        let harvester  = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
         let extensions = spawner.room.find(FIND_STRUCTURES, {filter: x => x.structureType == STRUCTURE_EXTENSION && x.store.getFreeCapacity(RESOURCE_ENERGY) != 0});
         let towers     = spawner.room.find(FIND_MY_STRUCTURES, {filter: x => x.structureType == STRUCTURE_TOWER && x.store.getFreeCapacity(RESOURCE_ENERGY) != 0});
 

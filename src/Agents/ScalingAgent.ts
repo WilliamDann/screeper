@@ -15,10 +15,10 @@ export class ScalingAgent extends Agent
 
     tick()
     {
-        let harv = this.findAgentWithClassName("HarvestAgent") as HarvestAgent;
-        let upgr = this.findAgentWithClassName("UpgradeAgent") as UpgradeAgent;
-        let buil = this.findAgentWithClassName("BuildAgent")   as BuildAgent;
-        let spwn = this.findAgentWithClassName("SpawnerAgent")   as SpawnerAgent;
+        let harv = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
+        let upgr = this.controller.findAgentOfType("UpgradeAgent") as UpgradeAgent;
+        let buil = this.controller.findAgentOfType("BuildAgent")   as BuildAgent;
+        let spwn = this.controller.findAgentOfType("SpawnerAgent")   as SpawnerAgent;
 
         if (Game.time % 10 == 0)
             this.log(this.stage);

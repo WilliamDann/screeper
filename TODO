@@ -5,39 +5,12 @@ High:
         ☐ Secure Entrances
         ☐ Defensive Ramparts
         ☐ Spawn defense forces if needed
-
-    ☐ More Strict Agent Scope @started(23-03-02 12:12)
-        i.e. A harvest agent explicitly only can act on it's assigned source.
-        ☐ Orgainized by room
-        ☐ Assigned targets like sources, spawners, extensions, or towers
-            ☐ Utilize All Sources @started(23-03-02 12:07)
-            This was in med but was moved here as it is part of this higher priority item.
-        ☐ Multiple instances of an agent can exist without error
-        ☐ Agents can be created and destroyed without error
-
-    ☐ Interchangable Goals
-        Right now agents have a stage variable and some code in the tick() func that determines the agent's goals. This could be
-        more robust - a Goal object that influinces the agent's actions. 
-        ☐ Move context-specific things to a Goal object
-            ☐ depo
-            ☐ creepTarget
-            ☐ bodyTarget
-            ☐ stage
-
 Med:
     ☐ Auto Build
         ☐ Extention Hive
         ☐ Roads
 
-    ☐ Resource Agent
-        An agent in charge of managing resources like energy. Instead of having to find a container itself, an Agent could ask
-        the ResourceAgent where to find what it is looking for.
-        ☐ Throws back a WithdrawJob a creep could execute to get the energy it needs
-        ☐ Manages resource allocation 
-            so as not to promise more energy than it has.
-            ☐ Emergency situations
-            If a creep needs to be spawned *now* this could need to be overridden.
-
+    ☐ Utilize All Sources
 
     ☐ Improved Optimizer
         ☐ Road Lottery

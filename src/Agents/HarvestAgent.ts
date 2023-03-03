@@ -19,8 +19,8 @@ export class HarvestAgent extends Agent
     constructDepo()
     {
         let room         = Game.rooms[(Game.getObjectById(this.source as any) as any).room.name];
-        let harvestAgent = this.findAgentWithClassName("HarvestAgent") as HarvestAgent;
-        let spawnAgent   = this.findAgentWithClassName("SpawnerAgent") as SpawnerAgent;
+        let harvestAgent = this.controller.findAgentOfType("HarvestAgent") as HarvestAgent;
+        let spawnAgent   = this.controller.findAgentOfType("SpawnerAgent") as SpawnerAgent;
 
         let source = Game.getObjectById(harvestAgent.source as any) as Source;
         let spawn  = Game.getObjectById(spawnAgent as any) as StructureSpawn;
