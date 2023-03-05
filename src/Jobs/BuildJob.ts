@@ -1,38 +1,43 @@
-import { Job, JobCode } from "./Job";
+import _HasStore    from "../Misc";
+import CollectTask from "../Tasks/CollectTask";
+import GeneralTask from "../Tasks/GeneralTask";
+import Task         from "../Tasks/Task";
+import Job          from "./Job";
 
-export class BuildJob implements Job
+export default class BuildJob implements Job
 {
-    jobCode : string;
+    complete : boolean;
+    error    : string;
+    tasks    : Task[];
 
-    creep   : string;
-    target  : string;
+    pickup   : Id<_HasId>;
+    site     : Id<ConstructionSite>;
 
-    constructor(creep:string|null=null, target:string|null=null)
+    constructor(pickup: Id<_HasId>, site: Id<ConstructionSite>)
     {
-        if (creep)
-            this.creep = creep;
-        if (target)
-            this.target = target;
-
-        this.jobCode = "BuildJob";
+        this.tasks = [
+            new CollectTask(pickup),
+            new GeneralTask('build', site)
+        ]
+        this.pickup = pickup;
+        this.site   = site;
     }
 
     run()
     {
-        let creep = Game.creeps[this.creep];
-        let target = Game.getObjectById(this.target as any) as ConstructionSite;
+        let pickup  = Game.getObjectById(this.pickup);
+        let site    = Game.getObjectById(this.site);
 
-        if (!creep || !target)
-            return JobCode.InvalidJob;
+        if (!pickup)
+        {
+            this.error = `Invalid Target ${this.pickup}`;
+            return;
+        }
 
-        let code = creep.build(target) as number;
-        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
-            return JobCode.FinishedOk;
-        if (code == ERR_NOT_IN_RANGE)
-            code = creep.moveTo(target);
-
-        if ([OK, ERR_BUSY, ERR_TIRED].indexOf(code as any) == -1)
-            return JobCode.FinishedError;
-        return JobCode.Running;
+        if (!site || site.progress >= site.progressTotal)
+        {
+            this.complete = true;
+            return;
+        }
     }
 }

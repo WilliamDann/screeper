@@ -4,16 +4,16 @@ import CollectTask  from "../Tasks/CollectTask";
 import TransferTask from "../Tasks/TransferTask";
 import _HasStore    from "../Misc";
 
-export default class HarvestJob implements Job
+export default class FillJob implements Job
 {
-    complete : boolean;
-    error    : string;
-    tasks    : Task[];
+    complete    : boolean;
+    error       : string;
+    tasks       : Task[];
 
-    pickup   : Id<Source>;
-    dropoff  : Id<_HasStore & _HasId>;
+    pickup      : Id<_HasStore & _HasId>;
+    dropoff     : Id<_HasStore & _HasId>;
 
-    constructor(pickup: Id<Source>, dropoff: Id<_HasStore & _HasId>)
+    constructor(pickup: Id<_HasStore & _HasId>, dropoff: Id<_HasStore & _HasId>)
     {
         this.tasks = [
             new CollectTask(pickup),
@@ -28,7 +28,7 @@ export default class HarvestJob implements Job
         let pickup  = Game.getObjectById(this.pickup);
         let dropoff = Game.getObjectById(this.dropoff);
 
-        if (!pickup || !pickup.energyCapacity)
+        if (!pickup || !pickup.store)
         {
             this.error = `Invalid Target ${this.pickup}`;
             return;
@@ -40,8 +40,7 @@ export default class HarvestJob implements Job
             return;
         }
 
-        // TODO should job end when dropoff is full?
-        if (pickup.energyCapacity == 0 || dropoff.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
+        if (dropoff.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
         {
             this.complete = true;
             return;

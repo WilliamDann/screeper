@@ -1,38 +1,42 @@
-import { Job, JobCode } from "./Job";
+import CollectTask  from "../Tasks/CollectTask";
+import GeneralTask  from "../Tasks/GeneralTask";
+import Task         from "../Tasks/Task";
+import Job          from "./Job";
 
-export class UpgradeJob implements Job
+export default class UpgradeJob implements Job
 {
-    jobCode : string;
+    complete    : boolean;
+    error       : string;
+    tasks       : Task[];
 
-    creep   : string;
-    target  : string;
+    pickup      : Id<_HasId>;
+    controller  : Id<StructureController>;
+    rclGoal     : number;
 
-    constructor(creep:string|null=null, target:string|null=null)
+    constructor(pickup: Id<_HasId>, controller: Id<StructureController>, rclGoal: number)
     {
-        if (creep)
-            this.creep = creep;
-        if (target)
-            this.target = target;
-
-        this.jobCode = "UpgradeJob";
+        this.tasks = [
+            new CollectTask(this.pickup),
+            new GeneralTask('upgradeController', this.controller)
+        ];
+        this.pickup     = pickup;
+        this.controller = controller;
+        this.rclGoal    = rclGoal;
     }
 
     run()
     {
-        let creep = Game.creeps[this.creep];
-        let target = Game.getObjectById(this.target as any) as StructureController;
+        let controller = Game.getObjectById(this.controller);
+        if (!controller || !controller.level)
+        {
+            this.error = `Invalid Target ${this.controller}`;
+            return;
+        }
 
-        if (!creep || !target)
-            return JobCode.InvalidJob;
-
-        let code = creep.upgradeController(target) as number;
-        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
-            return JobCode.FinishedOk;
-        if (code == ERR_NOT_IN_RANGE)
-            code = creep.moveTo(target);
-
-        if ([OK, ERR_BUSY, ERR_TIRED].indexOf(code as any) == -1)
-            return JobCode.FinishedError;
-        return JobCode.Running;
+        if (controller.level >= this.rclGoal)
+        {
+            this.complete = true;
+            return;
+        }
     }
 }
