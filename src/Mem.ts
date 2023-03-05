@@ -1,12 +1,13 @@
-import Colony                           from "./Colony/Colony";
-import ConstructionAgent                from "./Colony/ConstructionAgent";
-import ConstructionOrder                from "./Colony/ConstructionOrder";
-import HarvestAgent, { HarvestSite }    from "./Colony/HarvestAgent";
 import BuildJob                         from "./Jobs/BuildJob";
 import FillJob                          from "./Jobs/FillJob";
 import HarvestJob                       from "./Jobs/HarvestJob";
 import UpgradeJob                       from "./Jobs/UpgradeJob";
-import { MemoryDump }                   from "./MemoryDump"
+import MemoryDump                       from "./MemoryDump"
+import ControllerNode                   from "./Nodes/ControllerNode";
+import HarvestNode                      from "./Nodes/HarvestNode";
+import RoomNode                         from "./Nodes/RoomNode";
+import SpawnNode                        from "./Nodes/SpawnNode";
+import Graph from "./Structures/Graph";
 import LL                               from "./Structures/LL";
 import CollectTask                      from "./Tasks/CollectTask";
 import GeneralTask                      from "./Tasks/GeneralTask";
@@ -14,12 +15,11 @@ import TransferTask                     from "./Tasks/TransferTask";
 
 export const Protos = 
 {
-    // Colony
-    'Colony'            : Colony.prototype,
-
-    // Agents
-    'ConstructionAgent' : ConstructionAgent.prototype,
-    'HarvestAgent'      : HarvestAgent.prototype,
+    // Nodes
+    'ControllerNode'    : ControllerNode.prototype,
+    'HarvestNode'       : HarvestNode.prototype,
+    'RoomNode'          : RoomNode.prototype,
+    'SpawnNode'         : SpawnNode.prototype,
 
     // Jobs
     'BuildJob'          : BuildJob.prototype,
@@ -33,8 +33,7 @@ export const Protos =
     'TransferTask' : TransferTask.prototype,
 
     // Util
-    'ConstructionOrder' : ConstructionOrder.prototype,
-    'HarvestSite'       : HarvestSite.prototype,
+    'Graph'             : Graph.prototype,
     'LL'                : LL.prototype,
 }
 

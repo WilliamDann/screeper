@@ -20,7 +20,7 @@ export default class LL<T>
         this.length = 0;
     }
 
-    *iter()
+    private *iter()
     {
         let curr = this.root
         while (curr.next)
@@ -32,6 +32,12 @@ export default class LL<T>
 
     add(item: T)
     {
+        if (!this.root)
+        {
+            this.root = new Node(null, item);
+            return;
+        }
+
         this.root.next = new Node(this.root.next, item);
         this.length++;
     }
@@ -56,6 +62,9 @@ export default class LL<T>
 
     remove(): T
     {
+        if(!this.root)
+            return;
+
         let temp = this.root.val;
         this.root = this.root.next;
         this.length--;
@@ -84,6 +93,8 @@ export default class LL<T>
 
     peek(): T
     {
+        if (!this.root)
+            return null;
         return this.root.val;
     }
 

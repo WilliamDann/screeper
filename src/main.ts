@@ -1,29 +1,21 @@
-import Colony       from "./Colony/Colony";
-import { loadDump, makeDump } from "./Mem";
+import Graph                    from "./Structures/Graph";
+import Node                     from "./Nodes/Node";
+import RoomNode                 from "./Nodes/RoomNode";
+import { loadDump, makeDump }   from "./Mem";
 
-const validateMemory = function(loc: string)
+export function loop()
 {
-    for (let item in Memory[loc])
-        if (!Game[loc][item])
-            delete Memory[loc];
-}
+    globalThis.graph = loadDump();
+    if (!globalThis.graph)
+        globalThis.graph = new Graph<Node>();
 
-function init()
-{
-    let colonies = {};
+    let graph = globalThis.graph as Graph<Node>;
     for (let room in Game.rooms)
-        colonies[room] = new Colony(room);
-    return colonies;
-}
+        if (!graph.verts[room])
+            graph.addVert(room, new RoomNode(room));
 
-export function loop() 
-{
-    validateMemory('creeps');
+    for (let vert in graph.verts)
+        graph.verts[vert].tick();
 
-    if (!Memory['dump'])
-        makeDump(init());
-
-    let mem = loadDump();
-
-    makeDump(mem);
+    makeDump(globalThis.graph);
 }
