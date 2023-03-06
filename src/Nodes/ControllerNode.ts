@@ -22,6 +22,8 @@ export default class ControllerNode extends Node
     findFullestContainer(): HarvestNode|null
     {
         let node = this.searchForNode("HarvestNode") as HarvestNode;
+        if (!node)
+            return null;
         let drop = Game.getObjectById(node.drop)
 
         if (drop && drop.store)

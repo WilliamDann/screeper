@@ -11,17 +11,36 @@ declare global {
 
 export function loop()
 {
-    globalThis.graph = loadDump();
+    let dump = loadDump();
+
+    if (!dump)
+        dump = {}
+
+    globalThis.graph    = dump.graph;
+    globalThis.requests = dump.requests;
+
     if (!globalThis.graph)
         globalThis.graph = new Graph<Node>();
 
-    let graph = globalThis.graph;
     for (let room in Game.rooms)
-        if (!graph.verts[room])
-            graph.addVert(room, new RoomNode(room));
+        if (!globalThis.graph.verts[room])
+        {
+            let node = new RoomNode(room);
+            node.survery();
+            globalThis.graph.addVert(room, node);
+        }
 
-    for (let vert in graph.verts)
+    if (!globalThis.requests)
+    {
+        globalThis.requests = new RequestBank();
+        globalThis.requests.init(globalThis.graph);
+    }
+
+    for (let vert in globalThis.graph.verts)
         graph.verts[vert].tick();
 
-    makeDump(globalThis.graph);
+    makeDump({ 
+        graph    : globalThis.graph,
+        requests : globalThis.requests 
+    });
 }
