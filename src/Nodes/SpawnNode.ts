@@ -1,7 +1,6 @@
 import CollectJob from "../Job/CollectJob";
 import TransferJob from "../Job/TransferJob";
 import Graph from "../Structures/Graph";
-import LL   from "../Structures/LL";
 import HarvestNode from "./HarvestNode";
 import Node from "./Node";
 
@@ -15,13 +14,13 @@ export interface SpawnRequest
 
 export default class SpawnNode extends Node
 {
-    Q           : LL<SpawnRequest>;
+    Q           : SpawnRequest[];
     requests    : { [assigner: string] : number }
 
     constructor(spawner: Id<StructureSpawn>)
     {
         super(spawner);
-        this.Q        = new LL<SpawnRequest>();
+        this.Q        = [];
         this.requests = {};
     }
 
@@ -46,7 +45,7 @@ export default class SpawnNode extends Node
         if (this.requests[req.requester] && this.requests[req.requester] != 0)
             return false;
 
-        this.Q.add(req);
+        this.Q.push(req);
         if (!this.requests[req.requester])
             this.requests[req.requester] = 1
         else
@@ -57,7 +56,7 @@ export default class SpawnNode extends Node
 
     spawnerTick(graph: Graph<Node>, spawner: StructureSpawn)
    {
-        let request = this.Q.peek();
+        let request = this.Q[0];
 
         if (!request)
             return;
@@ -80,7 +79,7 @@ export default class SpawnNode extends Node
                 return;
         }
 
-        this.Q.remove();
+        this.Q.shift();
         this.requests[request.requester]--;
    }
 
@@ -101,6 +100,27 @@ export default class SpawnNode extends Node
         return bestNode;
    }
 
+   askHarvesterForEnergy()
+   {
+        let node = this.findBiggestHarvester();
+        if (node.getJobsAssignedBy(this.tag).length == 0)
+        {
+            let drop = Game.getObjectById(node.drop);
+            if (drop && drop.store)
+            {
+                let job     = new CollectJob(this.tag, drop.id);
+                job.next    = new TransferJob(this.tag, this.tag as Id<StructureSpawn>);
+                node.jobPool.add(job);
+            }
+            else
+            {
+                let job     = new CollectJob(this.tag, node.tag as Id<Source>);
+                job.next    = new TransferJob(this.tag, this.tag as Id<StructureSpawn>);
+                node.jobPool.add(job);
+            }
+        }
+   }
+
     tick()
     {
         let graph   = globalThis.graph as Graph<Node>;
@@ -109,15 +129,7 @@ export default class SpawnNode extends Node
         this.spawnerTick(graph, spawner);
 
         if (spawner.store.getFreeCapacity(RESOURCE_ENERGY) != 0 && this.creepPool.count() == 0)
-        {
-            let node = this.findBiggestHarvester();
-            if (node.getJobsAssignedBy(this.tag).length == 0)
-            {
-                let job     = new CollectJob(this.tag, node.tag as Id<Source>);
-                job.next    = new TransferJob(this.tag, this.tag as Id<StructureSpawn>);
-                node.jobPool.add(job);
-            }
-        }
+            this.askHarvesterForEnergy();
 
         super.tick();
     }

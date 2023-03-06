@@ -24,7 +24,7 @@ export default class ControllerNode extends Node
             if (node instanceof HarvestNode)
                 {
                     let drop = Game.getObjectById(node.drop);
-                    if (drop.store && drop.store.energy > energyMax)
+                    if (drop && drop.store && drop.store.energy > energyMax)
                     {
                         energyMax = drop.store.energy;
                         bestNode  = node;
@@ -37,7 +37,11 @@ export default class ControllerNode extends Node
     tick()
     {
         if (!this.pull)
-            this.pull = this.findFullestContainer().drop;
+        {
+            let hn = this.findFullestContainer();
+            if (hn)
+                this.pull = hn.drop;
+        }
 
         if (this.pull && this.creepPool.count() < 3)
         {
