@@ -99,22 +99,24 @@ export default class HarvestNode extends Node
 
         if (drop instanceof ConstructionSite)
         {
-            for (let i = 0; i < this.creepPool.free.length; i++)
-            {
-                let job = new CollectJob(this.tag, this.tag as Id<Source>);
-                job.next = new BuildJob(this.tag, drop.id as Id<ConstructionSite>);
-                this.jobPool.add(job);
-            }
+            if (this.getJobsAssignedBy(this.tag).length == 0)
+                for (let i = 0; i < this.creepPool.free.length; i++)
+                {
+                    let job = new CollectJob(this.tag, this.tag as Id<Source>);
+                    job.next = new BuildJob(this.tag, drop.id as Id<ConstructionSite>);
+                    this.jobPool.add(job);
+                }
         }
 
         if (drop instanceof StructureContainer)
         {
-            for (let i = 0; i < this.creepPool.free.length; i++)
-            {
-                let job     = new CollectJob(this.tag, this.tag as Id<Source>);
-                job.next    = new TransferJob(this.tag, drop.id as Id<StructureContainer>);
-                this.jobPool.add(job);
-            }
+            if (this.getJobsAssignedBy(this.tag).length == 0)
+                for (let i = 0; i < this.creepPool.free.length; i++)
+                {
+                    let job     = new CollectJob(this.tag, this.tag as Id<Source>);
+                    job.next    = new TransferJob(this.tag, drop.id as Id<StructureContainer>);
+                    this.jobPool.add(job);
+                }
         }
 
         if (this.jobPool.free.length == 0)

@@ -13,7 +13,7 @@ export default class TransferJob extends Job
 
     isFinished(creep: Creep, target: _HasStore & _HasId): boolean
     {
-        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || target.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
             return true;
     }
 
