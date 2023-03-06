@@ -1,4 +1,4 @@
-export class MemoryDump
+export default class MemoryDump
 {
     defs: {} // {protoName: class prototype}
 
@@ -69,8 +69,9 @@ export class MemoryDump
         else
             data = {};
 
-        for (let key of Object.keys(obj))
-            data[key] = this.load(obj[key]);
+            for (let key of Object.keys(obj))
+                if (key != 'proto')
+                    data[key] = this.load(obj[key]);
 
         return data;
     }

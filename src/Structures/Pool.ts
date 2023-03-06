@@ -1,4 +1,4 @@
-export class Pool<T>
+export default class Pool<T>
 {
     free: T[];
     used: T[];
