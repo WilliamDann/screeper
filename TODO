@@ -1,0 +1,33 @@
+Important:
+    ☐ DefenseNode
+        Behavior to defend rooms is needed
+
+    ☐ Room Planning
+        Building things that go in the room!
+
+        ☐ Extentions
+        ☐ Tower
+        ☐ Roads (?)
+            this could be lower priority
+
+    ☐ Resource Managment
+        Right now every Node can request anything it wants to no matter the cost. This _could_ cause a econ crash. 
+        It does cause one in the sim room when a creep gets spawned and then dies to the keeper over and over again.
+
+        ☐ Global Requests Object @started(23-03-06 13:40)
+            It would be useful to have a standard system Nodes could use to communicate with eachother.
+
+        ☐ Request Spamming
+            Is there a way to stop a Node from spamming a request every tick witout baking it into the implementation of the Node?
+
+Useful:
+    ☐ Nodes without GameObject producing tag
+        It is unclear if a tag that is not an in-game id would cause errors. This would prevent a DefenseNode like a DefenseAgent from the previous iteration.
+
+    ☐ Custom Creep Bodies
+        A clear way way for Nodes to know what they can spawn
+
+Possible:
+    ☐ Remove Mining
+        Looking outside to other rooms and mining their Sources would give more energy.
+        There are more important things to worry about at this time.
