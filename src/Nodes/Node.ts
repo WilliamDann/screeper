@@ -25,6 +25,26 @@ export default class Node
                 return node;
     }
 
+    searchForNode(className: string, rank: (node: Node) => number): Node
+    {
+        let graph = globalThis.graph as Graph<Node>;
+
+        let bestScore = -Infinity;
+        let bestNode  = null;
+        for (let node of graph.bfs(this.tag))
+            if (node.constructor.name == className)
+            {
+                let score = rank(node);
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestNode  = node;
+                }
+            }
+
+        return bestNode;
+    }
+
     getJobsAssignedBy(assigner: string)
     {
         let jobs = [];

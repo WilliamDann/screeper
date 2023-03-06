@@ -123,6 +123,16 @@ export default class HarvestNode extends Node
             this.jobPool.add(new CollectJob(this.tag, this.tag as Id<Source>))
     }
 
+    getCollectJob(): CollectJob
+    {
+        let drop = Game.getObjectById(this.drop);
+        if (drop && drop.store)
+        {
+            return new CollectJob(null, drop.id);
+        }
+        return new CollectJob(null, this.tag as Id<Source>);
+    }
+
     tick()
     {
         if (!this.spots)

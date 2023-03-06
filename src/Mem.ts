@@ -11,6 +11,7 @@ import Pool from "./Structures/Pool";
 import TransferJob from "./Job/TransferJob";
 import BuildJob from "./Job/BuildJob";
 import UpgradeJob from "./Job/UpgradeJob";
+import RepairJob from "./Job/RepairJob";
 
 export const Protos = 
 {
@@ -25,6 +26,7 @@ export const Protos =
     'TransferJob'       : TransferJob.prototype,
     'BuildJob'          : BuildJob.prototype,
     'UpgradeJob'        : UpgradeJob.prototype,
+    'RepairJob'         : RepairJob.prototype,
 
     // Util
     'Graph'             : Graph.prototype,
