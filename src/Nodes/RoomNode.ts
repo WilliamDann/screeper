@@ -4,16 +4,15 @@ import HarvestNode      from "./HarvestNode";
 import Node             from "./Node";
 import SpawnNode        from "./SpawnNode";
 
-export default class RoomNode implements Node
+export default class RoomNode extends Node
 {
-    room            : string;
-
     surveyInterval  : number;
     lastSurvery     : number;
 
     constructor(room: string, surveryInterval: number = 100)
     {
-        this.room           = room;
+        super(room);
+
         this.surveyInterval = surveryInterval;
     }
 
@@ -21,24 +20,24 @@ export default class RoomNode implements Node
     {
         let graph   = globalThis.graph as Graph<Node>;
 
-        let room    = Game.rooms[this.room];
+        let room    = Game.rooms[this.tag];
         let ctrl    = room.controller;
         let spawns  = room.find(FIND_MY_SPAWNS);
         let sources = room.find(FIND_SOURCES);
 
         graph.addVert(ctrl.id, new ControllerNode(ctrl.id));
-        graph.addEdge(ctrl.id, this.room);
+        graph.addEdge(ctrl.id, this.tag);
 
         for (let spawn of spawns)
         {
             graph.addVert(spawn.id, new SpawnNode(spawn.id));
-            graph.addEdge(spawn.id, this.room);
+            graph.addEdge(spawn.id, this.tag);
         }
 
         for (let source of sources)
         {
             graph.addVert(source.id, new HarvestNode(source.id));
-            graph.addEdge(source.id, this.room);
+            graph.addEdge(source.id, this.tag);
         }
 
         this.lastSurvery = Game.time;

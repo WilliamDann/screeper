@@ -9,18 +9,15 @@ export interface SpawnRequest
     opts       ?: SpawnOptions;
 }
 
-export default class SpawnNode implements Node
+export default class SpawnNode extends Node
 {
-    spawner     : Id<StructureSpawn>;
     Q           : LL<SpawnRequest>;
-
     requests    : { [assigner: string] : number }
 
     constructor(spawner: Id<StructureSpawn>)
     {
-        this.spawner = spawner;
-        this.Q       = new LL<SpawnRequest>();
-
+        super(spawner);
+        this.Q        = new LL<SpawnRequest>();
         this.requests = {};
     }
 
@@ -34,7 +31,7 @@ export default class SpawnNode implements Node
 
     requestCreep(req: SpawnRequest): boolean
     {
-        let spawner     = Game.getObjectById(this.spawner);
+        let spawner     = Game.getObjectById(this.tag as Id<StructureSpawn>);
         let capacity    = spawner.room.energyCapacityAvailable;
         let cost        = this.creepCost(req.body);
 
@@ -52,7 +49,7 @@ export default class SpawnNode implements Node
 
     tick()
     {
-        let spawner = Game.getObjectById(this.spawner);
+        let spawner = Game.getObjectById(this.tag as Id<StructureSpawn>);
         let request = this.Q.peek();
 
         if (!request)

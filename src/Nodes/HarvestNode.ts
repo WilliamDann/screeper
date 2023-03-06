@@ -1,12 +1,10 @@
 import Node from "./Node";
 
-export default class HarvestNode implements Node
+export default class HarvestNode extends Node
 {
-    source: Id<Source>;
-
     constructor(source: Id<Source>)
     {
-        this.source = source;
+        super(source);
     }
 
     tick()

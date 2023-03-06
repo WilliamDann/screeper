@@ -13,6 +13,8 @@ export default class Graph<T>
 
     addVert(tag: string, vert: T)
     {
+        if (this.verts[tag])
+            return;
         this.verts[tag] = vert;
     }
 
