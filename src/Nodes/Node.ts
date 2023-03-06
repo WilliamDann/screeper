@@ -1,17 +1,23 @@
-import Graph from "../Structures/Graph";
+import Job      from "../Job/Job";
+import Graph    from "../Structures/Graph";
+import Pool     from "../Structures/Pool";
 
 export default class Node
 {
     tag    : string;
-    creeps : string[];
+
+    creepPool : Pool<string>;
+    jobPool   : Pool<Job>;
 
     constructor(tag: string)
     {
-        this.tag    = tag;
-        this.creeps = [];
+        this.tag       = tag;
+
+        this.creepPool = new Pool<string>();
+        this.jobPool   = new Pool<Job>();
     }
 
-    findNodeOfType(className: string)
+    findNodeOfType(className): Node
     {
         let graph = globalThis.graph as Graph<Node>;
         for (let node of graph.bfs(this.tag))
@@ -19,18 +25,87 @@ export default class Node
                 return node;
     }
 
-    makeSpawnRequest()
+    getJobsAssignedBy(assigner: string)
     {
-        let spawn = this.findNodeOfType("SpawnNode") as any;
-        let request = {
-            requester   : this.tag,
-            body        : [WORK, CARRY, MOVE, MOVE],
-            name        : `ControllerNode-${Game.time}`
-        } as any;
-
-        if (spawn.requestCreep(request))
-            this.creeps.push(request.name);
+        let jobs = [];
+        for (let job of [...this.jobPool.free, ...this.jobPool.used])
+            if (job.assigner == assigner)
+                jobs.push(job);
+        return jobs;
     }
 
-    tick() { }
+    assignJob(job: Job, creep: string)
+    {
+        job.creep = creep;
+        this.creepPool.setUsed(creep);
+        this.jobPool.setUsed(job);
+    }
+
+    validateCreepPool()
+    {
+        for (let creep of [...this.creepPool.free, ...this.creepPool.used])
+            if (!Game.creeps[creep])
+                this.creepPool.remove(creep);
+    }
+
+    assignJobs()
+    {
+        for (let name of this.creepPool.free)
+            if (this.jobPool.free[0])
+                this.assignJob(this.jobPool.free[0], name);
+    }
+
+    runJob(job: Job)
+    {
+        job.run();
+
+        if (job.error)
+        {
+            this.log(job.error);
+            this.jobPool.remove(job);
+            this.creepPool.setFree(job.creep);
+            return;
+        }
+
+        if (job.complete)
+        {
+            if (job.next)
+            {
+                job.next.creep = job.creep;
+                this.jobPool.remove(job);
+                this.jobPool.used.push(job.next);
+                return;
+            }
+            this.jobPool.remove(job);
+            this.creepPool.setFree(job.creep);
+            return;
+        }
+    }
+
+    runJobs()
+    {
+        for (let job of this.jobPool.used)
+            this.runJob(job);
+    }
+
+    updateJobTimers()
+    {
+        for (let job of this.jobPool.used)
+            job.runTime++;
+        for (let job of this.jobPool.free)
+            job.waitTime++;
+    }
+
+    tick()
+    {
+        this.validateCreepPool();
+        this.assignJobs();
+        this.runJobs();
+        this.updateJobTimers();
+    }
+
+    log(message: string)
+    {
+        console.log(`${this.constructor.name}(${this.tag}) : ${message}`);
+    }
 }

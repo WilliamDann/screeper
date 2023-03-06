@@ -20,12 +20,22 @@ export default class LL<T>
         this.length = 0;
     }
 
-    private *iter()
+    private *node_iter()
     {
         let curr = this.root
         while (curr.next)
         {
             yield curr;
+            curr = curr.next;
+        }
+    }
+
+    *iter()
+    {
+        let curr = this.root
+        while (curr.next)
+        {
+            yield curr.val;
             curr = curr.next;
         }
     }
@@ -48,7 +58,7 @@ export default class LL<T>
         if (index >= this.length)
             throw new RangeError(`Range Error: ${index} >= ${this.length}`);
 
-        let iter            = this.iter();
+        let iter            = this.node_iter();
         let n               = index;
         let val : Node<T>   = null;
         while(n >= 0)
@@ -77,7 +87,7 @@ export default class LL<T>
         if (index >= this.length)
             throw new RangeError(`Range Error: ${index} >= ${this.length}`);
 
-        let iter            = this.iter();
+        let iter            = this.node_iter();
         let n               = index;
         let val : Node<T>   = null;
         while(n >= 0)
@@ -104,7 +114,7 @@ export default class LL<T>
         if (index >= this.length)
             throw new RangeError(`Range Error: ${index} >= ${this.length}`);
 
-        let iter = this.iter();
+        let iter = this.node_iter();
         let n    = index;
         let val  = this.root;
         while (n >= 0)
@@ -115,7 +125,7 @@ export default class LL<T>
 
     indexOf(val: T): number
     {
-        let iter = this.iter();
+        let iter = this.node_iter();
         let node = iter.next().value as Node<T>;
         let i    = 0;
         do {

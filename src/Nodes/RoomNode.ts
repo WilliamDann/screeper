@@ -47,5 +47,7 @@ export default class RoomNode extends Node
     {
         if (!this.lastSurvery || Game.time > this.lastSurvery+this.surveyInterval)
             this.survery();
+
+        super.tick();
     }
 }

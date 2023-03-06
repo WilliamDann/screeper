@@ -1,17 +1,14 @@
-import BuildJob                         from "./Jobs/BuildJob";
-import FillJob                          from "./Jobs/FillJob";
-import HarvestJob                       from "./Jobs/HarvestJob";
-import UpgradeJob                       from "./Jobs/UpgradeJob";
+import CollectJob from "./Job/CollectJob";
 import MemoryDump                       from "./MemoryDump"
 import ControllerNode                   from "./Nodes/ControllerNode";
 import HarvestNode                      from "./Nodes/HarvestNode";
+import Node from "./Structures/LL";
 import RoomNode                         from "./Nodes/RoomNode";
 import SpawnNode                        from "./Nodes/SpawnNode";
 import Graph from "./Structures/Graph";
 import LL                               from "./Structures/LL";
-import CollectTask                      from "./Tasks/CollectTask";
-import GeneralTask                      from "./Tasks/GeneralTask";
-import TransferTask                     from "./Tasks/TransferTask";
+import Pool from "./Structures/Pool";
+import TransferJob from "./Job/TransferJob";
 
 export const Protos = 
 {
@@ -21,20 +18,15 @@ export const Protos =
     'RoomNode'          : RoomNode.prototype,
     'SpawnNode'         : SpawnNode.prototype,
 
-    // Jobs
-    'BuildJob'          : BuildJob.prototype,
-    'FillJob'           : FillJob.prototype,
-    'HarvestJob'        : HarvestJob.prototype,
-    'UpgradeJob'        : UpgradeJob.prototype,
-
-    // Tasks
-    'CollectTask' : CollectTask.prototype,
-    'GeneralTask' : GeneralTask.prototype,
-    'TransferTask' : TransferTask.prototype,
+    // Job
+    'CollectJob'        : CollectJob.prototype,
+    'TransferJob'       : TransferJob.prototype,
 
     // Util
     'Graph'             : Graph.prototype,
     'LL'                : LL.prototype,
+    'Node'              : Node.prototype,
+    'Pool'              : Pool.prototype,
 }
 
 export const GameMemDump = () => new MemoryDump(Protos);
