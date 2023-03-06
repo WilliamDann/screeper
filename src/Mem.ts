@@ -10,6 +10,7 @@ import LL                               from "./Structures/LL";
 import Pool from "./Structures/Pool";
 import TransferJob from "./Job/TransferJob";
 import BuildJob from "./Job/BuildJob";
+import UpgradeJob from "./Job/UpgradeJob";
 
 export const Protos = 
 {
@@ -23,6 +24,7 @@ export const Protos =
     'CollectJob'        : CollectJob.prototype,
     'TransferJob'       : TransferJob.prototype,
     'BuildJob'          : BuildJob.prototype,
+    'UpgradeJob'        : UpgradeJob.prototype,
 
     // Util
     'Graph'             : Graph.prototype,
