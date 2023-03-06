@@ -15,6 +15,23 @@ export default class HarvestNode extends Node
         super(source);
     }
 
+    get rank()
+    {
+        let score   = 0;
+        let collect = this.getCollectJob();
+        let target  = Game.getObjectById(collect.target);
+
+        if (target instanceof StructureContainer)
+            score += 50 + (target.store.energy / 100);
+
+        score += this.spots*10;
+
+        score -= new RoomPosition(25, 25, target.room.name).getRangeTo(target);
+        score -= this.jobPool.count() * 10;
+
+        return score;
+    }
+
     findSpots(): number
     {
         let source = Game.getObjectById(this.tag as Id<Source>);

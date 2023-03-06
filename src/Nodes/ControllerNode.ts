@@ -14,24 +14,19 @@ export default class ControllerNode extends Node
         super(controller);
     }
 
+    get rank()
+    {
+        return Game.rooms[this.tag].controller.level;
+    }
+
     findFullestContainer(): HarvestNode|null
     {
-        let graph = globalThis.graph as Graph<Node>;
+        let node = this.searchForNode("HarvestNode") as HarvestNode;
+        let drop = Game.getObjectById(node.drop)
 
-        let energyMax = -Infinity;
-        let bestNode  = null;
-        for (let node of graph.bfs(this.tag))
-            if (node instanceof HarvestNode)
-                {
-                    let drop = Game.getObjectById(node.drop);
-                    if (drop && drop.store && drop.store.energy > energyMax)
-                    {
-                        energyMax = drop.store.energy;
-                        bestNode  = node;
-                    }
-                }
-
-        return bestNode;
+        if (drop && drop.store)
+            return node;
+        return null;
     }
 
     tick()

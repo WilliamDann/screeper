@@ -1,4 +1,3 @@
-import BuildJob from "../Job/BuildJob";
 import RepairJob from "../Job/RepairJob";
 import Graph            from "../Structures/Graph";
 import ControllerNode   from "./ControllerNode";
@@ -45,27 +44,6 @@ export default class RoomNode extends Node
         this.lastSurvery = Game.time;
     }
 
-    findHarvestNode(): HarvestNode
-    {
-        const score = (node: HarvestNode) => {
-            let score   = 0;
-            let collect = node.getCollectJob();
-            let target  = Game.getObjectById(collect.target);
-
-            if (target instanceof StructureContainer)
-                score += 50 + (target.store.energy / 100);
-
-            score += node.spots*10;
-
-            score -= new RoomPosition(25, 25, this.tag).getRangeTo(target);
-            score -= node.jobPool.count() * 10;
-
-            return score;
-        };
-
-        return this.searchForNode("HarvestNode", score) as HarvestNode;
-    }
-
     makeRepairJobs(harv: HarvestNode)
     {
         let room = Game.rooms[this.tag];
@@ -87,7 +65,7 @@ export default class RoomNode extends Node
     makeJobs()
     {
         let room = Game.rooms[this.tag];
-        let harv = this.findHarvestNode();
+        let harv = this.searchForNode("HarvestNode") as HarvestNode;
         if (this.getJobsAssignedBy(this.tag).length != 0)
             return;
 

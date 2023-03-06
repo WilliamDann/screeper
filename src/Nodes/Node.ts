@@ -17,6 +17,11 @@ export default class Node
         this.jobPool   = new Pool<Job>();
     }
 
+    get rank(): number
+    {
+        return 0;
+    }
+
     findNodeOfType(className): Node
     {
         let graph = globalThis.graph as Graph<Node>;
@@ -25,7 +30,7 @@ export default class Node
                 return node;
     }
 
-    searchForNode(className: string, rank: (node: Node) => number): Node
+    searchForNode(className: string): Node
     {
         let graph = globalThis.graph as Graph<Node>;
 
@@ -34,7 +39,7 @@ export default class Node
         for (let node of graph.bfs(this.tag))
             if (node.constructor.name == className)
             {
-                let score = rank(node);
+                let score = node.rank;
                 if (score > bestScore)
                 {
                     bestScore = score;

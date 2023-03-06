@@ -1,5 +1,6 @@
 import TransferJob from "../Job/TransferJob";
 import Graph    from "../Structures/Graph";
+import HarvestNode from "./HarvestNode";
 import Node     from "./Node";
 import RoomNode from "./RoomNode";
 
@@ -93,7 +94,7 @@ export default class SpawnNode extends Node
         if (spawner.store.getFreeCapacity(RESOURCE_ENERGY) != 0 && this.creepPool.count() == 0)
             if (roomNode.getJobsAssignedBy(this.tag).length == 0)
             {
-                let collect = roomNode.findHarvestNode();
+                let collect = this.searchForNode("HarvestNode") as HarvestNode;
                 let job     = collect.getCollectJob();
                 job.assigner = this.tag;
                 job.next = new TransferJob(this.tag, this.tag as Id<StructureSpawn>);
