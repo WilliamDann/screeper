@@ -1,16 +1,9 @@
 import TransferJob from "../Job/TransferJob";
+import { SpawnRequest } from "../Requests";
 import Graph    from "../Structures/Graph";
 import HarvestNode from "./HarvestNode";
 import Node     from "./Node";
 import RoomNode from "./RoomNode";
-
-export interface SpawnRequest
-{
-    requester   : string;
-    body        : BodyPartConstant[];
-    name        : string;
-    opts       ?: SpawnOptions;
-}
 
 export default class SpawnNode extends Node
 {
