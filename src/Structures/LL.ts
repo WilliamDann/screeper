@@ -34,7 +34,8 @@ export default class LL<T>
     {
         if (!this.root)
         {
-            this.root = new Node(null, item);
+            this.root   = new Node(null, item);
+            this.length = 1;
             return;
         }
 

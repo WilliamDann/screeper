@@ -1,8 +1,8 @@
-import Graph from "../Structures/Graph";
-import ControllerNode from "./ControllerNode";
-import HarvestNode from "./HarvestNode";
-import Node from "./Node";
-import SpawnNode from "./SpawnNode";
+import Graph            from "../Structures/Graph";
+import ControllerNode   from "./ControllerNode";
+import HarvestNode      from "./HarvestNode";
+import Node             from "./Node";
+import SpawnNode        from "./SpawnNode";
 
 export default class RoomNode implements Node
 {
@@ -46,8 +46,6 @@ export default class RoomNode implements Node
 
     tick()
     {
-        let graph   = globalThis.graph as Graph<Node>;
-
         if (!this.lastSurvery || Game.time > this.lastSurvery+this.surveyInterval)
             this.survery();
     }
