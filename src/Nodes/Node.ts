@@ -104,7 +104,7 @@ export default class Node
         this.updateJobTimers();
     }
 
-    log(message: string)
+    log(message: any)
     {
         console.log(`${this.constructor.name}(${this.tag}) : ${message}`);
     }
