@@ -1,9 +1,9 @@
-import RepairJob from "../Job/RepairJob";
-import Graph            from "../Structures/Graph";
+import RepairJob        from "../Job/RepairJob";
+import { SpawnRequest } from "../Requests";
 import ControllerNode   from "./ControllerNode";
 import HarvestNode      from "./HarvestNode";
 import Node             from "./Node";
-import SpawnNode, { SpawnRequest }        from "./SpawnNode";
+import SpawnNode        from "./SpawnNode";
 
 export default class RoomNode extends Node
 {
@@ -19,26 +19,24 @@ export default class RoomNode extends Node
 
     survery()
     {
-        let graph   = globalThis.graph as Graph<Node>;
-
         let room    = Game.rooms[this.tag];
         let ctrl    = room.controller;
         let spawns  = room.find(FIND_MY_SPAWNS);
         let sources = room.find(FIND_SOURCES);
 
-        graph.addVert(ctrl.id, new ControllerNode(ctrl.id));
-        graph.addEdge(ctrl.id, this.tag);
+        globalThis.graph.addVert(ctrl.id, new ControllerNode(ctrl.id));
+        globalThis.graph.addEdge(ctrl.id, this.tag);
 
         for (let spawn of spawns)
         {
-            graph.addVert(spawn.id, new SpawnNode(spawn.id));
-            graph.addEdge(spawn.id, this.tag);
+            globalThis.graph.addVert(spawn.id, new SpawnNode(spawn.id));
+            globalThis.graph.addEdge(spawn.id, this.tag);
         }
 
         for (let source of sources)
         {
-            graph.addVert(source.id, new HarvestNode(source.id));
-            graph.addEdge(source.id, this.tag);
+            globalThis.graph.addVert(source.id, new HarvestNode(source.id));
+            globalThis.graph.addEdge(source.id, this.tag);
         }
 
         this.lastSurvery = Game.time;

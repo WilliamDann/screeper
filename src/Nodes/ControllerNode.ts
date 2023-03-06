@@ -1,9 +1,9 @@
-import Graph from "../Structures/Graph";
-import Node         from "./Node";
-import SpawnNode, { SpawnRequest }    from "./SpawnNode";
-import HarvestNode from './HarvestNode';
-import CollectJob from "../Job/CollectJob";
-import UpgradeJob from "../Job/UpgradeJob";
+import Node             from "./Node";
+import SpawnNode        from "./SpawnNode";
+import HarvestNode      from './HarvestNode';
+import CollectJob       from "../Job/CollectJob";
+import UpgradeJob       from "../Job/UpgradeJob";
+import { SpawnRequest } from "../Requests";
 
 export default class ControllerNode extends Node
 {

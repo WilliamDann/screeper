@@ -1,6 +1,5 @@
-import Job      from "../Job/Job";
-import Graph    from "../Structures/Graph";
-import Pool     from "../Structures/Pool";
+import Job  from "../Job/Job";
+import Pool from "../Structures/Pool";
 
 export default class Node
 {
@@ -24,19 +23,16 @@ export default class Node
 
     findNodeOfType(className): Node
     {
-        let graph = globalThis.graph as Graph<Node>;
-        for (let node of graph.bfs(this.tag))
+        for (let node of globalThis.graph.bfs(this.tag))
             if (node.constructor.name == className)
                 return node;
     }
 
     searchForNode(className: string): Node
     {
-        let graph = globalThis.graph as Graph<Node>;
-
         let bestScore = -Infinity;
         let bestNode  = null;
-        for (let node of graph.bfs(this.tag))
+        for (let node of globalThis.graph.bfs(this.tag))
             if (node.constructor.name == className)
             {
                 let score = node.rank;

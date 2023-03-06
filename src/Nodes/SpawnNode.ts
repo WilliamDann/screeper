@@ -1,9 +1,8 @@
-import TransferJob from "../Job/TransferJob";
+import TransferJob      from "../Job/TransferJob";
 import { SpawnRequest } from "../Requests";
-import Graph    from "../Structures/Graph";
-import HarvestNode from "./HarvestNode";
-import Node     from "./Node";
-import RoomNode from "./RoomNode";
+import HarvestNode      from "./HarvestNode";
+import Node             from "./Node";
+import RoomNode         from "./RoomNode";
 
 export default class SpawnNode extends Node
 {
@@ -47,7 +46,7 @@ export default class SpawnNode extends Node
         return true;
     }
 
-    spawnerTick(graph: Graph<Node>, spawner: StructureSpawn)
+    spawnerTick(spawner: StructureSpawn)
    {
         let request = this.Q[0];
 
@@ -58,7 +57,7 @@ export default class SpawnNode extends Node
         switch (code)
         {
             case OK:
-                graph.verts[request.requester].creepPool.free.push(request.name);
+                globalThis.graph.verts[request.requester].creepPool.free.push(request.name);
                 break;
 
             case ERR_NOT_OWNER:
@@ -78,11 +77,10 @@ export default class SpawnNode extends Node
 
     tick()
     {
-        let graph    = globalThis.graph as Graph<Node>;
         let spawner  = Game.getObjectById(this.tag as Id<StructureSpawn>);
-        let roomNode = graph.verts[spawner.room.name] as RoomNode; 
+        let roomNode = globalThis.graph.verts[spawner.room.name] as RoomNode; 
 
-        this.spawnerTick(graph, spawner);
+        this.spawnerTick(spawner);
 
         if (spawner.store.getFreeCapacity(RESOURCE_ENERGY) != 0 && this.creepPool.count() == 0)
             if (roomNode.getJobsAssignedBy(this.tag).length == 0)

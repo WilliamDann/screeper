@@ -1,9 +1,10 @@
-import BuildJob from "../Job/BuildJob";
-import CollectJob from "../Job/CollectJob";
-import TransferJob from "../Job/TransferJob";
-import _HasStore from "../Misc";
-import Node from "./Node";
-import SpawnNode, { SpawnRequest } from "./SpawnNode";
+import BuildJob         from "../Job/BuildJob";
+import CollectJob       from "../Job/CollectJob";
+import TransferJob      from "../Job/TransferJob";
+import _HasStore        from "../Misc";
+import { SpawnRequest } from "../Requests";
+import Node             from "./Node";
+import SpawnNode        from "./SpawnNode";
 
 export default class HarvestNode extends Node
 {
