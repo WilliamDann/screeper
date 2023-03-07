@@ -116,7 +116,6 @@ export default class HarvestNode extends Node
                         .name(`HarvestNode-${Game.time}-${(Math.random()*1000).toFixed(0)}`)
                         .body([WORK, WORK, CARRY, MOVE])
                         .get()
-                    , this.spots-this.creepPool.count()
                 )
                 .addTo(this.searchForNode("SpawnNode").tag);
 

@@ -25,9 +25,9 @@ export default class RequestBank
         if (!request.priority)
             request.priority = RequestPriority.Low;
         if ([
-            !request.priority,
-            !request.from,
-            !graph.verts[tag].isValidRequest(request),
+            !request.priority != undefined,
+            !request.from != undefined,
+            graph.verts[tag].isValidRequest(request),
             this.getAssignedByFrom(request.from, tag).length == 0
         ].indexOf(false) != -1)
             return false;

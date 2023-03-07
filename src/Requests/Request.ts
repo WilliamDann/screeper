@@ -56,7 +56,7 @@ export class RequestBuilder
         for (let i = 0; i < n; i++)
             this.value.spawnCreeps.push(req);
 
-            return this;
+        return this;
     }
 
     creep(req: string, n=1): RequestBuilder
@@ -67,7 +67,7 @@ export class RequestBuilder
         for (let i = 0; i < n; i++)
             this.value.creeps.push(req);
 
-            return this;
+        return this;
     }
 
     work(req: Job, n=1): RequestBuilder

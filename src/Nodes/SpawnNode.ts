@@ -63,7 +63,7 @@ export default class SpawnNode extends Node
             }
         }
 
-        if (request.creeps.length == 0)
+        if (!request.creeps || request.creeps.length == 0)
             globalThis.requests.removeFrom(this.tag, request);
     }
 

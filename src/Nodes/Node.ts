@@ -127,8 +127,6 @@ export default class Node
 
     tick()
     {
-        globalThis.requests.requests[this.tag] = globalThis.requests.requests[this.tag].filter(this.isValidRequest);
-
         for (let request of globalThis.requests.requests[this.tag])
             this.fufil(request);
         for (let job of this.runningJobs)
