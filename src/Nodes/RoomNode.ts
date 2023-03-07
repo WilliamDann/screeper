@@ -1,5 +1,7 @@
 import RepairJob        from "../Job/RepairJob";
-import { SpawnRequest } from "../Requests";
+import { RequestBuilder } from "../Requests/Request";
+import { RequestPriority } from "../Requests/RequestPriority";
+import { SpawnRequestBuilder } from "../Requests/SpawnRequest";
 import ControllerNode   from "./ControllerNode";
 import HarvestNode      from "./HarvestNode";
 import Node             from "./Node";
@@ -42,32 +44,22 @@ export default class RoomNode extends Node
         this.lastSurvery = Game.time;
     }
 
-    makeRepairJobs(harv: HarvestNode)
+    makeRepairRequest()
     {
-        let room = Game.rooms[this.tag];
+        let req = new RequestBuilder()
+            .from(this.tag)
+            .priority(RequestPriority.Normal)
 
-        let flt = { filter: x => 
-            x.hits != x.hitsMax                     &&
-            x.structureType != STRUCTURE_WALL       &&
+        let filter = {
+            filter: x => 
+            x.hits != x.hitsMax                  &&
+            x.structureType != STRUCTURE_WALL    &&
             x.structureType != STRUCTURE_RAMPART
         };
-        for (let struct of room.find(FIND_STRUCTURES, flt))
-        {
-            let job      = harv.getCollectJob();
-            job.assigner = this.tag;
-            job.next     = new RepairJob(this.tag, struct.id);
-            this.jobPool.add(job);
-        }
-    }
+        for (let struct of Game.rooms[this.tag].find(FIND_STRUCTURES, filter))
+            req.work( new RepairJob(struct.id) );
 
-    makeJobs()
-    {
-        let room = Game.rooms[this.tag];
-        let harv = this.searchForNode("HarvestNode") as HarvestNode;
-        if (this.getJobsAssignedBy(this.tag).length != 0)
-            return;
-
-        this.makeRepairJobs(harv);
+        req.addTo(this.tag);
     }
 
     tick()
@@ -76,17 +68,19 @@ export default class RoomNode extends Node
             this.survery();
 
         if (this.creepPool.count() == 0)
-        {
-            let spawnNode = this.findNodeOfType("SpawnNode") as SpawnNode;
-            let request   = {
-                requester: this.tag,
-                body: [ WORK, CARRY, MOVE, MOVE ],
-                name: `RoomNode-${Game.time}` 
-            } as SpawnRequest;
-            spawnNode.requestCreep(request);
-        }
+            new RequestBuilder()
+                .from(this.tag)
+                .priority(RequestPriority.High)
+                .spawnCreep(
+                    new SpawnRequestBuilder()
+                        .name(`RoomNode-${Game.time}`)
+                        .body([WORK, CARRY, MOVE, MOVE])
+                        .get()
+                )
+                .addTo(this.searchForNode("SpawnNode").tag);
 
-        this.makeJobs();
+        this.makeRepairRequest(); // TODO it's the Node's job to ask
+
         super.tick();
     }
 }

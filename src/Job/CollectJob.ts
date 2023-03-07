@@ -5,9 +5,9 @@ export default class CollectJob extends Job
 {
     target: Id<Structure|Source>
 
-    constructor(assigner: string, target: Id<Structure|Source>)
+    constructor(target: Id<Structure|Source>)
     {
-        super(assigner);
+        super();
         this.target = target;
     }
 

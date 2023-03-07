@@ -5,9 +5,9 @@ export default class RepairJob extends Job
 {
     target: Id<Structure>
 
-    constructor(assigner: string, target: Id<Structure>)
+    constructor(target: Id<Structure>)
     {
-        super(assigner);
+        super();
         this.target = target;
     }
 

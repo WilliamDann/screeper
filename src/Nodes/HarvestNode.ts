@@ -1,10 +1,8 @@
-import BuildJob         from "../Job/BuildJob";
-import CollectJob       from "../Job/CollectJob";
-import TransferJob      from "../Job/TransferJob";
-import _HasStore        from "../Misc";
-import { SpawnRequest } from "../Requests";
-import Node             from "./Node";
-import SpawnNode        from "./SpawnNode";
+import CollectJob  from "../Job/CollectJob";
+import { RequestBuilder } from "../Requests/Request";
+import { RequestPriority } from "../Requests/RequestPriority";
+import { SpawnRequestBuilder } from "../Requests/SpawnRequest";
+import Node        from "./Node";
 
 export default class HarvestNode extends Node
 {
@@ -28,7 +26,7 @@ export default class HarvestNode extends Node
         score += this.spots*10;
 
         score -= new RoomPosition(25, 25, target.room.name).getRangeTo(target);
-        score -= this.jobPool.count() * 10;
+        score -= this.runningJobs.length * 10;
 
         return score;
     }
@@ -91,64 +89,14 @@ export default class HarvestNode extends Node
         }
     }
 
-    spawnCreepsForSpots()
-    {
-        if (this.creepPool.count() < this.spots)
-        {
-            let spawnNode = this.findNodeOfType("SpawnNode") as SpawnNode;
-            let request   = {
-                requester: this.tag,
-                body: [ WORK, CARRY, MOVE, MOVE ],
-                name: `HarvestNode-${Game.time}` 
-            } as SpawnRequest;
-            spawnNode.requestCreep(request);
-        }
-    }
-
-    makeJobs()
-    {
-        let drop = Game.getObjectById(this.drop);
-
-        if (!drop)
-        {
-            delete this.drop;
-            return;
-        }
-
-        if (drop instanceof ConstructionSite)
-        {
-            if (this.getJobsAssignedBy(this.tag).length == 0)
-                for (let i = 0; i < this.creepPool.free.length; i++)
-                {
-                    let job = new CollectJob(this.tag, this.tag as Id<Source>);
-                    job.next = new BuildJob(this.tag, drop.id as Id<ConstructionSite>);
-                    this.jobPool.add(job);
-                }
-        }
-
-        if (drop instanceof StructureContainer)
-        {
-            if (this.getJobsAssignedBy(this.tag).length == 0)
-                for (let i = 0; i < this.creepPool.free.length; i++)
-                {
-                    let job     = new CollectJob(this.tag, this.tag as Id<Source>);
-                    job.next    = new TransferJob(this.tag, drop.id as Id<StructureContainer>);
-                    this.jobPool.add(job);
-                }
-        }
-
-        if (this.jobPool.free.length == 0)
-            this.jobPool.add(new CollectJob(this.tag, this.tag as Id<Source>))
-    }
-
     getCollectJob(): CollectJob
     {
         let drop = Game.getObjectById(this.drop);
         if (drop && drop.store)
         {
-            return new CollectJob(null, drop.id);
+            return new CollectJob(drop.id);
         }
-        return new CollectJob(null, this.tag as Id<Source>);
+        return new CollectJob(this.tag as Id<Source>);
     }
 
     tick()
@@ -159,8 +107,18 @@ export default class HarvestNode extends Node
         if (!this.drop)
             this.resolveDropSite();
 
-        this.spawnCreepsForSpots();
-        this.makeJobs();
+        if (this.creepPool.count() < this.spots)
+            new RequestBuilder()
+                .from(this.tag)
+                .priority(RequestPriority.Normal)
+                .spawnCreep(
+                    new SpawnRequestBuilder()
+                        .name(`HarvestNode-${Game.time}-${(Math.random()*1000).toFixed(0)}`)
+                        .body([WORK, WORK, CARRY, MOVE])
+                        .get()
+                    , this.spots-this.creepPool.count()
+                )
+                .addTo(this.searchForNode("SpawnNode").tag);
 
         super.tick();
     }

@@ -5,9 +5,9 @@ export default class UpgradeJob extends Job
 {
     target: Id<StructureController>
 
-    constructor(assigner: string, target: Id<StructureController>)
+    constructor(target: Id<StructureController>)
     {
-        super(assigner);
+        super();
         this.target = target;
     }
 

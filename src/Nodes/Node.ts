@@ -1,79 +1,102 @@
-import Job  from "../Job/Job";
-import Pool from "../Structures/Pool";
+import Job          from "../Job/Job";
+import Pool         from "../Structures/Pool";
+import Request      from "../Requests/Request";
 
 export default class Node
 {
-    tag    : string;
-
-    creepPool : Pool<string>;
-    jobPool   : Pool<Job>;
+    tag         : string;
+    creepPool   : Pool<string>;
+    runningJobs : Job[];
 
     constructor(tag: string)
     {
-        this.tag       = tag;
-
-        this.creepPool = new Pool<string>();
-        this.jobPool   = new Pool<Job>();
+        this.tag         = tag;
+        this.creepPool   = new Pool<string>();
+        this.runningJobs = [];
     }
 
-    get rank(): number
-    {
-        return 0;
-    }
+    get rank() { return 0; }
 
-    findNodeOfType(className): Node
+    searchForNode(className: string, rank ?: (node: Node) => number): Node
     {
+        let max  = -Infinity;
+        let best = null; 
         for (let node of globalThis.graph.bfs(this.tag))
-            if (node.constructor.name == className)
-                return node;
-    }
+        {
+            if (node.constructor.name != className)
+                continue;
 
-    searchForNode(className: string): Node
-    {
-        let bestScore = -Infinity;
-        let bestNode  = null;
-        for (let node of globalThis.graph.bfs(this.tag))
-            if (node.constructor.name == className)
+            let score = 0;
+            if (rank)
+                score = rank(node);
+            else
+                score = node.rank;
+
+            if (score > max)
             {
-                let score = node.rank;
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestNode  = node;
-                }
+                max = score;
+                best = node;
+            }
+        }
+
+        return best;
+    }
+
+    isValidRequest(request: Request): boolean
+    {
+        return true;
+    }
+
+    fufilSpawnRequest(request: Request)
+    {
+        delete request.spawnCreeps;
+    }
+
+    fufilCreepRequest(request: Request)
+    {
+        if (request.creeps.length == 0)
+            delete request.creeps;
+
+        for (let creep of request.creeps)
+            if (this.creepPool.free.indexOf(creep))
+            {
+                let to = graph.verts[request.to];
+                to.creepPool.add(creep);
+                this.creepPool.remove(creep);
+
+                request.creeps.splice(request.creeps.indexOf(creep), 1);
             }
 
-        return bestNode;
+        return true;
     }
 
-    getJobsAssignedBy(assigner: string)
+    fufilWorkRequest(request: Request)
     {
-        let jobs = [];
-        for (let job of [...this.jobPool.free, ...this.jobPool.used])
-            if (job.assigner == assigner)
-                jobs.push(job);
-        return jobs;
+        if (request.work.length == 0)
+            delete request.work;
+
+        for (let job of request.work)
+            if (this.creepPool.free.length != 0)
+            {
+                let creep = this.creepPool.free[0];
+                job.creep = creep;
+                this.runningJobs.push(job);
+                this.creepPool.setUsed(creep);
+                request.work.splice(request.work.indexOf(job), 1);
+            }
     }
 
-    assignJob(job: Job, creep: string)
+    fufil(request: Request)
     {
-        job.creep = creep;
-        this.creepPool.setUsed(creep);
-        this.jobPool.setUsed(job);
-    }
+        if (request.spawnCreeps)
+            this.fufilSpawnRequest(request);
+        if (request.creeps)
+            this.fufilCreepRequest(request);
+        if (request.work)
+            this.fufilWorkRequest(request);
 
-    validateCreepPool()
-    {
-        for (let creep of [...this.creepPool.free, ...this.creepPool.used])
-            if (!Game.creeps[creep])
-                this.creepPool.remove(creep);
-    }
-
-    assignJobs()
-    {
-        for (let name of this.creepPool.free)
-            if (this.jobPool.free[0])
-                this.assignJob(this.jobPool.free[0], name);
+        if (!request.spawnCreeps && !request.creeps && !request.work)
+            globalThis.requests.removeFrom(this.tag, request);
     }
 
     runJob(job: Job)
@@ -83,9 +106,8 @@ export default class Node
         if (job.error)
         {
             this.log(job.error);
-            this.jobPool.remove(job);
+            this.runningJobs.splice(this.runningJobs.indexOf(job), 1);
             this.creepPool.setFree(job.creep);
-            return;
         }
 
         if (job.complete)
@@ -93,37 +115,26 @@ export default class Node
             if (job.next)
             {
                 job.next.creep = job.creep;
-                this.jobPool.remove(job);
-                this.jobPool.used.push(job.next);
+                this.runningJobs.push(job.next);
+                this.runningJobs.splice(this.runningJobs.indexOf(job), 1);
                 return;
             }
-            this.jobPool.remove(job);
+            this.runningJobs.splice(this.runningJobs.indexOf(job), 1);
             this.creepPool.setFree(job.creep);
             return;
         }
     }
 
-    runJobs()
+    tick()
     {
-        for (let job of this.jobPool.used)
+        globalThis.requests.requests[this.tag] = globalThis.requests.requests[this.tag].filter(this.isValidRequest);
+
+        for (let request of globalThis.requests.requests[this.tag])
+            this.fufil(request);
+        for (let job of this.runningJobs)
             this.runJob(job);
     }
 
-    updateJobTimers()
-    {
-        for (let job of this.jobPool.used)
-            job.runTime++;
-        for (let job of this.jobPool.free)
-            job.waitTime++;
-    }
-
-    tick()
-    {
-        this.validateCreepPool();
-        this.assignJobs();
-        this.runJobs();
-        this.updateJobTimers();
-    }
 
     log(message: any)
     {

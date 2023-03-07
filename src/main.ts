@@ -2,7 +2,7 @@ import Graph                    from "./Structures/Graph";
 import Node                     from "./Nodes/Node";
 import RoomNode                 from "./Nodes/RoomNode";
 import { loadDump, makeDump }   from "./Mem";
-import RequestBank              from "./Requests";
+import RequestBank from "./Requests/RequestBank";
 
 declare global {
     var requests    : RequestBank;

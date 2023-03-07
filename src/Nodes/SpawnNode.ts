@@ -1,19 +1,13 @@
-import TransferJob      from "../Job/TransferJob";
-import { SpawnRequest } from "../Requests";
-import HarvestNode      from "./HarvestNode";
-import Node             from "./Node";
-import RoomNode         from "./RoomNode";
+import TransferJob from "../Job/TransferJob";
+import Node        from "./Node";
+import Request, { RequestBuilder }     from "../Requests/Request";
+import { RequestPriority } from "../Requests/RequestPriority";
 
 export default class SpawnNode extends Node
 {
-    Q           : SpawnRequest[];
-    requests    : { [assigner: string] : number }
-
     constructor(spawner: Id<StructureSpawn>)
     {
         super(spawner);
-        this.Q        = [];
-        this.requests = {};
     }
 
     creepCost(body: BodyPartConstant[])
@@ -24,74 +18,65 @@ export default class SpawnNode extends Node
         return cost;
     }
 
-    requestCreep(req: SpawnRequest): boolean
+    isValidRequest(request: Request): boolean
     {
-        let spawner     = Game.getObjectById(this.tag as Id<StructureSpawn>);
-        let capacity    = spawner.room.energyCapacityAvailable;
-        let cost        = this.creepCost(req.body);
-
-        if (cost > capacity)
-            return false;
-        if (Game.creeps[req.name])
-            return false;
-        if (this.requests[req.requester] && this.requests[req.requester] != 0)
+        if (request.creeps || request.work)
             return false;
 
-        this.Q.push(req);
-        if (!this.requests[req.requester])
-            this.requests[req.requester] = 1
-        else
-            this.requests[req.requester]++;
+        let spawner  = Game.getObjectById(this.tag as Id<StructureSpawn>);
+        let capacity = spawner.room.energyCapacityAvailable;
+        for (let creep of request.spawnCreeps)
+            if (this.creepCost(creep.body) > capacity)
+                return false;
 
         return true;
     }
 
-    spawnerTick(spawner: StructureSpawn)
-   {
-        let request = this.Q[0];
+    fufilSpawnRequest(request: Request)
+    {
+        let spawner = Game.getObjectById(this.tag as Id<StructureSpawn>);
 
-        if (!request)
-            return;
+        if (request.spawnCreeps.length == 0)
+            delete request.spawnCreeps;
 
-        let code = spawner.spawnCreep(request.body, request.name, request.opts);
-        switch (code)
+        for (let creep of request.spawnCreeps)
         {
-            case OK:
-                globalThis.graph.verts[request.requester].creepPool.free.push(request.name);
-                break;
+            let code = spawner.spawnCreep(creep.body, creep.name, creep.opts);
+            switch (code)
+            {
+                case OK:
+                    graph.verts[request.from].creepPool.free.push(creep.name);
+                    request.spawnCreeps.splice(request.spawnCreeps.indexOf(creep), 1);
+                    break;
 
-            case ERR_NOT_OWNER:
-            case ERR_NAME_EXISTS:
-            case ERR_INVALID_ARGS:
-            case ERR_RCL_NOT_ENOUGH:
-                break;
+                case ERR_NOT_OWNER:
+                case ERR_NAME_EXISTS:
+                case ERR_INVALID_ARGS:
+                case ERR_RCL_NOT_ENOUGH:
+                    request.spawnCreeps.splice(request.spawnCreeps.indexOf(creep), 1);
+                    break;
 
-            case ERR_NOT_ENOUGH_ENERGY:
-            case ERR_BUSY:
-                return;
+                case ERR_NOT_ENOUGH_ENERGY:
+                    break;
+                case ERR_BUSY:
+                    break;
+            }
         }
 
-        this.Q.shift();
-        this.requests[request.requester]--;
-   }
+        if (request.creeps.length == 0)
+            globalThis.requests.removeFrom(this.tag, request);
+    }
 
     tick()
     {
-        let spawner  = Game.getObjectById(this.tag as Id<StructureSpawn>);
-        let roomNode = globalThis.graph.verts[spawner.room.name] as RoomNode; 
-
-        this.spawnerTick(spawner);
-
-        if (spawner.store.getFreeCapacity(RESOURCE_ENERGY) != 0 && this.creepPool.count() == 0)
-            if (roomNode.getJobsAssignedBy(this.tag).length == 0)
-            {
-                let collect = this.searchForNode("HarvestNode") as HarvestNode;
-                let job     = collect.getCollectJob();
-                job.assigner = this.tag;
-                job.next = new TransferJob(this.tag, this.tag as Id<StructureSpawn>);
-                roomNode.jobPool.add(job);
-            }
-
         super.tick();
+
+        let spawn = Game.getObjectById(this.tag as Id<StructureSpawn>);
+        if (spawn.store.energy != spawn.store.getCapacity(RESOURCE_ENERGY))
+            new RequestBuilder()
+                .from(this.tag)
+                .priority(RequestPriority.High)
+                .work(new TransferJob(this.tag as Id<StructureSpawn>))
+                .addTo(this.searchForNode("HarvestNode").tag);
     }
 }

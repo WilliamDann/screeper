@@ -1,9 +1,9 @@
 import Node             from "./Node";
-import SpawnNode        from "./SpawnNode";
 import HarvestNode      from './HarvestNode';
-import CollectJob       from "../Job/CollectJob";
-import UpgradeJob       from "../Job/UpgradeJob";
-import { SpawnRequest } from "../Requests";
+import UpgradeJob from "../Job/UpgradeJob";
+import { RequestBuilder } from "../Requests/Request";
+import { RequestPriority } from "../Requests/RequestPriority";
+import { SpawnRequestBuilder } from "../Requests/SpawnRequest";
 
 export default class ControllerNode extends Node
 {
@@ -19,7 +19,7 @@ export default class ControllerNode extends Node
         return Game.rooms[this.tag].controller.level;
     }
 
-    findFullestContainer(): HarvestNode|null
+    findContainerHarvester(): HarvestNode|null
     {
         let node = this.searchForNode("HarvestNode") as HarvestNode;
         if (!node)
@@ -31,34 +31,45 @@ export default class ControllerNode extends Node
         return null;
     }
 
+    resolvePull()
+    {
+        let harv = this.findContainerHarvester();
+        if (harv)
+        {
+            this.pull = harv.drop;
+            return true;
+        }
+        return false;
+    }
+
+    spawnCreeps()
+    {
+        let creeps = this.creepPool.count();
+        if (this.creepPool.count() < 3)
+            new RequestBuilder()
+                .from(this.tag)
+                .priority(RequestPriority.Normal)
+                .spawnCreep(
+                    new SpawnRequestBuilder()
+                        .name( `ControllerNode-${Game.time}-${Math.random().toFixed(4)}`)
+                        .body([WORK, CARRY, MOVE, MOVE])
+                        .get(), 3-creeps
+                )
+                .addTo(this.tag);
+    }
+
     tick()
     {
-        if (!this.pull)
-        {
-            let hn = this.findFullestContainer();
-            if (hn)
-                this.pull = hn.drop;
-        }
-
-        if (this.pull && this.creepPool.count() < 3)
-        {
-            let spawnNode = this.findNodeOfType("SpawnNode") as SpawnNode;
-            let request   = {
-                requester: this.tag,
-                body: [ WORK, CARRY, MOVE, MOVE ],
-                name: `ControllerNode-${Game.time}` 
-            } as SpawnRequest;
-            spawnNode.requestCreep(request);
-
-        }
-
-        if (this.pull && this.jobPool.free.length == 0)
-        {
-            let job = new CollectJob(this.tag, this.pull)
-            job.next = new UpgradeJob(this.tag, this.tag as Id<StructureController>);
-            this.jobPool.add(job);
-        }
-
         super.tick();
+        if (!this.pull)
+            if (!this.resolvePull())
+                return;
+
+        this.spawnCreeps();
+        new RequestBuilder()
+            .from(this.tag)
+            .priority(RequestPriority.Normal)
+            .work(new UpgradeJob(this.tag as Id<StructureController>))
+            .addTo(this.tag);
     }
 }

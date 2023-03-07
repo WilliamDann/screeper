@@ -17,9 +17,15 @@ Important:
         ☐ Global Requests Object @started(23-03-06 13:40)
             It would be useful to have a standard system Nodes could use to communicate with eachother.
 
-        ☐ Request Spamming
+        ☐ Request Spamming @started(23-03-06 16:56)
             Is there a way to stop a Node from spamming a request every tick witout baking it into the implementation of the Node?
 
+
+        ☐ Idle Location
+            Creeps that are idling tend to stand near containers blocking acccess
+
+            grouping around some idle flag would solve this issue. Job system cannot be used because the creep still
+            needs to be marked as free.
 Useful:
     ☐ Nodes without GameObject producing tag
         It is unclear if a tag that is not an in-game id would cause errors. This would prevent a DefenseNode like a DefenseAgent from the previous iteration.
@@ -27,7 +33,11 @@ Useful:
     ☐ Custom Creep Bodies
         A clear way way for Nodes to know what they can spawn
 
+    ☐ Nodes own Structures
+        Nodes own structurs and it's their responsibility to make repair jobs. Right now the room
+        make a repair job for all structures that need it.
+
 Possible:
-    ☐ Remove Mining
+    ☐ Remote Mining
         Looking outside to other rooms and mining their Sources would give more energy.
         There are more important things to worry about at this time.

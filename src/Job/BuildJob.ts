@@ -5,9 +5,9 @@ export default class BuildJob extends Job
 {
     target: Id<ConstructionSite>
 
-    constructor(assigner: string, target: Id<ConstructionSite>)
+    constructor(target: Id<ConstructionSite>)
     {
-        super(assigner);
+        super();
         this.target = target;
     }
 

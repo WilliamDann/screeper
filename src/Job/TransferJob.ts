@@ -5,9 +5,9 @@ export default class TransferJob extends Job
 {
     target: Id<_HasStore & _HasId>
 
-    constructor(assigner: string, target: Id<_HasStore & _HasId>)
+    constructor(target: Id<_HasStore & _HasId>)
     {
-        super(assigner);
+        super();
         this.target = target;
     }
 
