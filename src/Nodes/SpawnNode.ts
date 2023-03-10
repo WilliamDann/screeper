@@ -2,9 +2,13 @@ import TransferJob from "../Job/TransferJob";
 import Node        from "./Node";
 import Request, { RequestBuilder }     from "../Requests/Request";
 import { RequestPriority } from "../Requests/RequestPriority";
+import { JobBuilder } from "../Requests/JobBuilder";
+import HarvestNode from "./HarvestNode";
 
 export default class SpawnNode extends Node
 {
+    spawnedThisTick ?: boolean;
+
     constructor(spawner: Id<StructureSpawn>)
     {
         super(spawner);
@@ -37,16 +41,24 @@ export default class SpawnNode extends Node
         let spawner = Game.getObjectById(this.tag as Id<StructureSpawn>);
 
         if (request.spawnCreeps.length == 0)
+        {
             delete request.spawnCreeps;
+            return;
+        }
 
         for (let creep of request.spawnCreeps)
         {
+            if (this.spawnedThisTick)
+                break;
+
             let code = spawner.spawnCreep(creep.body, creep.name, creep.opts);
             switch (code)
             {
                 case OK:
+                    this.log(`Spawn: ${creep.name} with ${code}`);
                     graph.verts[request.from].creepPool.free.push(creep.name);
                     request.spawnCreeps.splice(request.spawnCreeps.indexOf(creep), 1);
+                    this.spawnedThisTick = true;
                     break;
 
                 case ERR_NOT_OWNER:
@@ -62,9 +74,6 @@ export default class SpawnNode extends Node
                     break;
             }
         }
-
-        if (!request.creeps || request.creeps.length == 0)
-            globalThis.requests.removeFrom(this.tag, request);
     }
 
     tick()
@@ -72,11 +81,21 @@ export default class SpawnNode extends Node
         super.tick();
 
         let spawn = Game.getObjectById(this.tag as Id<StructureSpawn>);
+        let harv  = this.searchForNode("HarvestNode") as HarvestNode;
         if (spawn.store.energy != spawn.store.getCapacity(RESOURCE_ENERGY))
             new RequestBuilder()
                 .from(this.tag)
                 .priority(RequestPriority.High)
-                .work(new TransferJob(this.tag as Id<StructureSpawn>))
-                .addTo(this.searchForNode("HarvestNode").tag);
+                .work(
+                    new JobBuilder()
+                        .add(harv.getCollectJob())
+                        .add(new TransferJob(this.tag as Id<StructureSpawn>))
+                        .root
+                    )
+                .limit(2)
+                .addTo(harv.tag);
+
+        // Only needed locally, do not store
+        delete this.spawnedThisTick;
     }
 }

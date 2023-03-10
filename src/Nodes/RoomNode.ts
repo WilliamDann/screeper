@@ -1,4 +1,5 @@
 import RepairJob        from "../Job/RepairJob";
+import { JobBuilder } from "../Requests/JobBuilder";
 import { RequestBuilder } from "../Requests/Request";
 import { RequestPriority } from "../Requests/RequestPriority";
 import { SpawnRequestBuilder } from "../Requests/SpawnRequest";
@@ -57,7 +58,26 @@ export default class RoomNode extends Node
             x.structureType != STRUCTURE_RAMPART
         };
         for (let struct of Game.rooms[this.tag].find(FIND_STRUCTURES, filter))
-            req.work( new RepairJob(struct.id) );
+        {
+            let harv = this.searchForNode("HarvestNode", (x) => {
+                let score  = 0;
+                let job    = (x as HarvestNode).getCollectJob();
+                let target = Game.getObjectById(job.target);
+
+                if (target instanceof StructureContainer)
+                    score += 50;
+
+                score += struct.pos.getRangeTo(target) * 10;
+                return score;
+            }) as HarvestNode;
+
+            req.work(
+                new JobBuilder()
+                    .add(harv.getCollectJob())
+                    .add(new RepairJob(this.tag as any))
+                    .root
+            );
+        }
 
         req.addTo(this.tag);
     }

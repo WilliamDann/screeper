@@ -55,7 +55,10 @@ export default class Node
     fufilCreepRequest(request: Request)
     {
         if (request.creeps.length == 0)
+        {
             delete request.creeps;
+            return;
+        }
 
         for (let creep of request.creeps)
             if (this.creepPool.free.indexOf(creep))
@@ -73,7 +76,10 @@ export default class Node
     fufilWorkRequest(request: Request)
     {
         if (request.work.length == 0)
+        {
             delete request.work;
+            return;
+        }
 
         for (let job of request.work)
             if (this.creepPool.free.length != 0)

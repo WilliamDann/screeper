@@ -1,4 +1,7 @@
+import BuildJob from "../Job/BuildJob";
 import CollectJob  from "../Job/CollectJob";
+import TransferJob from "../Job/TransferJob";
+import { JobBuilder } from "../Requests/JobBuilder";
 import { RequestBuilder } from "../Requests/Request";
 import { RequestPriority } from "../Requests/RequestPriority";
 import { SpawnRequestBuilder } from "../Requests/SpawnRequest";
@@ -118,6 +121,20 @@ export default class HarvestNode extends Node
                         .get()
                 )
                 .addTo(this.searchForNode("SpawnNode").tag);
+
+        let job = new JobBuilder();
+        job.add(new CollectJob(this.tag as Id<Source>))
+        if (this.getCollectJob().target == this.tag)
+            job.add(new BuildJob(this.drop as any));
+        else
+            job.add(new TransferJob(this.drop));
+
+        new RequestBuilder()
+            .from(this.tag)
+            .priority(RequestPriority.Normal)
+            .work(job.root, this.creepPool.count())
+            .limit(1)
+            .addTo(this.tag);
 
         super.tick();
     }

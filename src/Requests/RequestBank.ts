@@ -22,13 +22,15 @@ export default class RequestBank
     {
         request.to   = tag;
         request.time = Game.time;
+        if (!request.limit)
+            request.limit = 1
         if (!request.priority)
             request.priority = RequestPriority.Low;
         if ([
             !request.priority != undefined,
             !request.from != undefined,
             graph.verts[tag].isValidRequest(request),
-            this.getAssignedByFrom(request.from, tag).length == 0
+            this.getAssignedByFrom(request.from, tag).length <= request.limit
         ].indexOf(false) != -1)
             return false;
 

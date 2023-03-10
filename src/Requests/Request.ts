@@ -9,6 +9,7 @@ export default interface Request
     to         ?: string;
     time       ?: number;
     priority   ?: number;
+    limit      ?: number;
 
     spawnCreeps?: SpawnRequest[];
     creeps     ?: string[];
@@ -45,6 +46,12 @@ export class RequestBuilder
     priority(val: RequestPriority): RequestBuilder
     {
         this.value.priority = val;
+        return this;
+    }
+
+    limit(n: number): RequestBuilder
+    {
+        this.value.limit = n;
         return this;
     }
 
