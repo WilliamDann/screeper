@@ -1,6 +1,7 @@
 import TransferJob from "../Job/TransferJob";
 import Node        from "./Node";
-import Request, { RequestBuilder }     from "../Requests/Request";
+import Request     from "../Requests/Request";
+import RequestBuilder from "../Requests/RequestBuilder";
 import { RequestPriority } from "../Requests/RequestPriority";
 import { JobBuilder } from "../Requests/JobBuilder";
 import HarvestNode from "./HarvestNode";

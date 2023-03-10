@@ -2,7 +2,7 @@ import BuildJob from "../Job/BuildJob";
 import CollectJob  from "../Job/CollectJob";
 import TransferJob from "../Job/TransferJob";
 import { JobBuilder } from "../Requests/JobBuilder";
-import { RequestBuilder } from "../Requests/Request";
+import RequestBuilder from "../Requests/RequestBuilder";
 import { RequestPriority } from "../Requests/RequestPriority";
 import { SpawnRequestBuilder } from "../Requests/SpawnRequest";
 import Node        from "./Node";

@@ -1,7 +1,7 @@
 import Node             from "./Node";
 import HarvestNode      from './HarvestNode';
 import UpgradeJob from "../Job/UpgradeJob";
-import { RequestBuilder } from "../Requests/Request";
+import RequestBuilder from "../Requests/RequestBuilder";
 import { RequestPriority } from "../Requests/RequestPriority";
 import { SpawnRequestBuilder } from "../Requests/SpawnRequest";
 

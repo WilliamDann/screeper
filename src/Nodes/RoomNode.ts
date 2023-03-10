@@ -1,6 +1,6 @@
 import RepairJob        from "../Job/RepairJob";
 import { JobBuilder } from "../Requests/JobBuilder";
-import { RequestBuilder } from "../Requests/Request";
+import RequestBuilder from "../Requests/RequestBuilder";
 import { RequestPriority } from "../Requests/RequestPriority";
 import { SpawnRequestBuilder } from "../Requests/SpawnRequest";
 import ControllerNode   from "./ControllerNode";
