@@ -1,37 +1,19 @@
-import BuildJob from "../Job/BuildJob";
-import CollectJob  from "../Job/CollectJob";
-import TransferJob from "../Job/TransferJob";
-import { JobBuilder } from "../Requests/JobBuilder";
-import RequestBuilder from "../Requests/RequestBuilder";
-import { RequestPriority } from "../Requests/RequestPriority";
-import { SpawnRequestBuilder } from "../Requests/SpawnRequest";
-import Node        from "./Node";
+import Node             from "./Node";
+import SpawnNode        from "./SpawnNode";
+import { typeNearRank } from "../Structures/Searches";
+import { RoomRank } from "../Algorithms/RoomRank";
 
-export default class HarvestNode extends Node
+export class ProtoHarvestNode extends Node
 {
-    spots: number;
-    drop : Id<StructureContainer>;
+    spots : number;
+    pull  : Id<_HasId>;
+    depo  : Id<ConstructionSite>;
 
     constructor(source: Id<Source>)
     {
         super(source);
-    }
-
-    get rank()
-    {
-        let score   = 0;
-        let collect = this.getCollectJob();
-        let target  = Game.getObjectById(collect.target);
-
-        if (target instanceof StructureContainer)
-            score += 50 + (target.store.energy / 100);
-
-        score += this.spots*10;
-
-        score -= new RoomPosition(25, 25, target.room.name).getRangeTo(target);
-        score -= this.runningJobs.length * 10;
-
-        return score;
+        this.pull = source;
+        this.depo = null;
     }
 
     findSpots(): number
@@ -49,93 +31,81 @@ export default class HarvestNode extends Node
         return area.length;
     }
 
-    findContainer(): boolean
+    placeContainerSite(): Id<ConstructionSite>
+    {
+
+        let source = Game.getObjectById(this.tag as Id<Source>);
+        let area   = source.room.lookAtArea(
+            source.pos.y - 2,
+            source.pos.x - 2,
+            source.pos.y + 2,
+            source.pos.x + 2,
+            true
+        );
+
+        let rank = new RoomRank();
+        rank.processArea(area);
+        rank.posWeight(source.pos);
+        let pos = rank.getBest();
+
+        source.room.createConstructionSite(pos.x, pos.y, 'container');
+        return source.room.lookForAt(LOOK_CONSTRUCTION_SITES, new RoomPosition(pos.x, pos.y, source.room.name))[0].id;
+    }
+
+    findContainer(): string
     {
         let src  = Game.getObjectById(this.tag as Id<Source>);
-        let area = src.room.lookForAtArea(
-            LOOK_STRUCTURES,
-            src.pos.y-2,
-            src.pos.x-2,
+        let area = src.room.lookAtArea(
+            src.pos.y - 2,
+            src.pos.x - 2,
             src.pos.y + 2,
-            src.pos.x +2,
+            src.pos.x + 2,
             true
         ); 
 
         for (let entry of area)
-            if (entry.structure.structureType == STRUCTURE_CONTAINER)
-            {
-                this.drop = entry.structure.id as Id<StructureContainer>;
-                return true;
-            }
-
-        return false;
+            if (entry.constructionSite)
+                return entry.constructionSite.id;
+            else if (entry.structure && entry.structure.structureType == 'container')
+                return entry.structure.id;
+            else
+                return this.placeContainerSite();
     }
 
-    findDropSpot(): RoomPosition
+    upgradeNode(container: Id<StructureContainer>)
     {
-        let src = Game.getObjectById(this.tag as Id<Source>);
-        let spn = src.room.find(FIND_MY_SPAWNS)[0];
-
-        let path = spn.pos.findPathTo(src, { ignoreCreeps: true })
-
-        return new RoomPosition(path[path.length-3].x, path[path.length-3].y, src.room.name);
-    }
-
-    resolveDropSite()
-    {
-        if (!this.findContainer())
-        {
-            let room = Game.getObjectById(this.tag as Id<Source>).room;
-            let spot = this.findDropSpot()
-            room.createConstructionSite(spot, STRUCTURE_CONTAINER)
-            this.drop = room.lookForAt(LOOK_CONSTRUCTION_SITES, spot)[0].id as any;
-        }
-    }
-
-    getCollectJob(): CollectJob
-    {
-        let drop = Game.getObjectById(this.drop);
-        if (drop && drop.store)
-        {
-            return new CollectJob(drop.id);
-        }
-        return new CollectJob(this.tag as Id<Source>);
+        globalThis.graph.verts[this.tag] = new HarvestNode(this.tag as Id<Source>, container);
     }
 
     tick()
     {
         if (!this.spots)
-            this.spots = this.findSpots();
+        {
+            this.spots  = this.findSpots();
+            let spawn   = globalThis.graph.rankBfs(this.tag,x => typeNearRank("SpawnNode", this.tag as any, x.tag as any)) as SpawnNode;
+            spawn.requests[this.tag] = this.spots;
+        }
 
-        if (!this.drop)
-            this.resolveDropSite();
+        if (!this.depo)
+            this.depo = this.findContainer() as any;
 
-        if (this.creepPool.count() < this.spots)
-            new RequestBuilder()
-                .from(this.tag)
-                .priority(RequestPriority.Normal)
-                .spawnCreep(
-                    new SpawnRequestBuilder()
-                        .name(`HarvestNode-${Game.time}-${(Math.random()*1000).toFixed(0)}`)
-                        .body([WORK, WORK, CARRY, MOVE])
-                        .get()
-                )
-                .addTo(this.searchForNode("SpawnNode").tag);
+        if (Game.getObjectById(this.depo) instanceof StructureContainer)
+            this.upgradeNode(this.depo as any);
 
-        let job = new JobBuilder();
-        job.add(new CollectJob(this.tag as Id<Source>))
-        if (this.getCollectJob().target == this.tag)
-            job.add(new BuildJob(this.drop as any));
-        else
-            job.add(new TransferJob(this.drop));
+        super.tick();
+    }
+}
 
-        new RequestBuilder()
-            .from(this.tag)
-            .priority(RequestPriority.Normal)
-            .work(job.root, this.creepPool.count())
-            .limit(1)
-            .addTo(this.tag);
+export class HarvestNode extends ProtoHarvestNode
+{
+    constructor(source: Id<Source>, container: Id<StructureContainer>)
+    {
+        super(source);
+        this.pull = container;
+    }
 
+    tick()
+    {
         super.tick();
     }
 }

@@ -52,5 +52,23 @@ export default class Graph<T>
         }
     }
 
+    rankBfs(start: string, rank: (item: T) => number): T
+    {
+        let best = -Infinity;
+        let node = null;
+
+        for (let elem of this.bfs(start))
+        {
+            let score = rank(elem);
+            if (score > best)
+            {
+                best = score;
+                node = elem;
+            }
+        }
+
+        return node;
+    }
+
     // TODO dfs, use stack instead of queue
 }

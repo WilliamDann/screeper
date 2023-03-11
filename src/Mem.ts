@@ -12,7 +12,6 @@ import TransferJob from "./Job/TransferJob";
 import BuildJob from "./Job/BuildJob";
 import UpgradeJob from "./Job/UpgradeJob";
 import RepairJob from "./Job/RepairJob";
-import RequestBank from "./Requests/RequestBank";
 
 export const Protos = 
 {
@@ -34,7 +33,6 @@ export const Protos =
     'LL'                : LL.prototype,
     'Node'              : Node.prototype,
     'Pool'              : Pool.prototype,
-    'RequestBank'       : RequestBank.prototype,
 }
 
 export const GameMemDump = () => new MemoryDump(Protos);
