@@ -13,3 +13,11 @@ export function typeNearRank(type: string, thisNode: Node, thatNode: Node): numb
     return thatObj.pos.getRangeTo(thisObj);
 
 }
+
+export function typeProductionRank(type: string, thatNode: Node)
+{
+    if (thatNode.constructor.name != type)
+        return -Infinity;
+
+    return thatNode.creeps.count * 10;
+}

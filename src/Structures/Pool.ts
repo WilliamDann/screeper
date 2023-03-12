@@ -17,10 +17,10 @@ export default class Pool<T>
 
     get(item: T): T[]
     {
-        return [].push.apply(
-            this.free.filter(x => x == item),
-            this.used.filter(x => x == item)
-        );
+        return [
+            ...this.free.filter(x => x == item),
+            ...this.used.filter(x => x == item)
+        ];
     }
 
     remove(item: T): void
@@ -49,7 +49,7 @@ export default class Pool<T>
         this.free.push(rem[0]);
     }
 
-    count(): number
+    get count(): number
     {
         return this.free.length + this.used.length;
     }

@@ -2,6 +2,10 @@ import Node             from "./Node";
 import SpawnNode        from "./SpawnNode";
 import { typeNearRank } from "../Structures/Searches";
 import { RoomRank } from "../Algorithms/RoomRank";
+import JobBuilder from "../Job/JobBuilder";
+import CollectJob from "../Job/CollectJob";
+import BuildJob from "../Job/BuildJob";
+import TransferJob from "../Job/TransferJob";
 
 export class ProtoHarvestNode extends Node
 {
@@ -12,8 +16,8 @@ export class ProtoHarvestNode extends Node
     constructor(source: Id<Source>)
     {
         super(source);
-        this.pull = source;
         this.depo = null;
+        this.pull = source;
     }
 
     findSpots(): number
@@ -72,7 +76,12 @@ export class ProtoHarvestNode extends Node
 
     upgradeNode(container: Id<StructureContainer>)
     {
-        globalThis.graph.verts[this.tag] = new HarvestNode(this.tag as Id<Source>, container);
+        graph.verts[this.tag] = new HarvestNode(this.tag as Id<Source>, container);
+
+        for (let creep of [...this.creeps.free, ...this.creeps.used])
+            graph.verts[this.tag].creeps.add(creep);
+        // for (let job of [...this.jobs.free, ...this.jobs.used])
+        //     graph.verts[this.tag].jobs.add(job);
     }
 
     tick()
@@ -90,20 +99,59 @@ export class ProtoHarvestNode extends Node
         if (Game.getObjectById(this.depo) instanceof StructureContainer)
             this.upgradeNode(this.depo as any);
 
+        if (this.jobs.free.length == 0)
+            this.jobs.add(
+                new JobBuilder()
+                    .add(new CollectJob(this.tag as Id<Source>))
+                    .add(new BuildJob(this.depo))
+                    .build()
+                );
         super.tick();
     }
 }
 
-export class HarvestNode extends ProtoHarvestNode
+export class HarvestNode extends Node
 {
+    spots : number;
+    pull  : Id<StructureContainer>;
+
     constructor(source: Id<Source>, container: Id<StructureContainer>)
     {
         super(source);
         this.pull = container;
     }
 
+    findSpots(): number
+    {
+        let source = Game.getObjectById(this.tag as Id<Source>);
+        let area   = source.room.lookForAtArea(
+            LOOK_TERRAIN,
+            source.pos.y - 1,
+            source.pos.x - 1,
+            source.pos.y + 1,
+            source.pos.x + 1,
+            true
+        );
+        area = area.filter(x => x.terrain != 'wall');
+        return area.length;
+    }
+
     tick()
     {
+        if (!this.spots)
+        {
+            this.spots = this.findSpots();
+            let spawn  = globalThis.graph.rankBfs(this.tag,x => typeNearRank("SpawnNode", this, x)) as SpawnNode;
+            spawn.requests[this.tag] = this.spots;
+        }
+
+        if (this.jobs.free.length == 0)
+            this.jobs.add(
+                new JobBuilder()
+                    .add(new CollectJob(this.tag as Id<Source>))
+                    .add(new TransferJob(this.pull))
+                    .build()
+                );
         super.tick();
     }
 }
