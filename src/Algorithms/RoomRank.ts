@@ -5,10 +5,6 @@ export class RoomRank
 
     mat: [number[]]
 
-    weights = {
-
-    }
-
     constructor(w=50, h=50)
     {
         this.w = w;
@@ -18,13 +14,13 @@ export class RoomRank
 
     init(starting=-Infinity)
     {
-        let matrix = []
+        this.mat = [] as any;
         for (let x = 0; x < this.w; x++)
         {
             let row = [];
             for (let y = 0; y < this.h; y++)
                 row.push(-Infinity)
-            matrix.push(row);
+            this.mat.push(row);
         }
     }
 
@@ -53,9 +49,10 @@ export class RoomRank
 
     posWeight(pos: RoomPosition)
     {
-        for (let x = 0; x < this.w; x++)
-            for (let y = 0; y < this.h; y++)
-                this.mat[x][y] -= pos.getRangeTo(new RoomPosition(x, y, pos.roomName));
+        for (let x = 0; x < this.w-1; x++)
+            for (let y = 0; y < this.h-1; y++)
+                if (this.mat[x][y] != -Infinity)
+                    this.mat[x][y] -= new RoomPosition(x, y, pos.roomName).findPathTo(pos).length * 10;
     }
 
     getBest() : {x: number, y: number}

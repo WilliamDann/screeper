@@ -1,7 +1,7 @@
 import CollectJob from "./Job/CollectJob";
 import MemoryDump                       from "./MemoryDump"
 import ControllerNode                   from "./Nodes/ControllerNode";
-import HarvestNode                      from "./Nodes/HarvestNode";
+import {ProtoHarvestNode, HarvestNode}                      from "./Nodes/HarvestNode";
 import Node from "./Structures/LL";
 import RoomNode                         from "./Nodes/RoomNode";
 import SpawnNode                        from "./Nodes/SpawnNode";
@@ -17,6 +17,7 @@ export const Protos =
 {
     // Nodes
     'ControllerNode'    : ControllerNode.prototype,
+    'ProtoHarvestNode'  : ProtoHarvestNode.prototype,
     'HarvestNode'       : HarvestNode.prototype,
     'RoomNode'          : RoomNode.prototype,
     'SpawnNode'         : SpawnNode.prototype,

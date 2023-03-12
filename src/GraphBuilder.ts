@@ -1,17 +1,16 @@
-import ControllerNode from "./Nodes/ControllerNode";
-import HarvestNode    from "./Nodes/HarvestNode";
-import SpawnNode      from "./Nodes/SpawnNode";
-import RoomNode       from "./Nodes/RoomNode";
-
-import Graph          from "./Structures/Graph";
-import Node           from "./Nodes/Node";
+import ControllerNode    from "./Nodes/ControllerNode";
+import {ProtoHarvestNode}  from "./Nodes/HarvestNode";
+import SpawnNode         from "./Nodes/SpawnNode";
+import RoomNode          from "./Nodes/RoomNode";
+import Graph             from "./Structures/Graph";
+import Node              from "./Nodes/Node";
 
 export default class GraphBuilder {
     graph: Graph<Node>
 
     constructor()
     {
-        this.graph = new Graph<Node>; 
+        this.graph = new Graph<Node>(); 
     }
 
     addRoom(room: Room)
@@ -33,7 +32,7 @@ export default class GraphBuilder {
 
         for (let source of sources)
         {
-            this.graph.addVert(source.id, new HarvestNode(source.id));
+            this.graph.addVert(source.id, new ProtoHarvestNode(source.id));
             this.graph.addEdge(source.id, room.name);
         }
     }

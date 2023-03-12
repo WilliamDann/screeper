@@ -32,7 +32,7 @@ export default class SpawnNode extends Node
             name
         );
 
-        if ([-1, -3, -10, -14].indexOf(code))
+        if ([-1, -3, -10, -14].indexOf(code) != -1)
             throw new Error(`Spawn Error: ${code}`);
         if (code == -4 || code == -6)
             return;

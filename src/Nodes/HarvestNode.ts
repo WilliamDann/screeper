@@ -31,15 +31,14 @@ export class ProtoHarvestNode extends Node
         return area.length;
     }
 
-    placeContainerSite(): Id<ConstructionSite>
+    placeContainerSite()
     {
-
         let source = Game.getObjectById(this.tag as Id<Source>);
         let area   = source.room.lookAtArea(
-            source.pos.y - 2,
-            source.pos.x - 2,
-            source.pos.y + 2,
-            source.pos.x + 2,
+            source.pos.y - 3,
+            source.pos.x - 3,
+            source.pos.y + 3,
+            source.pos.x + 3,
             true
         );
 
@@ -49,17 +48,16 @@ export class ProtoHarvestNode extends Node
         let pos = rank.getBest();
 
         source.room.createConstructionSite(pos.x, pos.y, 'container');
-        return source.room.lookForAt(LOOK_CONSTRUCTION_SITES, new RoomPosition(pos.x, pos.y, source.room.name))[0].id;
     }
 
     findContainer(): string
     {
         let src  = Game.getObjectById(this.tag as Id<Source>);
         let area = src.room.lookAtArea(
-            src.pos.y - 2,
-            src.pos.x - 2,
-            src.pos.y + 2,
-            src.pos.x + 2,
+            src.pos.y - 4,
+            src.pos.x - 4,
+            src.pos.y + 4,
+            src.pos.x + 4,
             true
         ); 
 
@@ -68,8 +66,8 @@ export class ProtoHarvestNode extends Node
                 return entry.constructionSite.id;
             else if (entry.structure && entry.structure.structureType == 'container')
                 return entry.structure.id;
-            else
-                return this.placeContainerSite();
+        
+        this.placeContainerSite();
     }
 
     upgradeNode(container: Id<StructureContainer>)
@@ -81,8 +79,8 @@ export class ProtoHarvestNode extends Node
     {
         if (!this.spots)
         {
-            this.spots  = this.findSpots();
-            let spawn   = globalThis.graph.rankBfs(this.tag,x => typeNearRank("SpawnNode", this.tag as any, x.tag as any)) as SpawnNode;
+            this.spots = this.findSpots();
+            let spawn  = globalThis.graph.rankBfs(this.tag,x => typeNearRank("SpawnNode", this, x)) as SpawnNode;
             spawn.requests[this.tag] = this.spots;
         }
 

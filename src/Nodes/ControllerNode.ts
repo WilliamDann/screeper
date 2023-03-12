@@ -13,7 +13,7 @@ export default class ControllerNode extends Node
     {
         if (this.creeps.length == 0)
         {
-            let spawn = globalThis.graph.rankBfs(this.tag,x => typeNearRank("SpawnNode", this.tag as any, x.tag as any)) as SpawnNode;
+            let spawn = globalThis.graph.rankBfs(this.tag,x => typeNearRank("SpawnNode", this, x)) as SpawnNode;
             if (!spawn.requests[this.tag])
                 spawn.requests[this.tag] = 1;
         }
