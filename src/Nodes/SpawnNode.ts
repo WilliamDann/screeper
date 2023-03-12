@@ -72,6 +72,10 @@ export default class SpawnNode extends Node
 
     tick()
     {
+        for (let request in this.requests)
+            if (this.requests[request] <= 0)
+                delete this.requests[request];
+
         this.spawnNext();
         this.requestFill();
         super.tick();
