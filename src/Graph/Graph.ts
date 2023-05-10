@@ -1,4 +1,4 @@
-import Node from "./Node";
+import Node from "../Node/Node";
 
 export default class Graph
 {
@@ -31,5 +31,43 @@ export default class Graph
 
         this.edges[from].push(to);
         this.edges[to].push(from);
+    }
+
+    // BFS Search of the graph
+    *bfs(start)
+    {
+        const visited = {};
+        const toVisit = []; // should be a queue
+
+        toVisit.push(start);
+        while (toVisit.length != 0)
+        {
+            const node = toVisit.shift();
+            if (node && !visited[node]) {
+                yield node;
+                visited[node] = true;
+                for (let adj of this.edges[node])
+                    toVisit.unshift(adj);
+            }
+        }
+    }
+
+    // DFS Search of the graph
+    *dfs(start)
+    {
+        const visited = {};
+        const toVisit = []; // should be a stack
+
+        toVisit.push(start);
+        while (toVisit.length != 0)
+        {
+            const node = toVisit.pop();
+            if (node && !visited[node]) {
+                yield node;
+                visited[node] = true;
+                for (let adj of this.edges[node])
+                    toVisit.push(adj);
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 import Graph from "./Graph";
-import Node  from "./Node";
+import Node  from "../Node/Node";
+import SourceNode from "../Node/SourceNode";
 
 export default class GraphBuilder
 {
@@ -31,16 +32,23 @@ export default class GraphBuilder
                 if (this[param])
                     this[param](obj[param])
                 else
-                    this.addHasId(obj[param])
+                    this.hasId(obj[param])
             }
         }
 
         return this;
     }
 
-    addHasId(obj: _HasId): GraphBuilder
+    hasId(obj: _HasId): GraphBuilder
     {
         const id = this.graph.addNode(new Node<_HasId>(obj.id));
+        this.graph.addEdge(id, this.onRoom);
+        return this;
+    }
+
+    source(obj: Source)
+    {
+        const id = this.graph.addNode(new SourceNode(obj.id));
         this.graph.addEdge(id, this.onRoom);
         return this;
     }
