@@ -1,16 +1,12 @@
-// Concerns
-// 1. Find a source to harvest from
-// 2. Harvest from that soucre
-// 3. Find a building to build
-// 4. Build that found building
+// Responsible for controlling creeps while building
 
 export default function(creep: Creep) 
 {
     const target = Game.getObjectById(creep.memory['target'] as Id<ConstructionSite>);
 
-    if (creep.memory['state'] && creep.store.getFreeCapacity("energy") == 0)
+    if (creep.memory['state'] && creep.store.getUsedCapacity("energy") == 0)
         creep.memory['state'] = false;
-    if (!creep.memory['state'] && creep.store.getUsedCapacity("energy") == 0)
+    if (!creep.memory['state'] && creep.store.getUsedCapacity("energy") != 0)
         creep.memory['state'] = true;
 
     if (creep.memory['state'])

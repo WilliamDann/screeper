@@ -18,9 +18,21 @@ export default class Site
         this.contents.set(identifier, existing);
     }
 
+    addContentIfMissing(identifier: string, value: Id<_HasId>)
+    {
+        if (this.contains(value, identifier))
+            return;
+        this.addContent(identifier, value);
+    }
+
     getContent<T extends _HasId>(identifier: string): T[]
     {
         let arr = [];
+
+        let cnt = this.contents.get(identifier);
+        if (!cnt)
+            return arr;
+
         for (let id of this.contents.get(identifier))
             arr.push(Game.getObjectById(id));
         return arr;

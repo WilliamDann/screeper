@@ -1,8 +1,8 @@
-// Responsible for controlling creeps while upgrading
+// Responsible for controlling creeps transferring resources 
 
-export default function(creep: Creep) 
+export default function(creep: Creep)
 {
-    const target = Game.getObjectById(creep.memory['target'] as Id<StructureController>);
+    const target = Game.getObjectById(creep.memory['target'] as Id<StructureContainer>);
 
     if (creep.memory['state'] && creep.store.getUsedCapacity("energy") == 0)
         creep.memory['state'] = false;
@@ -11,7 +11,7 @@ export default function(creep: Creep)
 
     if (creep.memory['state'])
     {
-        let status: any = creep.upgradeController(target);
+        let status: any = creep.transfer(target, RESOURCE_ENERGY);
         if (status == ERR_NOT_IN_RANGE)
             status = creep.moveTo(target);
 

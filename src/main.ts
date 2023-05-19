@@ -2,9 +2,7 @@
 // 1. Run creep roles
 // 2. Run site tick funcs
 
-import harvester   from "./roles/harvest";
-import upgrader    from "./roles/upgrader";
-import builder     from "./roles/builder";
+import roles       from "./roles/all";
 import HarvestSite from "./sites/HarvestSite";
 
 export function loop()
@@ -19,15 +17,12 @@ export function loop()
     hs.tick();
 
     for(var name in Game.creeps) {
-        var creep = Game.creeps[name];
-        if(creep.memory['role'] == 'harvest') {
-            harvester(creep);
-        }
-        if(creep.memory['role'] == 'upgrad') {
-            upgrader(creep);
-        }
-        if(creep.memory['role'] == 'build') {
-            builder(creep);
-        }
+        const creep = Game.creeps[name];
+        const role  = creep.memory['role'];
+    if (!role)
+            continue;
+
+        // run role
+        roles[role](creep);
     }
 }
