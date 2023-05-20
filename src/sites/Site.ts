@@ -64,6 +64,39 @@ export default class Site
         return this.containsId(value);
     }
 
+    poll(center: RoomPosition, range: number)
+    {
+        let room   = Game.rooms[center.roomName];
+        let area   = room.lookAtArea(
+            center.y - range,
+            center.x - range,
+            center.y + range,
+            center.x + range,
+            true
+        )
+        for (let site of area)
+        {
+            // structs
+            if (site.structure)
+            {
+                if (site.structure['source'])
+                    this.addContent('container', site.structure.id);
+                else
+                    this.addContent(site.structure.structureType, site.structure.id);
+
+                continue;
+            }
+
+            // creeps
+            if (site.creep)
+            {
+                if (!site.creep.my)
+                    this.addContent('danger', site.creep.id);
+                continue; // adding is handled elsewhere
+            }
+        }
+    }
+
     // called every tick
     tick()
     {

@@ -28,6 +28,9 @@ export default class RoomMediator
 
     tick()
     {
+        let room = Game.rooms[this.roomName];
+        
+
         [
             ...this.spawnSites,
             ...this.harvestSites

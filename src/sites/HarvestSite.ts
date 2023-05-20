@@ -74,67 +74,6 @@ export default class extends Site
         return area.length;
     }
 
-    findContainers(range: number): StructureContainer[]
-    {
-        let source = this.getContent("source")[0] as Source;
-        let area   = source.room.lookAtArea(
-            source.pos.y - range,
-            source.pos.x - range,
-            source.pos.y + range,
-            source.pos.x + range,
-            true
-        )
-
-        let arr = []
-        for (let result of area)
-            if (result.structure && result.structure['store'])
-                arr.push(result.structure)
-
-        return arr;
-    }
-
-    findSites(range: number): ConstructionSite[]
-    {
-        let source = this.getContent("source")[0] as Source;
-        let area   = source.room.lookAtArea(
-            source.pos.y - range,
-            source.pos.x - range,
-            source.pos.y + range,
-            source.pos.x + range,
-            true
-        )
-
-        let arr = []
-        for (let result of area)
-            if (result.constructionSite)
-                arr.push(result.constructionSite)
-
-        return arr;
-    }
-
-    siteIsDangerous(range: number): boolean
-    {
-        let source = this.getContent("source")[0] as Source;
-        let area   = source.room.lookAtArea(
-            source.pos.y - range,
-            source.pos.x - range,
-            source.pos.y + range,
-            source.pos.x + range,
-            true
-        )
-
-        let arr = []
-        for (let result of area)
-        {
-            if (result.tombstone)
-                arr.push(result.tombstone);
-            if (result.creep && !result.creep.my)
-                arr.push(result.creep);
-        }
-
-        return arr.length != 0;
-    }
-
     createContainerSite(range: number)
     {
         let source = this.getContent("source")[0] as Source;
@@ -151,30 +90,17 @@ export default class extends Site
         )
     }
 
-    poll()
-    {
-        let containerObjs = this.findContainers(5);
-        let siteObjs      = this.findSites(5);
-
-        if (containerObjs.length != 0)
-            for (let container of containerObjs)
-                this.addContentIfMissing('container', container.id);
-
-        if (siteObjs.length != 0)
-            for (let site of siteObjs)
-                this.addContentIfMissing('site', site.id);
-    } 
-
     tick()
     {
-        this.poll();
-
         let source     = this.getContent<Source>('source')[0];
+        this.poll(source.pos, 10);
+
         let containers = this.getContent<StructureContainer>('container');
         let sites      = this.getContent<StructureSpawn>('site');
         let creeps     = this.getContent<Creep>('creep');
+        let danger     = this.getContent('danger');
 
-        if (creeps.length < this.findMiningSpots() && !this.siteIsDangerous(10))
+        if (creeps.length < this.findMiningSpots() && danger.length == 0)
             RoomMediator.getInstance(source.room.name).spawnRequest(
                 this.identifier,
                 [WORK, CARRY, MOVE, MOVE],
