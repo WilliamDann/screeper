@@ -1,6 +1,6 @@
 // Responsible for using creeps to harvest at a given source
-import CreepMediator from "../mediators/CreepMediator";
-import Site          from "./Site";
+import RoomMediator from "../mediators/RoomMediators";
+import Site         from "./Site";
 
 export default class extends Site
 {
@@ -169,12 +169,13 @@ export default class extends Site
     {
         this.poll();
 
+        let source     = this.getContent<Source>('source')[0];
         let containers = this.getContent<StructureContainer>('container');
         let sites      = this.getContent<StructureSpawn>('site');
         let creeps     = this.getContent<Creep>('creep');
 
         if (creeps.length < this.findMiningSpots() && !this.siteIsDangerous(10))
-            CreepMediator.getInstance().request(
+            RoomMediator.getInstance(source.room.name).spawnRequest(
                 this.identifier,
                 [WORK, CARRY, MOVE, MOVE],
                 'harvestSite'+Game.time

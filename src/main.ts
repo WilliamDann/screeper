@@ -1,49 +1,51 @@
-import roles       from "./roles/all";
-import HarvestSite from "./sites/HarvestSite";
-import Site        from "./sites/Site";
-import SpawnSite   from "./sites/SpawnSite";
+import RoomMediator from "./mediators/RoomMediators";
+import roles        from "./roles/all";
+import HarvestSite  from "./sites/HarvestSite";
+import SpawnSite    from "./sites/SpawnSite";
 
-function pollRoom(room: Room): Site[]
+function poll(roomName: string)
 {
-    let sources = [] as Site[];
-    let spawns  = [] as Site[];
+    const room    = Game.rooms[roomName];
+    const inst    = RoomMediator.getInstance(roomName);
+    const siteMap = {};
 
+    // create harvest sites
     for (let source of room.find(FIND_SOURCES))
-        sources.push(new HarvestSite(source.id));
-
-    for (let spawn of room.find(FIND_MY_SPAWNS))
     {
-        for (let source of sources)
-            source.addContent('container', spawn.id);
-        spawns.push(new SpawnSite(spawn.id));
+        let site = new HarvestSite(source.id)
+        inst.harvestSites.push(site);
+        siteMap[source.id] = site;
     }
 
-    return [...sources, ...spawns];
-}
+    // create spawn sites
+    // also add spawn as containers to harvest sites
+    for (let spawn of room.find(FIND_MY_SPAWNS))
+    {
+        let site = new SpawnSite(spawn.id);
+        for (let harv of inst.harvestSites)
+            harv.addContent('container', spawn.id);
+        inst.spawnSites.push(site);
+        siteMap[spawn.id] = site;
+    }
 
-function pollCreeps(sites: Site[])
-{
+    // add creeps to sites
     for (let name in Game.creeps)
     {
         const creep = Game.creeps[name];
-        for (let site of sites)
-            if (site.identifier == creep.memory['owner'])
-                site.addContent('creep', creep.id);
+        if (creep.pos.roomName == inst.roomName && creep.memory['owner'])
+            siteMap[creep.memory['owner']].addContent('creep', creep.id);
     }
 }
 
 export function loop()
 {
-    // Create Sites
-    let sites = [] as Site[];
+    // Create room mediators
     for (let room in Game.rooms)
-        sites = sites.concat(pollRoom(Game.rooms[room]));
+        poll(room)
 
-    // Add Creeps to Sites
-    pollCreeps(sites);
-
-    // Run Ticks
-    sites.forEach(site => site.tick());
+    // Run room mediators
+    for (let room in Game.rooms)
+        RoomMediator.getInstance(room).tick();
 
     // Run Creep funcs
     for(var name in Game.creeps) {
