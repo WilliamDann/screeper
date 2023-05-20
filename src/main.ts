@@ -1,37 +1,57 @@
-import Graph                    from "./Structures/Graph";
-import Node                     from "./Nodes/Node";
-import { loadDump, makeDump }   from "./Mem";
-import GraphBuilder             from "./GraphBuilder";
+import roles       from "./roles/all";
+import HarvestSite from "./sites/HarvestSite";
+import Site        from "./sites/Site";
+import SpawnSite   from "./sites/SpawnSite";
 
-declare global {
-    var graph       : Graph<Node>;
+function pollRoom(room: Room): Site[]
+{
+    let sources = [] as Site[];
+    let spawns  = [] as Site[];
+
+    for (let source of room.find(FIND_SOURCES))
+        sources.push(new HarvestSite(source.id));
+
+    for (let spawn of room.find(FIND_MY_SPAWNS))
+    {
+        for (let source of sources)
+            source.addContent('container', spawn.id);
+        spawns.push(new SpawnSite(spawn.id));
+    }
+
+    return [...sources, ...spawns];
+}
+
+function pollCreeps(sites: Site[])
+{
+    for (let name in Game.creeps)
+    {
+        const creep = Game.creeps[name];
+        for (let site of sites)
+            if (site.identifier == creep.memory['owner'])
+                site.addContent('creep', creep.id);
+    }
 }
 
 export function loop()
 {
-    let dump = loadDump();
-
-    if (!dump)
-        dump = {}
-
-    globalThis.graph    = dump.graph;
-    globalThis.requests = dump.requests;
-
-    if (!globalThis.graph)
-        globalThis.graph = new Graph<Node>();
-
-    let gb = new GraphBuilder();
-    gb.graph = globalThis.graph;
-
+    // Create Sites
+    let sites = [] as Site[];
     for (let room in Game.rooms)
-        if (!gb.graph.verts[room])
-            gb.addRoom(Game.rooms[room]);
+        sites = sites.concat(pollRoom(Game.rooms[room]));
 
-    for (let vert in globalThis.graph.verts)
-        graph.verts[vert].tick();
+    // Add Creeps to Sites
+    pollCreeps(sites);
 
-    makeDump({ 
-        graph    : globalThis.graph,
-        requests : globalThis.requests 
-    });
+    // Run Ticks
+    sites.forEach(site => site.tick());
+
+    // Run Creep funcs
+    for(var name in Game.creeps) {
+        const creep = Game.creeps[name];
+        const role  = creep.memory['role'];
+        if (!role)
+            continue;
+
+        roles[role](creep);
+    }
 }
