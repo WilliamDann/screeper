@@ -1,7 +1,3 @@
-// Concerns
-// 1. Run creep roles
-// 2. Run site tick funcs
-
 import roles       from "./roles/all";
 import HarvestSite from "./sites/HarvestSite";
 import SpawnSite   from "./sites/SpawnSite";
@@ -15,6 +11,7 @@ export function loop()
     for (let name in Game.creeps)
         if (!hs.contains(Game.creeps[name].id))
             hs.addContent("creep", Game.creeps[name].id);
+    hs.addContent('container', Game.spawns.Spawn1.id);
 
     ss.tick();
     hs.tick();

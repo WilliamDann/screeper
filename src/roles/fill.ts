@@ -15,6 +15,13 @@ export default function(creep: Creep)
         if (status == ERR_NOT_IN_RANGE)
             status = creep.moveTo(target);
 
+        if (status == ERR_FULL)
+        {
+            creep.memory['role']   = undefined;
+            creep.memory['state']  = undefined;
+            creep.memory['target'] = undefined;
+            return;
+        }
         if (status != OK)
             creep.say(`! ${status}`);
     }

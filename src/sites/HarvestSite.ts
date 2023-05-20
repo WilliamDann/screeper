@@ -28,6 +28,7 @@ export default class extends Site
         }
 
         let containers  = this.getContent('container') as StructureContainer[];
+        containers      = containers.filter(x => x.store.getFreeCapacity(RESOURCE_ENERGY) != 0)
         if (containers.length != 0)
         {
             creep.memory['role']   = 'fill';
@@ -114,8 +115,24 @@ export default class extends Site
         )
     }
 
+    poll()
+    {
+        let containerObjs = this.findContainers(5);
+        let siteObjs      = this.findSites(5);
+
+        if (containerObjs.length != 0)
+            for (let container of containerObjs)
+                this.addContentIfMissing('container', container.id);
+
+        if (siteObjs.length != 0)
+            for (let site of siteObjs)
+                this.addContentIfMissing('site', site.id);
+    }
+
     tick()
     {
+        this.poll();
+
         let containers = this.getContent<StructureContainer>('container');
         let sites      = this.getContent<StructureSpawn>('site');
         let creeps     = this.getContent<Creep>('creep');
@@ -127,21 +144,7 @@ export default class extends Site
             );
 
         if (containers.length == 0 && sites.length == 0)
-        {
-            let containerObjs = this.findContainers(5);
-            let siteObjs      = this.findSites(5);
-
-            if (containerObjs.length != 0)
-                for (let container of containerObjs)
-                    this.addContentIfMissing('container', container.id);
-
-            if (siteObjs.length != 0)
-                for (let site of siteObjs)
-                    this.addContentIfMissing('site', site.id);
-
-            if (containerObjs.length == 0 && siteObjs.length == 0)
-                this.createContainerSite(5);
-        }
+            this.createContainerSite(5);
 
         for (let creep of this.getContent('creep') as Creep[])
             if (!creep.memory['role'])
