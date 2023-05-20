@@ -1,43 +1,5 @@
-Important:
-    ☐ DefenseNode
-        Behavior to defend rooms is needed
+☐ RoadMediator
+    A mediator that can be used to build roads on problem locations.
 
-    ☐ Room Planning
-        Building things that go in the room!
-
-        ☐ Extentions
-        ☐ Tower
-        ☐ Roads (?)
-            this could be lower priority
-
-    ☐ Resource Managment
-        Right now every Node can request anything it wants to no matter the cost. This _could_ cause a econ crash. 
-        It does cause one in the sim room when a creep gets spawned and then dies to the keeper over and over again.
-
-        ✔ Global Requests Object @started(23-03-06 13:40) @done(23-03-10 13:15) @lasted(3d23h35m58s)
-            It would be useful to have a standard system Nodes could use to communicate with eachother.
-
-        ☐ Request Spamming
-            Is there a way to stop a Node from spamming a request every tick witout baking it into the implementation of the Node?
-
-
-        ☐ Idle Location
-            Creeps that are idling tend to stand near containers blocking acccess
-
-            grouping around some idle flag would solve this issue. Job system cannot be used because the creep still
-            needs to be marked as free.
-Useful:
-    ☐ Nodes without GameObject producing tag
-        It is unclear if a tag that is not an in-game id would cause errors. This would prevent a DefenseNode like a DefenseAgent from the previous iteration.
-
-    ☐ Custom Creep Bodies
-        A clear way way for Nodes to know what they can spawn
-
-    ☐ Nodes own Structures
-        Nodes own structurs and it's their responsibility to make repair jobs. Right now the room
-        make a repair job for all structures that need it.
-
-Possible:
-    ☐ Remote Mining
-        Looking outside to other rooms and mining their Sources would give more energy.
-        There are more important things to worry about at this time.
+☐ Defense
+    Defense for the room!
