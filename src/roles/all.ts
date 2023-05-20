@@ -1,8 +1,8 @@
-import { fill } from "lodash";
-import builder from "./builder";
-import harvest from "./harvest";
+import fill     from './fill';
+import builder  from "./builder";
+import harvest  from "./harvest";
 import upgrader from "./upgrader";
-import idle from "./idle";
+import idle     from "./idle";
 
 const roles =
 {

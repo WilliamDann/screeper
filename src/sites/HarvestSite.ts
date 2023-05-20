@@ -57,7 +57,7 @@ export default class extends Site
 
         let arr = []
         for (let result of area)
-            if (result.structure && result['store'])
+            if (result.structure && result.structure['store'])
                 arr.push(result.structure)
 
         return arr;
