@@ -1,4 +1,5 @@
 // Responsible for using creeps to harvest at a given source
+import CreepMediator from "../mediators/CreepMediator";
 import Site from "./Site";
 
 export default class extends Site
@@ -42,6 +43,21 @@ export default class extends Site
         delete creep.memory['role'];
         delete creep.memory['state'];
         delete creep.memory['target'];
+    }
+
+    findMiningSpots(): number
+    {
+        let source = this.getContent<Source>("source")[0]
+        let area   = source.room.lookForAtArea(
+            LOOK_TERRAIN,
+            source.pos.y - 1,
+            source.pos.x - 1,
+            source.pos.y + 1,
+            source.pos.x + 1,
+            true
+        );
+        area = area.filter(x => x.terrain != 'wall');
+        return area.length;
     }
 
     findContainers(range: number): StructureContainer[]
@@ -100,8 +116,15 @@ export default class extends Site
 
     tick()
     {
-        let containers = this.getContent('container') as StructureContainer[];
-        let sites      = this.getContent('site')      as ConstructionSite[];
+        let containers = this.getContent<StructureContainer>('container');
+        let sites      = this.getContent<StructureSpawn>('site');
+        let creeps     = this.getContent<Creep>('creep');
+
+        if (creeps.length < this.findMiningSpots())
+            CreepMediator.getInstance().request(
+                [WORK, CARRY, MOVE],
+                'harvestSite'+Game.time
+            );
 
         if (containers.length == 0 && sites.length == 0)
         {
