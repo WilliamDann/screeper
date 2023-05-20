@@ -99,6 +99,29 @@ export default class extends Site
         return arr;
     }
 
+    siteIsDangerous(range: number): boolean
+    {
+        let source = this.getContent("source")[0] as Source;
+        let area   = source.room.lookAtArea(
+            source.pos.y - range,
+            source.pos.x - range,
+            source.pos.y + range,
+            source.pos.x + range,
+            true
+        )
+
+        let arr = []
+        for (let result of area)
+        {
+            if (result.tombstone)
+                arr.push(result.tombstone);
+            if (result.creep && !result.creep.my)
+                arr.push(result.creep);
+        }
+
+        return arr.length != 0;
+    }
+
     createContainerSite(range: number)
     {
         let source = this.getContent("source")[0] as Source;
@@ -127,7 +150,7 @@ export default class extends Site
         if (siteObjs.length != 0)
             for (let site of siteObjs)
                 this.addContentIfMissing('site', site.id);
-    }
+    } 
 
     tick()
     {
@@ -137,10 +160,10 @@ export default class extends Site
         let sites      = this.getContent<StructureSpawn>('site');
         let creeps     = this.getContent<Creep>('creep');
 
-        if (creeps.length < this.findMiningSpots())
+        if (creeps.length < this.findMiningSpots() && !this.siteIsDangerous(10))
             CreepMediator.getInstance().request(
                 this.identifier,
-                [WORK, CARRY, MOVE],
+                [WORK, CARRY, MOVE, MOVE],
                 'harvestSite'+Game.time
             );
 
