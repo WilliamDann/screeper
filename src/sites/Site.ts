@@ -1,11 +1,13 @@
 export default class Site
 {
     // the strucutres owned by the site
-    contents : Map<string, Id<_HasId>[]>;
+    identifier : string;
+    contents   : Map<string, Id<_HasId>[]>;
 
-    constructor()
+    constructor(identifier: string)
     {
-        this.contents = new Map();
+        this.identifier = identifier;
+        this.contents   = new Map();
     }
 
     addContent(identifier: string, value: Id<_HasId>)

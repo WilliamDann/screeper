@@ -6,7 +6,7 @@ export default class extends Site
 {
     constructor(spawner: Id<StructureSpawn>)
     {
-        super();
+        super(spawner);
         this.addContent("spawn", spawner);
         CreepMediator.getInstance().addProducer(this);
     }
@@ -17,10 +17,10 @@ export default class extends Site
         return spawner.spawnCreep(body, name, { dryRun: true });
     }
 
-    spawn(body: BodyPartConstant[], name: string)
+    spawn(body: BodyPartConstant[], name: string, opts: SpawnOptions)
     {
         let spawner = this.getContent<StructureSpawn>('spawn')[0];
-        return spawner.spawnCreep(body, name);
+        return spawner.spawnCreep(body, name, opts);
     }
 
     tick()

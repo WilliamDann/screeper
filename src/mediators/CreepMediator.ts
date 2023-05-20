@@ -22,14 +22,14 @@ export default class CreepMediator
         this.producers.push(spawnSite);
     }
 
-    public request(body: BodyPartConstant[], name?: string): boolean
+    public request(requester: string, body: BodyPartConstant[], name?: string): boolean
     {
         if (!name)
             name = 'Creep_'+Game.time+'_'+Math.floor(Math.random() * 100);
 
         for (let prod of this.producers)
             if (prod.canSpawn(body, name) == OK)
-                return prod.spawn(body, name) == OK;
+                return prod.spawn(body, name, { memory: { owner: requester } }) == OK;
         return false;
     }
 }

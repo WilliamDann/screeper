@@ -6,7 +6,7 @@ export default class extends Site
 {
     constructor(source : Id<Source>)
     {
-        super();
+        super(source);
         this.addContent("source", source);
     }
 
@@ -139,6 +139,7 @@ export default class extends Site
 
         if (creeps.length < this.findMiningSpots())
             CreepMediator.getInstance().request(
+                this.identifier,
                 [WORK, CARRY, MOVE],
                 'harvestSite'+Game.time
             );
