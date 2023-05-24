@@ -105,6 +105,22 @@ export default class extends Site
         return best;
     }
 
+    roomAtMaxExtentions(): boolean
+    {
+        let room = (this.getContent('source')[0] as Source).room;
+        let extentions = room.find(FIND_STRUCTURES, { filter: {structureType: STRUCTURE_EXTENSION} })
+        return {
+            1: 0,
+            2: 5,
+            3: 10,
+            4: 20,
+            5: 30,
+            6: 40,
+            7: 50,
+            8: 60
+        }[room.controller.level] > extentions.length;
+    }
+
     tick()
     {
         let source = this.getContent<Source>('source')[0];
@@ -120,7 +136,7 @@ export default class extends Site
             if (sites.length == 0 && source.room.controller.level > 1)
                 source.room.createConstructionSite(this.findPositionByPathLength(source.pos, 2, 4), 'extension');
 
-            if (creeps.length < this.findMiningSpots() && danger.length == 0)
+            if (!this.roomAtMaxExtentions() && creeps.length < this.findMiningSpots() && danger.length == 0)
                 RoomMediator.getInstance(source.room.name).spawnRequest(
                     this.identifier,
                     [WORK, CARRY, MOVE, MOVE],
