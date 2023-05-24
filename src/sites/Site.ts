@@ -95,6 +95,10 @@ export default class Site
                 continue; // adding is handled elsewhere
             }
 
+            // tombstones
+            if (site.tombstone)
+                this.addContent('danger', site.tombstone.id)
+
             // sites
             if (site.constructionSite)
             {
