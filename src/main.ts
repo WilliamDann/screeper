@@ -1,3 +1,4 @@
+import RoomMediators from "./mediators/RoomMediators";
 import RoomMediator from "./mediators/RoomMediators";
 import roles        from "./roles/all";
 import HarvestSite  from "./sites/HarvestSite";
@@ -56,4 +57,8 @@ export function loop()
 
         roles[role](creep);
     }
+
+    // for some reason static objects stick around in the game world??
+    for (let room in Game.rooms)
+        RoomMediators.clearInstance(room);
 }

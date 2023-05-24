@@ -18,4 +18,9 @@ export default class RoomMediators
             RoomMediators.instances[roomName] = new RoomMediator(roomName);
         return RoomMediators.instances[roomName];
     }
+
+    static clearInstance(roomName: string)
+    {
+        delete RoomMediators.instances[roomName];
+    }
 }

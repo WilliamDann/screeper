@@ -1,4 +1,5 @@
 import HarvestSite  from "../sites/HarvestSite";
+import Site         from "../sites/Site";
 import SpawnSite    from "../sites/SpawnSite";
 
 export default class RoomMediator
@@ -29,11 +30,9 @@ export default class RoomMediator
     tick()
     {
         let room = Game.rooms[this.roomName];
-        
-
         [
-            ...this.spawnSites,
-            ...this.harvestSites
+            ...this.harvestSites,
+            ...this.spawnSites
         ].forEach(x => x.tick());
     }
 }

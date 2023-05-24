@@ -79,7 +79,7 @@ export default class Site
             // structs
             if (site.structure)
             {
-                if (site.structure['source'])
+                if (site.structure['store'])
                     this.addContent('container', site.structure.id);
                 else
                     this.addContent(site.structure.structureType, site.structure.id);
@@ -93,6 +93,13 @@ export default class Site
                 if (!site.creep.my)
                     this.addContent('danger', site.creep.id);
                 continue; // adding is handled elsewhere
+            }
+
+            // sites
+            if (site.constructionSite)
+            {
+                this.addContent('site', site.constructionSite.id);
+                continue;
             }
         }
     }

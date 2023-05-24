@@ -17,6 +17,8 @@ export default function(creep: Creep)
 
         if (status != OK)
             creep.say(`! ${status}`);
+        if (status == ERR_INVALID_TARGET)
+            delete creep.memory['state'];
     }
     else
         creep.say("idle");

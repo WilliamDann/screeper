@@ -74,25 +74,40 @@ export default class extends Site
         return area.length;
     }
 
-    createContainerSite(range: number)
+    findPositionByPathLength(origin: RoomPosition, min: number, max: number): RoomPosition
     {
-        let source = this.getContent("source")[0] as Source;
-        let minX = source.pos.x - range;
-        let minY = source.pos.y - range;
-        let maxX = source.pos.x + range;
-        let maxY = source.pos.y + range;
+        console.log(origin)
+        let area  = Game.rooms[origin.roomName].lookAtArea(
+            origin.x - Math.floor(max / 2),
+            origin.y - Math.floor(max / 2),
+            origin.x + Math.floor(max / 2),
+            origin.y + Math.floor(max / 2),
+            false
+            );
 
-        // TODO not random
-        source.room.createConstructionSite(
-            Math.random() * (maxX - minX) + minX,
-            Math.random() * (maxY - minY) + minY,
-            'container'
-        )
+        let best: RoomPosition;
+        let bestDist = Infinity;
+        for (let x in area)
+            for (let y in area[x])
+            {
+                // skip if blocker
+                if (area[x][y].filter(x => x.terrain == 'wall' || x.structure).length != 0)
+                    continue;
+
+                let dist = origin.findPathTo(parseInt(x), parseInt(y)).length;
+                if (dist >= min && min < bestDist)
+                {
+                    bestDist = dist;
+                    best     = new RoomPosition(parseInt(x), parseInt(y), origin.roomName);
+                }
+            }
+
+        return best;
     }
 
     tick()
     {
-        let source     = this.getContent<Source>('source')[0];
+        let source = this.getContent<Source>('source')[0];
         this.poll(source.pos, 10);
 
         let containers = this.getContent<StructureContainer>('container');
@@ -100,15 +115,24 @@ export default class extends Site
         let creeps     = this.getContent<Creep>('creep');
         let danger     = this.getContent('danger');
 
-        if (creeps.length < this.findMiningSpots() && danger.length == 0)
-            RoomMediator.getInstance(source.room.name).spawnRequest(
-                this.identifier,
-                [WORK, CARRY, MOVE, MOVE],
-                'harvestSite'+Game.time
-            );
+        if (danger.length == 0)
+        {
+            if (sites.length == 0 && source.room.controller.level > 1)
+                source.room.createConstructionSite(this.findPositionByPathLength(source.pos, 2, 4), 'extension');
 
-        if (containers.length == 0 && sites.length == 0)
-            this.createContainerSite(5);
+            if (creeps.length < this.findMiningSpots() && danger.length == 0)
+                RoomMediator.getInstance(source.room.name).spawnRequest(
+                    this.identifier,
+                    [WORK, CARRY, MOVE, MOVE],
+                    'harvestSite'+Game.time
+                );
+
+            if (containers.length == 1 && sites.length == 0 && source.room.controller.level > 2)
+                source.room.createConstructionSite(
+                    this.findPositionByPathLength(source.pos, 3, 5),
+                    'container'
+                );
+        }
 
         for (let creep of this.getContent('creep') as Creep[])
             if (!creep.memory['role'])
