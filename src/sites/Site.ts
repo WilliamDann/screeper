@@ -40,14 +40,16 @@ export class SiteBuilder
     addObject(id: string, obj: _HasId|Id<_HasId>)
     {
         if (typeof(obj) != 'string')
-            obj = obj.id;
+            obj = (obj as _HasId).id;
         this.site.objects.addContentIfMissing(id, obj);
+        return this;
     }
 
     add_source(source: Source)
     {
         this.site.energyRequestHandlers.push(harvestEnergyHandler.bind(this.site));
         this.addObject('source', source);
+        return this;
     }
 
     add_structure(structure: Structure)
@@ -60,29 +62,34 @@ export class SiteBuilder
             this.add_container(structure as StructureContainer);
 
         this.addObject(structure.structureType, structure);
+        return this;
     }
 
     add_spawn(spawn: StructureSpawn)
     {
         this.site.spawnRequestHandlers.push(anySpawnHandler.bind(this.site));
         this.addObject('spawn', spawn);
+        return this;
     }
 
     add_creep(creep: Creep)
     {
         if (!creep.my)
             this.addObject('danger', creep);
+        return this;
     }
 
     add_container(container: StructureContainer)
     {
         this.site.energyRequestHandlers.push(containerEnergyHandler.bind(this.site));
         this.addObject('conatiner', container.id);
+        return this;
     }
 
     add_tombstone(tombstone: Tombstone)
     {
         this.addObject('danger', tombstone);
+        return this;
     }
 
     addRoomArea(origin: RoomPosition, range: number)
@@ -107,6 +114,8 @@ export class SiteBuilder
             else if (obj[obj.type]['id'])
                 this.addObject(obj.type, obj[obj.type] as _HasId);
         }
+
+        return this;
     }
 
     addCreeps()
@@ -117,6 +126,7 @@ export class SiteBuilder
             if (creep.memory['owner'] == this.site.identifier)
                 this.addObject('creep', creep);
         }
+        return this;
     }
 
     build(): Site
