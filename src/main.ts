@@ -1,37 +1,13 @@
 import roles from "./roles/all";
-import { Site, SiteBuilder } from "./sites/Site";
-
-// TODO 
-//  - Save between ticks
-//  - extract into class 
-function pollRoom(room: Room)
-{
-    let sites  = [];
-    let spawns = room.find(FIND_MY_SPAWNS);
-    let points = [
-        ...spawns,
-        ...room.find(FIND_SOURCES),
-    ];
-
-    for (let point of points)
-        sites.push(
-            new SiteBuilder(point.id)
-                .addRoomArea(point.pos, 10)
-                .add_spawn(spawns[0])
-                .addCreeps()
-                .addObject('controller', room.controller)
-                .build()
-        );
-
-    return sites;
-}
+import { Site } from "./sites/Site";
+import LowPopStrat from "./strats/LowPopStrat";
 
 export function loop()
 {
     // Build sites
     let sites = [] as Site[];
     for (let name in Game.rooms)
-        sites = sites.concat(pollRoom(Game.rooms[name]));
+        sites = sites.concat(LowPopStrat(Game.rooms[name]));
 
     // Run tick funcs
     for (let site of sites)
