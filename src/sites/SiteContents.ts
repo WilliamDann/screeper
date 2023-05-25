@@ -1,31 +1,31 @@
 export default class SiteContents
 {
-    contents   : Map<string, Id<_HasId>[]>;
+    contents   : { [name: string]: Id<_HasId>[] };
 
     constructor()
     {
-        this.contents = new Map();
+        this.contents = {};
     }
 
     addContent(identifier: string, value: Id<_HasId>)
     {
-        let existing = this.contents.get(identifier);
+        let existing = this.contents[identifier];
         if (!existing)
             existing = [];
 
         existing.push(value);
-        this.contents.set(identifier, existing);
+        this.contents[identifier] = existing;
     }
 
     getContent<T extends _HasId>(identifier: string): T[]
     {
         let arr = [];
 
-        let cnt = this.contents.get(identifier);
+        let cnt = this.contents[identifier];
         if (!cnt)
             return arr;
 
-        for (let id of this.contents.get(identifier))
+        for (let id of this.contents[identifier])
             arr.push(Game.getObjectById(id));
         return arr;
     }
@@ -39,7 +39,7 @@ export default class SiteContents
 
     containsWithIdentifier(identifier: string, value: Id<_HasId>): boolean
     {
-        let bucket = this.contents.get(identifier);
+        let bucket = this.contents[identifier];
         if (!bucket)
             return false;
         return bucket.indexOf(value) != -1;
@@ -47,8 +47,8 @@ export default class SiteContents
 
     containsId(value: Id<_HasId>)
     {
-        for (let val of this.contents.values())
-            for (let id in val)
+        for (let val in this.contents)
+            for (let id in this.contents[val])
                 if (id == value)
                     return true;
         return false;
