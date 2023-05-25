@@ -1,8 +1,8 @@
 import RoomMediators from "./mediators/RoomMediators";
 import RoomMediator from "./mediators/RoomMediators";
 import roles        from "./roles/all";
-import HarvestSite  from "./sites/HarvestSite";
-import SpawnSite    from "./sites/SpawnSite";
+import HarvestSite  from "../old/HarvestSite";
+import SpawnSite    from "../old/SpawnSite";
 
 function poll(roomName: string)
 {

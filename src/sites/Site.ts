@@ -1,116 +1,126 @@
-export default class Site
+import SiteContents     from "./SiteContents";
+
+import RoleHandler      from "./funcs/roles/RoleHandler";
+import SpawnHandler     from "./funcs/spawn/SpawnHandler";
+import EnergyHandler    from "./funcs/energy/EnergyHandler";
+
+import harvestEnergyHandler   from "./funcs/energy/harvestEnergyHandler";
+import containerEnergyHandler from "./funcs/energy/containerEnergyHandler";
+import genericRoleHandler     from "./funcs/roles/genericRoleHandler";
+import anySpawnHandler        from "./funcs/spawn/anySpawnHandler";
+
+export interface Site
 {
-    // the strucutres owned by the site
     identifier : string;
-    contents   : Map<string, Id<_HasId>[]>;
+    objects    : SiteContents;
 
-    constructor(identifier: string)
+    // request handlers
+    energyRequestHandlers : EnergyHandler[];
+    spawnRequestHandlers  : SpawnHandler[];
+    creepRoleHandler      : RoleHandler;
+}
+
+export class SiteBuilder
+{
+    site: Site;
+
+    constructor(id: Id<_HasId>)
     {
-        this.identifier = identifier;
-        this.contents   = new Map();
+        this.site = 
+        {
+            identifier : id,
+            objects    : new SiteContents(),
+
+            energyRequestHandlers : [],
+            spawnRequestHandlers  : [],
+            creepRoleHandler      : genericRoleHandler.bind(this.site)
+        } as Site;
     }
 
-    addContent(identifier: string, value: Id<_HasId>)
+    addObject(id: string, obj: _HasId|Id<_HasId>)
     {
-        let existing = this.contents.get(identifier);
-        if (!existing)
-            existing = [];
-
-        existing.push(value);
-        this.contents.set(identifier, existing);
+        if (typeof(obj) != 'string')
+            obj = obj.id;
+        this.site.objects.addContentIfMissing(id, obj);
     }
 
-    addContentIfMissing(identifier: string, value: Id<_HasId>)
+    add_source(source: Source)
     {
-        if (this.contains(value, identifier))
-            return;
-        this.addContent(identifier, value);
+        this.site.energyRequestHandlers.push(harvestEnergyHandler.bind(this.site));
+        this.addObject('source', source);
     }
 
-    getContent<T extends _HasId>(identifier: string): T[]
+    add_structure(structure: Structure)
     {
-        let arr = [];
+        if (structure['store'])
+            this.addObject('container', structure);
+        if (structure.structureType == 'spawn')
+            this.add_spawn(structure as StructureSpawn);
+        if (structure.structureType == 'controller' || structure.structureType == 'storage')
+            this.add_container(structure as StructureContainer);
 
-        let cnt = this.contents.get(identifier);
-        if (!cnt)
-            return arr;
-
-        for (let id of this.contents.get(identifier))
-            arr.push(Game.getObjectById(id));
-        return arr;
+        this.addObject(structure.structureType, structure);
     }
 
-    containsWithIdentifier(identifier: string, value: Id<_HasId>): boolean
+    add_spawn(spawn: StructureSpawn)
     {
-        let bucket = this.contents.get(identifier);
-        if (!bucket)
-            return false;
-        return bucket.indexOf(value) != -1;
+        this.site.spawnRequestHandlers.push(anySpawnHandler.bind(this.site));
+        this.addObject('spawn', spawn);
     }
 
-    containsId(value: Id<_HasId>)
+    add_creep(creep: Creep)
     {
-        for (let val of this.contents.values())
-            for (let id in val)
-                if (id == value)
-                    return true;
-        return false;
+        if (!creep.my)
+            this.addObject('danger', creep);
     }
 
-    contains(value: Id<_HasId>, identifier?: string): boolean
+    add_container(container: StructureContainer)
     {
-        if (identifier)
-            return this.containsWithIdentifier(identifier, value);
-        return this.containsId(value);
+        this.site.energyRequestHandlers.push(containerEnergyHandler.bind(this.site));
+        this.addObject('conatiner', container.id);
     }
 
-    poll(center: RoomPosition, range: number)
+    add_tombstone(tombstone: Tombstone)
     {
-        let room   = Game.rooms[center.roomName];
+        this.addObject('danger', tombstone);
+    }
+
+    addRoomArea(origin: RoomPosition, range: number)
+    {
+        let room   = Game.rooms[origin.roomName];
         let area   = room.lookAtArea(
-            center.y - range,
-            center.x - range,
-            center.y + range,
-            center.x + range,
+            origin.y - Math.floor(range / 2),
+            origin.x - Math.floor(range / 2),
+            origin.y + Math.floor(range / 2),
+            origin.x + Math.floor(range / 2),
             true
         )
-        for (let site of area)
+
+        let ignore = [ 'terrain', ]
+        for (let obj of area)
         {
-            // structs
-            if (site.structure)
-            {
-                if (site.structure['store'])
-                    this.addContent('container', site.structure.id);
-                else
-                    this.addContent(site.structure.structureType, site.structure.id);
-
+            if (ignore.indexOf(obj.type) != -1)
                 continue;
-            }
 
-            // creeps
-            if (site.creep)
-            {
-                if (!site.creep.my)
-                    this.addContent('danger', site.creep.id);
-                continue; // adding is handled elsewhere
-            }
-
-            // tombstones
-            if (site.tombstone)
-                this.addContent('danger', site.tombstone.id)
-
-            // sites
-            if (site.constructionSite)
-            {
-                this.addContent('site', site.constructionSite.id);
-                continue;
-            }
+            if (this[obj.type])
+                this[`add_${obj.type}`](obj);
+            else if (obj[obj.type]['id'])
+                this.addObject(obj.type, obj[obj.type] as _HasId);
         }
     }
 
-    // called every tick
-    tick()
+    addCreeps()
     {
+        for (let name in Game.creeps)
+        {
+            let creep = Game.creeps[name];
+            if (creep.memory['owner'] == this.site.identifier)
+                this.addObject('creep', creep);
+        }
+    }
 
+    build(): Site
+    {
+        return this.site;
     }
 }

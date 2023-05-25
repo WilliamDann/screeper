@@ -1,7 +1,7 @@
 // Responsible for spawning creeps
-import Site from "./Site";
+import Site, { OldSite } from "../src/sites/Site";
 
-export default class extends Site
+export default class extends OldSite
 {
     constructor(spawner: Id<StructureSpawn>)
     {

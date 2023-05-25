@@ -1,9 +1,7 @@
 // Responsible for using creeps to harvest at a given source
 import {sortBy} from 'lodash'
-import RoomMediator from "../mediators/RoomMediators";
-import Site         from "./Site";
 
-export default class extends Site
+export default class
 {
     constructor(source : Id<Source>)
     {
@@ -13,45 +11,7 @@ export default class extends Site
 
     findCreepRole(creep: Creep)
     {
-        // Harvest Energy if empty
-        if (creep.store.getUsedCapacity("energy") == 0)
-        {
-            creep.memory['role']   = 'harvest';
-            creep.memory['target'] = this.getContent("source")[0].id;
-            return;
-        }
 
-        // Fill containers owned by the site
-        let containers  = this.getContent('container') as StructureContainer[];
-        containers      = containers.filter(x => x.store.getFreeCapacity(RESOURCE_ENERGY) != 0)
-        if (containers.length != 0)
-        {
-            containers = sortBy(containers, x => creep.pos.getRangeTo(x));
-            creep.memory['role']   = 'fill';
-            creep.memory['target'] = containers[0].id;
-            return;
-        }
-
-        // Build construction owned by the site
-        let sites = this.getContent('site') as ConstructionSite[];
-        if (sites.length != 0)
-        {
-            creep.memory['role']   = 'build';
-            creep.memory['target'] = sites[0].id;
-            return;
-        }
-
-        // Upgrade controller near the site
-        let controller = this.getContent<Source>('source')[0].room.controller;
-        if (controller)
-        {
-            creep.memory['role']  = 'upgrade';
-            creep.memory['target'] = controller.id;
-            return;
-        }
-
-        // Sit idle :/
-        creep.memory['role'] = 'idle';
     }
 
     resetCreepRole(creep: Creep)
