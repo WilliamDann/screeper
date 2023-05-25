@@ -19,6 +19,7 @@ function pollRoom(room: Room)
                 .addRoomArea(point.pos, 10)
                 .add_spawn(spawns[0])
                 .addCreeps()
+                .addObject('controller', room.controller)
                 .build()
         );
 

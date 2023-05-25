@@ -41,7 +41,7 @@ function findWorkRole(creep: Creep, site: Site)
     // Upgrade controllers
     let controllers = site.objects.getContent('controller') as StructureController[];
     controllers = filter(controllers, x=>x.pos.roomName == creep.pos.roomName);
-    if (containers.length != 0)
+    if (controllers.length != 0)
     {
         assignRole(creep, 'upgrade', controllers[0].id);
         return;
