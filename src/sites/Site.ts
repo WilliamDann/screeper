@@ -1,116 +1,167 @@
-export default class Site
+import SiteContents     from "./SiteContents";
+
+import RoleHandler      from "./funcs/roles/RoleHandler";
+import SpawnHandler     from "./funcs/spawn/SpawnHandler";
+import EnergyHandler    from "./funcs/energy/EnergyHandler";
+
+import harvestEnergyHandler   from "./funcs/energy/harvestEnergyHandler";
+import containerEnergyHandler from "./funcs/energy/containerEnergyHandler";
+import genericRoleHandler     from "./funcs/roles/genericRoleHandler";
+import anySpawnHandler        from "./funcs/spawn/anySpawnHandler";
+import minPop from "./funcs/tick/minPop";
+import creepTick from "./funcs/tick/creepTick";
+
+export interface Site
 {
-    // the strucutres owned by the site
     identifier : string;
-    contents   : Map<string, Id<_HasId>[]>;
+    objects    : SiteContents;
+    
+    // callbacks
+    onTick                : Function[];
+    
+    // request handlers
+    energyRequestHandlers : EnergyHandler[];
+    spawnRequestHandlers  : SpawnHandler[];
+    creepRoleHandler      : RoleHandler;
+}
 
-    constructor(identifier: string)
+export class SiteBuilder
+{
+    site: Site;
+
+    constructor(id: Id<_HasId>)
     {
-        this.identifier = identifier;
-        this.contents   = new Map();
+        this.site = 
+        {
+            identifier : id,
+            objects    : new SiteContents(),
+
+            onTick                : [],
+            energyRequestHandlers : [],
+            spawnRequestHandlers  : [],
+            creepRoleHandler      : null
+        } as Site;
+        this.site.creepRoleHandler = genericRoleHandler.bind(this.site);
     }
 
-    addContent(identifier: string, value: Id<_HasId>)
+    findSourceSpots(source: Source): number
     {
-        let existing = this.contents.get(identifier);
-        if (!existing)
-            existing = [];
-
-        existing.push(value);
-        this.contents.set(identifier, existing);
+        let area = source.room.lookForAtArea(
+            LOOK_TERRAIN,
+            source.pos.y - 1,
+            source.pos.x - 1,
+            source.pos.y + 1,
+            source.pos.x + 1,
+            true
+        );
+        area = area.filter(x => x.terrain != 'wall');
+        return area.length;
     }
 
-    addContentIfMissing(identifier: string, value: Id<_HasId>)
+    addObject(id: string, obj: _HasId|Id<_HasId>)
     {
-        if (this.contains(value, identifier))
-            return;
-        this.addContent(identifier, value);
+        if (typeof(obj) != 'string')
+            obj = (obj as _HasId).id;
+        this.site.objects.addContentIfMissing(id, obj);
+        return this;
     }
 
-    getContent<T extends _HasId>(identifier: string): T[]
+    add_source(source: Source)
     {
-        let arr = [];
+        this.site.energyRequestHandlers.push(harvestEnergyHandler.bind(this.site));
 
-        let cnt = this.contents.get(identifier);
-        if (!cnt)
-            return arr;
+        let spots = this.findSourceSpots(source);
+        this.site.onTick.push(minPop.bind(this.site, spots));
 
-        for (let id of this.contents.get(identifier))
-            arr.push(Game.getObjectById(id));
-        return arr;
+        this.addObject('source', source);
+        return this;
     }
 
-    containsWithIdentifier(identifier: string, value: Id<_HasId>): boolean
+    add_structure(structure: Structure)
     {
-        let bucket = this.contents.get(identifier);
-        if (!bucket)
-            return false;
-        return bucket.indexOf(value) != -1;
+        if (structure['store'])
+            this.addObject('container', structure);
+        if (structure.structureType == 'spawn')
+            this.add_spawn(structure as StructureSpawn);
+        if (structure.structureType == 'controller' || structure.structureType == 'storage')
+            this.add_container(structure as StructureContainer);
+
+        this.addObject(structure.structureType, structure);
+        return this;
     }
 
-    containsId(value: Id<_HasId>)
+    add_spawn(spawn: StructureSpawn)
     {
-        for (let val of this.contents.values())
-            for (let id in val)
-                if (id == value)
-                    return true;
-        return false;
+        this.site.spawnRequestHandlers.push(anySpawnHandler.bind(this.site));
+        this.addObject('spawn', spawn);
+        this.addObject('container', spawn);
+        return this;
     }
 
-    contains(value: Id<_HasId>, identifier?: string): boolean
+    add_creep(creep: Creep)
     {
-        if (identifier)
-            return this.containsWithIdentifier(identifier, value);
-        return this.containsId(value);
+        if (!creep.my)
+            this.addObject('danger', creep);
+        return this;
     }
 
-    poll(center: RoomPosition, range: number)
+    add_container(container: StructureContainer)
     {
-        let room   = Game.rooms[center.roomName];
+        this.site.energyRequestHandlers.push(containerEnergyHandler.bind(this.site));
+        this.addObject('conatiner', container.id);
+        return this;
+    }
+
+    add_tombstone(tombstone: Tombstone)
+    {
+        this.addObject('danger', tombstone);
+        return this;
+    }
+
+    addRoomArea(origin: RoomPosition, range: number)
+    {
+        let room   = Game.rooms[origin.roomName];
         let area   = room.lookAtArea(
-            center.y - range,
-            center.x - range,
-            center.y + range,
-            center.x + range,
+            origin.y - Math.floor(range / 2),
+            origin.x - Math.floor(range / 2),
+            origin.y + Math.floor(range / 2),
+            origin.x + Math.floor(range / 2),
             true
         )
-        for (let site of area)
+
+        let ignore = [ 'terrain', 'creep' ]
+        for (let res of area)
         {
-            // structs
-            if (site.structure)
-            {
-                if (site.structure['store'])
-                    this.addContent('container', site.structure.id);
-                else
-                    this.addContent(site.structure.structureType, site.structure.id);
-
+            if (res[res.type]['my'] === false)
+                this.addObject('danger', res[res.type] as _HasId);
+            if (ignore.indexOf(res.type) != -1)
                 continue;
-            }
 
-            // creeps
-            if (site.creep)
-            {
-                if (!site.creep.my)
-                    this.addContent('danger', site.creep.id);
-                continue; // adding is handled elsewhere
-            }
 
-            // tombstones
-            if (site.tombstone)
-                this.addContent('danger', site.tombstone.id)
-
-            // sites
-            if (site.constructionSite)
-            {
-                this.addContent('site', site.constructionSite.id);
-                continue;
-            }
+            let obj = Game.getObjectById((res[res.type] as _HasId).id);
+            if (this[`add_${res.type}`])
+                this[`add_${res.type}`](obj);
+            else if (obj[res.type]['id'])
+                this.addObject(res.type, obj);
         }
+
+        return this;
     }
 
-    // called every tick
-    tick()
+    addCreeps()
     {
+        for (let name in Game.creeps)
+        {
+            let creep = Game.creeps[name];
+            if (creep.memory['owner'] == this.site.identifier)
+                this.addObject('creep', creep);
+        }
+        this.site.onTick.push(creepTick.bind(this.site));
+        return this;
+    }
 
+    build(): Site
+    {
+        return this.site;
     }
 }

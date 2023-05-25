@@ -1,52 +1,41 @@
-import RoomMediators from "./mediators/RoomMediators";
-import RoomMediator from "./mediators/RoomMediators";
-import roles        from "./roles/all";
-import HarvestSite  from "./sites/HarvestSite";
-import SpawnSite    from "./sites/SpawnSite";
+import roles from "./roles/all";
+import { Site, SiteBuilder } from "./sites/Site";
 
-function poll(roomName: string)
+// TODO 
+//  - Save between ticks
+//  - extract into class 
+function pollRoom(room: Room)
 {
-    const room    = Game.rooms[roomName];
-    const inst    = RoomMediator.getInstance(roomName);
-    const siteMap = {};
+    let sites  = [];
+    let spawns = room.find(FIND_MY_SPAWNS);
+    let points = [
+        ...spawns,
+        ...room.find(FIND_SOURCES),
+    ];
 
-    // create harvest sites
-    for (let source of room.find(FIND_SOURCES))
-    {
-        let site = new HarvestSite(source.id)
-        inst.harvestSites.push(site);
-        siteMap[source.id] = site;
-    }
+    for (let point of points)
+        sites.push(
+            new SiteBuilder(point.id)
+                .addRoomArea(point.pos, 10)
+                .add_spawn(spawns[0])
+                .addCreeps()
+                .build()
+        );
 
-    // create spawn sites
-    // also add spawn as containers to harvest sites
-    for (let spawn of room.find(FIND_MY_SPAWNS))
-    {
-        let site = new SpawnSite(spawn.id);
-        for (let harv of inst.harvestSites)
-            harv.addContent('container', spawn.id);
-        inst.spawnSites.push(site);
-        siteMap[spawn.id] = site;
-    }
-
-    // add creeps to sites
-    for (let name in Game.creeps)
-    {
-        const creep = Game.creeps[name];
-        if (creep.pos.roomName == inst.roomName && creep.memory['owner'])
-            siteMap[creep.memory['owner']].addContent('creep', creep.id);
-    }
+    return sites;
 }
 
 export function loop()
 {
-    // Create room mediators
-    for (let room in Game.rooms)
-        poll(room)
+    // Build sites
+    let sites = [] as Site[];
+    for (let name in Game.rooms)
+        sites = sites.concat(pollRoom(Game.rooms[name]));
 
-    // Run room mediators
-    for (let room in Game.rooms)
-        RoomMediator.getInstance(room).tick();
+    // Run tick funcs
+    for (let site of sites)
+        for (let tick of site.onTick)
+            tick();
 
     // Run Creep funcs
     for(var name in Game.creeps) {
@@ -58,7 +47,6 @@ export function loop()
         roles[role](creep);
     }
 
-    // for some reason static objects stick around in the game world??
-    for (let room in Game.rooms)
-        RoomMediators.clearInstance(room);
+    // Sim room does not always destroy object on script exit
+    sites = [];
 }

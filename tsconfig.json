@@ -5,8 +5,8 @@
         "outDir": "bin",
         // "sourceMap": true,
         "removeComments": true,
-        "importsNotUsedAsValues": "remove"
+        "importsNotUsedAsValues": "remove",
     },
-    "include": ["src/**/*.ts"],
+    "include": ["src/**/*.ts", "old/HarvestSite.ts", "old/SpawnSite.ts"],
     "exclude": []
 }
