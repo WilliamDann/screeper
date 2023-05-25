@@ -9,6 +9,7 @@ import containerEnergyHandler from "./funcs/energy/containerEnergyHandler";
 import genericRoleHandler     from "./funcs/roles/genericRoleHandler";
 import anySpawnHandler        from "./funcs/spawn/anySpawnHandler";
 import minPop from "./funcs/tick/minPop";
+import creepTick from "./funcs/tick/creepTick";
 
 export interface Site
 {
@@ -38,13 +39,14 @@ export class SiteBuilder
             onTick                : [],
             energyRequestHandlers : [],
             spawnRequestHandlers  : [],
-            creepRoleHandler      : genericRoleHandler.bind(this.site)
+            creepRoleHandler      : null
         } as Site;
+        this.site.creepRoleHandler = genericRoleHandler.bind(this.site);
     }
 
     findSourceSpots(source: Source): number
     {
-        let area   = source.room.lookForAtArea(
+        let area = source.room.lookForAtArea(
             LOOK_TERRAIN,
             source.pos.y - 1,
             source.pos.x - 1,
@@ -69,8 +71,7 @@ export class SiteBuilder
         this.site.energyRequestHandlers.push(harvestEnergyHandler.bind(this.site));
 
         let spots = this.findSourceSpots(source);
-        let f     = () => minPop(spots);
-        this.site.onTick.push(f.bind(this.site));
+        this.site.onTick.push(minPop.bind(this.site, spots));
 
         this.addObject('source', source);
         return this;
@@ -93,6 +94,7 @@ export class SiteBuilder
     {
         this.site.spawnRequestHandlers.push(anySpawnHandler.bind(this.site));
         this.addObject('spawn', spawn);
+        this.addObject('container', spawn);
         return this;
     }
 
@@ -127,16 +129,20 @@ export class SiteBuilder
             true
         )
 
-        let ignore = [ 'terrain', ]
-        for (let obj of area)
+        let ignore = [ 'terrain', 'creep' ]
+        for (let res of area)
         {
-            if (ignore.indexOf(obj.type) != -1)
+            if (res[res.type]['my'] === false)
+                this.addObject('danger', res[res.type] as _HasId);
+            if (ignore.indexOf(res.type) != -1)
                 continue;
 
-            if (this[obj.type])
-                this[`add_${obj.type}`](obj);
-            else if (obj[obj.type]['id'])
-                this.addObject(obj.type, obj[obj.type] as _HasId);
+
+            let obj = Game.getObjectById((res[res.type] as _HasId).id);
+            if (this[`add_${res.type}`])
+                this[`add_${res.type}`](obj);
+            else if (obj[res.type]['id'])
+                this.addObject(res.type, obj);
         }
 
         return this;
@@ -150,6 +156,7 @@ export class SiteBuilder
             if (creep.memory['owner'] == this.site.identifier)
                 this.addObject('creep', creep);
         }
+        this.site.onTick.push(creepTick.bind(this.site));
         return this;
     }
 

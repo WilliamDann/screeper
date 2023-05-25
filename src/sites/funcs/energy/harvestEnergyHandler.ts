@@ -3,7 +3,7 @@ import EnergyHandler from "./EnergyHandler";
 
 export default (function (creep: Creep): boolean
 {
-    let sources = this.getContent('source') as Source[];
+    let sources = this.objects.getContent('source') as Source[];
 
     sources = filter(sources, x => x.energy != 0);
     if (sources.length == 0)

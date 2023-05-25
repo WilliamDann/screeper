@@ -7,8 +7,9 @@ import { Site, SiteBuilder } from "./sites/Site";
 function pollRoom(room: Room)
 {
     let sites  = [];
+    let spawns = room.find(FIND_MY_SPAWNS);
     let points = [
-        ...room.find(FIND_MY_SPAWNS),
+        ...spawns,
         ...room.find(FIND_SOURCES),
     ];
 
@@ -16,6 +17,7 @@ function pollRoom(room: Room)
         sites.push(
             new SiteBuilder(point.id)
                 .addRoomArea(point.pos, 10)
+                .add_spawn(spawns[0])
                 .addCreeps()
                 .build()
         );
@@ -25,10 +27,12 @@ function pollRoom(room: Room)
 
 export function loop()
 {
+    // Build sites
     let sites = [] as Site[];
     for (let name in Game.rooms)
-        sites.concat(pollRoom(Game.rooms[name]));
+        sites = sites.concat(pollRoom(Game.rooms[name]));
 
+    // Run tick funcs
     for (let site of sites)
         for (let tick of site.onTick)
             tick();
@@ -42,4 +46,7 @@ export function loop()
 
         roles[role](creep);
     }
+
+    // Sim room does not always destroy object on script exit
+    sites = [];
 }

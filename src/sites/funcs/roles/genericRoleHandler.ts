@@ -53,7 +53,9 @@ function findWorkRole(creep: Creep, site: Site)
 
 export default (function (creep:Creep) {
     let role = creep.memory['role'];
-    if (!role || role == 'idle')
+    let state = creep.memory['state'];
+
+    if (!role || role == 'idle' || !state)
     {
         let fillPercent = creep.store.getUsedCapacity() / creep.store.getCapacity();
         if (fillPercent < 0.25)

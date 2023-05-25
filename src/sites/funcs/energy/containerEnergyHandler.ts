@@ -3,7 +3,7 @@ import EnergyHandler from "./EnergyHandler";
 
 export default (function (creep: Creep): boolean
 {
-    let containers = this.getContent('container') as StructureContainer[];
+    let containers = this.objects.getContent('container') as StructureContainer[];
 
     containers = filter(containers, x => x.store.getUsedCapacity(RESOURCE_ENERGY) != 0);
     if (containers.length == 0)

@@ -3,7 +3,7 @@ export default function (requester: string, body: BodyPartConstant[], name?: str
     const spawnCreep = (spawn: StructureSpawn, dryRun=false) => 
         spawn.spawnCreep( body, name, { memory: {owner: requester}, dryRun: dryRun } ) == OK;
 
-    let spawns = this.getContent('spawn') as StructureSpawn[];
+    let spawns = this.objects.getContent('spawn') as StructureSpawn[];
     for (let spawn of spawns)
         if (spawnCreep(spawn, true))
             return spawnCreep(spawn);
