@@ -8,12 +8,16 @@ import harvestEnergyHandler   from "./funcs/energy/harvestEnergyHandler";
 import containerEnergyHandler from "./funcs/energy/containerEnergyHandler";
 import genericRoleHandler     from "./funcs/roles/genericRoleHandler";
 import anySpawnHandler        from "./funcs/spawn/anySpawnHandler";
+import minPop from "./funcs/tick/minPop";
 
 export interface Site
 {
     identifier : string;
     objects    : SiteContents;
-
+    
+    // callbacks
+    onTick                : Function[];
+    
     // request handlers
     energyRequestHandlers : EnergyHandler[];
     spawnRequestHandlers  : SpawnHandler[];
@@ -31,10 +35,25 @@ export class SiteBuilder
             identifier : id,
             objects    : new SiteContents(),
 
+            onTick                : [],
             energyRequestHandlers : [],
             spawnRequestHandlers  : [],
             creepRoleHandler      : genericRoleHandler.bind(this.site)
         } as Site;
+    }
+
+    findSourceSpots(source: Source): number
+    {
+        let area   = source.room.lookForAtArea(
+            LOOK_TERRAIN,
+            source.pos.y - 1,
+            source.pos.x - 1,
+            source.pos.y + 1,
+            source.pos.x + 1,
+            true
+        );
+        area = area.filter(x => x.terrain != 'wall');
+        return area.length;
     }
 
     addObject(id: string, obj: _HasId|Id<_HasId>)
@@ -48,6 +67,11 @@ export class SiteBuilder
     add_source(source: Source)
     {
         this.site.energyRequestHandlers.push(harvestEnergyHandler.bind(this.site));
+
+        let spots = this.findSourceSpots(source);
+        let f     = () => minPop(spots);
+        this.site.onTick.push(f.bind(this.site));
+
         this.addObject('source', source);
         return this;
     }
