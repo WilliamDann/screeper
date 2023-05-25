@@ -1,4 +1,5 @@
 // Responsible for using creeps to harvest at a given source
+import {sortBy} from 'lodash'
 import RoomMediator from "../mediators/RoomMediators";
 import Site         from "./Site";
 
@@ -25,6 +26,7 @@ export default class extends Site
         containers      = containers.filter(x => x.store.getFreeCapacity(RESOURCE_ENERGY) != 0)
         if (containers.length != 0)
         {
+            containers = sortBy(containers, x => creep.pos.getRangeTo(x));
             creep.memory['role']   = 'fill';
             creep.memory['target'] = containers[0].id;
             return;
