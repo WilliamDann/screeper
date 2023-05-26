@@ -9,6 +9,7 @@ import anySpawnHandler from "../sites/funcs/spawn/anySpawnHandler";
 import creepTick from "../sites/funcs/tick/creepTick";
 import minPop from "../sites/funcs/tick/minPop";
 import RoomStrat from "./RoomStrat";
+import filteredRoleHandler from "../sites/funcs/roles/filteredRoleHandler";
 
 
 function findSourceSpots(source: Source): number
@@ -56,13 +57,15 @@ function findPositionByPathLength(origin: RoomPosition, min: number, max: number
     return best;
 }
 
-function addOrBuildContainer(room: Room, builder: SiteBuilder, sources: Site[])
+function addOrBuildContainer(room: Room, builder: SiteBuilder, sources: Site[], fillers=8)
 {
     let origin    = Game.getObjectById(builder.site.identifier as any) as any;
-    let containers = builder.site.objects.getContent('container');
+    let containers = builder.site.objects.getContent('container') as StructureContainer[];
     if (containers.length != 0)
     {
-        builder.addOnTick(minPop, 3);
+        let fillPercent = containers[0].store.getUsedCapacity() / containers[0].store.getCapacity();
+        builder.addOnTick(minPop, Math.ceil(fillers*fillPercent));
+
         for (let container of containers)
             for (let source of sources)
                 source.objects.addContent('container', container.id);
@@ -110,11 +113,16 @@ export default (function (room: Room)
     }
 
     let ctrlBuilder = new SiteBuilder(room.controller.id)
-        .setRoleHandler(oneRoleHandler('upgrade', (site) => room.controller))
+        .setRoleHandler(filteredRoleHandler((x: Structure) => x?.structureType != 'container'))
         .addSpwanHandler(anySpawnHandler)
         .addEnergyHandler(containerEnergyHandler)
         .addRoomArea(room.controller.pos, 10)
         .addOnTick(creepTick)
+        .addObject('controller', room.controller.id)
+        .addCreeps()
+
+    for (let spawn of spawns)
+        ctrlBuilder.addObject('spawn', spawn.id)
 
     addOrBuildContainer(room, ctrlBuilder, sources);
     sinks.push(ctrlBuilder.build());
@@ -122,21 +130,16 @@ export default (function (room: Room)
     for (let spawn of spawns)
     {
         let sb = new SiteBuilder(spawn.id)
-            .setRoleHandler(
-                oneRoleHandler('fill', 
-                    (site: Site) => filter(
-                        site.objects.getContent('spawn'), 
-                        x => (x as StructureSpawn).store.getFreeCapacity(RESOURCE_ENERGY) != 0
-                    )
-                ))
+            .setRoleHandler(filteredRoleHandler((x: Structure) => x?.structureType != 'container'))
             .addSpwanHandler(anySpawnHandler)
             .addEnergyHandler(containerEnergyHandler)
-            .addRoomArea(spawn.pos, 10)
+            .addRoomArea(spawn.pos, 20)
             .addOnTick(creepTick)
             .addCreeps()
             .addObject('spawn', spawn.id)
+            .addObject('container', spawn.id)
 
-        addOrBuildContainer(room, sb, sources);
+        addOrBuildContainer(room, sb, sources, 8);
         sinks.push(sb.build());
     }
 
