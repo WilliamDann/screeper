@@ -36,6 +36,7 @@ function findWorkRole(creep: Creep, site: Site)
     {
         sites = sortBy(sites, x => creep.pos.getRangeTo(x));
         assignRole(creep, 'build', sites[0].id);
+        return;
     }
 
     // Upgrade controllers

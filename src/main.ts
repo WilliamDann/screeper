@@ -1,5 +1,6 @@
 import roles from "./roles/all";
 import { Site } from "./sites/Site";
+import ContainerRush from "./strats/ContainerRush";
 import LowPop from "./strats/LowPop";
 
 function creepsInRoom(room: Room)
@@ -16,6 +17,9 @@ export function loop()
     // Build sites
     let sites = [] as Site[];
     for (let name in Game.rooms)
+        if (Game.rooms[name].controller.level >= 2)
+            sites = sites.concat(ContainerRush(Game.rooms[name]))
+        else
             sites = sites.concat(LowPop(Game.rooms[name]));
 
     // Run tick funcs

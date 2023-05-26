@@ -86,7 +86,13 @@ export class SiteBuilder
                 continue;
 
             let obj = Game.getObjectById((res[res.type] as _HasId).id);
-            this.addObject(res.type, obj);
+            if (res.type == 'structure' && (obj['structureType'] == 'container' || obj['structureType'] == 'storage'))
+                this.addObject('container', obj);
+
+            if (res.type == 'structure')
+                this.addObject((obj as Structure).structureType, obj);
+            else
+                this.addObject(res.type, obj);
         }
 
         return this;
