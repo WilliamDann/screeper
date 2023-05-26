@@ -39,7 +39,7 @@ export default (function(room: Room)
             .addCreeps();
 
         sb.addOnTick(creepTick);
-        sb.addOnTick(minPop, spots);
+        sb.addOnTick(minPop, spots+1);
 
         for (let spawn of spawns)
         {

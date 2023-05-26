@@ -1,4 +1,4 @@
 export default interface SpawnHandler
 {
-    (requester: string, body: BodyPartConstant[], name: string): boolean;
+    (name: string, body: BodyPartConstant[], opts: SpawnOptions): boolean;
 }

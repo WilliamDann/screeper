@@ -1,7 +1,12 @@
-export default function (requester: string, body: BodyPartConstant[], name?: string): boolean
+import SpawnHandler from "./SpawnHandler";
+
+export default (function (name: string, body: BodyPartConstant[], opts: SpawnOptions): boolean
 {
     const spawnCreep = (spawn: StructureSpawn, dryRun=false) => 
-        spawn.spawnCreep( body, name, { memory: {owner: requester}, dryRun: dryRun } ) == OK;
+    {
+        opts['dryRun'] = dryRun;
+        return spawn.spawnCreep( body, name, opts) == OK;
+    }
 
     let spawns = this.objects.getContent('spawn') as StructureSpawn[];
     for (let spawn of spawns)
@@ -9,4 +14,4 @@ export default function (requester: string, body: BodyPartConstant[], name?: str
             return spawnCreep(spawn);
 
     return false;
-}
+}) as SpawnHandler

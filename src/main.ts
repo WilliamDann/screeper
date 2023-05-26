@@ -1,13 +1,22 @@
 import roles from "./roles/all";
 import { Site } from "./sites/Site";
-import LowPopStrat from "./strats/LowPopStrat";
+import LowPop from "./strats/LowPop";
+
+function creepsInRoom(room: Room)
+{
+    let num = 0
+    for (let name in Game.creeps)
+        if (Game.creeps[name].pos.roomName == room.name)
+            num += 1
+    return num;
+}
 
 export function loop()
 {
     // Build sites
     let sites = [] as Site[];
     for (let name in Game.rooms)
-        sites = sites.concat(LowPopStrat(Game.rooms[name]));
+            sites = sites.concat(LowPop(Game.rooms[name]));
 
     // Run tick funcs
     for (let site of sites)

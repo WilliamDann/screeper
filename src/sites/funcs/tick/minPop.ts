@@ -10,7 +10,12 @@ export default function(pop: number)
     if (creeps.length < pop && danger.length == 0)
     {
         for (let handler of site.spawnRequestHandlers)
-            if (handler(site.identifier, [WORK, CARRY, MOVE, MOVE], ''+site.identifier+Game.time))
+        {
+            let name = `${site.identifier}_${Game.time}`;
+            let body = [WORK, CARRY, MOVE, MOVE];
+            let opts =  { memory: { owner: site.identifier } };
+            if (handler(name, body, opts))
                 return;
+        }
     }
 }

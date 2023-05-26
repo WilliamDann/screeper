@@ -3,7 +3,8 @@ import builder  from "./builder";
 import harvest  from "./harvest";
 import upgrader from "./upgrader";
 import idle     from "./idle";
-import { pull } from 'lodash';
+import pull     from "./pull"
+import take     from './take'
 
 const roles =
 {
@@ -12,6 +13,7 @@ const roles =
     'build'  : builder,
     'fill'   : fill,
     'pull'   : pull,
+    'take'   : take,
     'idle'   : idle
 }
 
