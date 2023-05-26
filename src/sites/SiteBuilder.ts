@@ -1,8 +1,11 @@
 import { Site } from "./Site";
 import SiteContents from "./SiteContents";
+import EnergyHandler from "./funcs/energy/EnergyHandler";
 import containerEnergyHandler from "./funcs/energy/containerEnergyHandler";
 import harvestEnergyHandler from "./funcs/energy/harvestEnergyHandler";
+import RoleHandler from "./funcs/roles/RoleHandler";
 import genericRoleHandler from "./funcs/roles/genericRoleHandler";
+import SpawnHandler from "./funcs/spawn/SpawnHandler";
 import anySpawnHandler from "./funcs/spawn/anySpawnHandler";
 import creepTick from "./funcs/tick/creepTick";
 import minPop from "./funcs/tick/minPop";
@@ -23,80 +26,48 @@ export class SiteBuilder
             spawnRequestHandlers  : [],
             creepRoleHandler      : null
         } as Site;
-        this.site.creepRoleHandler = genericRoleHandler.bind(this.site);
     }
 
-    findSourceSpots(source: Source): number
+    // handlers
+    addHandler(type: string, handler: Function)
     {
-        let area = source.room.lookForAtArea(
-            LOOK_TERRAIN,
-            source.pos.y - 1,
-            source.pos.x - 1,
-            source.pos.y + 1,
-            source.pos.x + 1,
-            true
-        );
-        area = area.filter(x => x.terrain != 'wall');
-        return area.length;
+        this.site[type].push(handler.bind(this.site));
+        return this;
     }
 
+    addEnergyHandler(handler: EnergyHandler)
+    {
+        this.addHandler('energyRequestHandlers', handler);
+        return this;
+    }
+
+    addSpwanHandler(handler: SpawnHandler)
+    {
+        this.addHandler('spawnRequestHandlers', handler);
+        return this;
+    }
+
+    setRoleHandler(handler: RoleHandler)
+    {
+        this.site.creepRoleHandler = handler.bind(this.site);
+        return this;
+    }
+
+    addOnTick(func: Function, ...args)
+    {
+        if (!args)
+            args = [];
+
+        this.site.onTick.push(func.bind(this.site, ...args));
+        return this;
+    }
+
+    // objects
     addObject(id: string, obj: _HasId|Id<_HasId>)
     {
         if (typeof(obj) != 'string')
             obj = (obj as _HasId).id;
         this.site.objects.addContentIfMissing(id, obj);
-        return this;
-    }
-
-    add_source(source: Source)
-    {
-        this.site.energyRequestHandlers.push(harvestEnergyHandler.bind(this.site));
-
-        let spots = this.findSourceSpots(source);
-        this.site.onTick.push(minPop.bind(this.site, spots));
-
-        this.addObject('source', source);
-        return this;
-    }
-
-    add_structure(structure: Structure)
-    {
-        if (structure['store'])
-            this.addObject('container', structure);
-        if (structure.structureType == 'spawn')
-            this.add_spawn(structure as StructureSpawn);
-        if (structure.structureType == 'controller' || structure.structureType == 'storage')
-            this.add_container(structure as StructureContainer);
-
-        this.addObject(structure.structureType, structure);
-        return this;
-    }
-
-    add_spawn(spawn: StructureSpawn)
-    {
-        this.site.spawnRequestHandlers.push(anySpawnHandler.bind(this.site));
-        this.addObject('spawn', spawn);
-        this.addObject('container', spawn);
-        return this;
-    }
-
-    add_creep(creep: Creep)
-    {
-        if (!creep.my)
-            this.addObject('danger', creep);
-        return this;
-    }
-
-    add_container(container: StructureContainer)
-    {
-        this.site.energyRequestHandlers.push(containerEnergyHandler.bind(this.site));
-        this.addObject('conatiner', container.id);
-        return this;
-    }
-
-    add_tombstone(tombstone: Tombstone)
-    {
-        this.addObject('danger', tombstone);
         return this;
     }
 
@@ -119,17 +90,15 @@ export class SiteBuilder
             if (ignore.indexOf(res.type) != -1)
                 continue;
 
-
             let obj = Game.getObjectById((res[res.type] as _HasId).id);
-            if (this[`add_${res.type}`])
-                this[`add_${res.type}`](obj);
-            else if (obj[res.type]['id'])
-                this.addObject(res.type, obj);
+            this.addObject(res.type, obj);
         }
 
         return this;
     }
+    //
 
+    // creeps
     addCreeps()
     {
         for (let name in Game.creeps)
@@ -141,6 +110,7 @@ export class SiteBuilder
         this.site.onTick.push(creepTick.bind(this.site));
         return this;
     }
+    //
 
     build(): Site
     {
