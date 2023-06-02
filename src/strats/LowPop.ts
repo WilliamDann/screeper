@@ -1,4 +1,5 @@
 // Strategy to repopulate a room low on creeps
+import { sortBy } from "lodash";
 import { Site } from "../sites/Site";
 import { SiteBuilder } from "../sites/SiteBuilder";
 import harvestEnergyHandler from "../sites/funcs/energy/harvestEnergyHandler";
@@ -27,7 +28,7 @@ export default (function(room: Room)
 {
     let sites   = [] as Site[];
     let spawns  = room.find(FIND_MY_SPAWNS);
-    let sources = room.find(FIND_SOURCES);
+    let sources = sortBy(room.find(FIND_SOURCES), x => -spawns[0].pos.getRangeTo(x));
 
     for (let point of sources)
     {
