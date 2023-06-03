@@ -42,7 +42,7 @@ export default class Nest
     {
         for (let site of this.sites)
             for (let creep of site.objects.getContent('creep') as Creep[])
-                if (creep && !creep.memory['role'] || creep.memory['role'] == 'idle' || !creep.memory['state'])
+                if (creep && (!creep.memory['role'] || creep.memory['role'] == 'idle' || !creep.memory['state']))
                     site.roleHandler(creep);
     }
 

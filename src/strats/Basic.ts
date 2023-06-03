@@ -50,7 +50,7 @@ export default (function(room: Room)
         nest.addHandler('spawn', anySpawnHandler, site)
             .addSite(site);
 
-        surplusSpawn.push(minPop.bind(site, 10, spawn.room.name));
+        surplusSpawn.push(minPop.bind(site, 50, spawn.room.name));
     }
 
     nest.tick();
