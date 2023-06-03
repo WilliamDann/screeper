@@ -8,21 +8,7 @@ import anySpawnHandler from "../sites/funcs/spawn/anySpawnHandler";
 import creepTick from "../sites/funcs/tick/creepTick";
 import minPop from "../sites/funcs/tick/minPop";
 import RoomStrat from "./RoomStrat";
-
-
-function findSourceSpots(source: Source): number
-{
-    let area = source.room.lookForAtArea(
-        LOOK_TERRAIN,
-        source.pos.y - 1,
-        source.pos.x - 1,
-        source.pos.y + 1,
-        source.pos.x + 1,
-        true
-    );
-    area = area.filter(x => x.terrain != 'wall');
-    return area.length;
-}
+import { findSourceSpots } from "../funcs/misc";
 
 export default (function(room: Room)
 {
