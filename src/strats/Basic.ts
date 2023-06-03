@@ -18,7 +18,15 @@ export default (function(room: Room)
     let spawners = room.find(FIND_MY_SPAWNS);
     let sources  = sortBy(room.find(FIND_SOURCES), x => spawners[0].pos.getRangeTo(x))
 
-    let surplusSpawn = [];
+    let workerSite = new SiteBuilder(room.controller.id)
+        .addRoomArea(new RoomPosition(25, 25, room.name), 50)
+        .addCreeps()
+        .addObject('controller', room.controller.id)
+        .addCreeps()
+        .addOnTick(minPop, 25, room.name)
+        .setRoleHandler(anyRole)
+        .build()
+    nest.addSite(workerSite);
 
     for (let source of sources)
     {
@@ -43,20 +51,16 @@ export default (function(room: Room)
             .addObject('container', spawn.id)
             .addObject('controller', spawn.room.controller.id)
             .addCreeps()
-            .addOnTick(minPop, 2, spawn.room.name)
+            .addOnTick(minPop, 1, spawn.room.name)
             .setRoleHandler(anyRole)
             .build()
 
         nest.addHandler('spawn', anySpawnHandler, site)
             .addSite(site);
 
-        surplusSpawn.push(minPop.bind(site, 50, spawn.room.name));
+        workerSite.objects.addContent('container', spawn.id);
     }
 
     nest.tick();
-
-    // TODO this should be solved with a better SpawnManager rather than abusing the order of execution
-    for (let f of surplusSpawn)
-        f();
 
 }) as RoomStrat;
