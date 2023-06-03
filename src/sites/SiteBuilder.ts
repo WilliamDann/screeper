@@ -1,9 +1,6 @@
 import { Site }         from "./Site";
 import SiteContents     from "./SiteContents";
-import EnergyHandler    from "./funcs/energy/EnergyHandler";
-import RoleHandler      from "./funcs/roles/RoleHandler";
-import SpawnHandler     from "./funcs/spawn/SpawnHandler";
-import creepTick        from "./funcs/tick/creepTick";
+import RoleHandler from "./funcs/roles/RoleHandler";
 
 export class SiteBuilder
 {
@@ -13,47 +10,26 @@ export class SiteBuilder
     {
         this.site = 
         {
-            identifier : id,
-            objects    : new SiteContents(),
-
-            onTick                : [],
-            energyRequestHandlers : [],
-            spawnRequestHandlers  : [],
-            creepRoleHandler      : null
+            identifier  : id,
+            objects     : new SiteContents(),
+            onTick      : [],
+            roleHandler : null
         } as Site;
     }
 
     // handlers
-    addHandler(type: string, handler: Function)
-    {
-        this.site[type].push(handler.bind(this.site));
-        return this;
-    }
-
-    addEnergyHandler(handler: EnergyHandler)
-    {
-        this.addHandler('energyRequestHandlers', handler);
-        return this;
-    }
-
-    addSpwanHandler(handler: SpawnHandler)
-    {
-        this.addHandler('spawnRequestHandlers', handler);
-        return this;
-    }
-
-    setRoleHandler(handler: RoleHandler)
-    {
-        this.site.creepRoleHandler = handler.bind(this.site);
-        return this;
-    }
-
     addOnTick(func: Function, ...args)
     {
         if (!args)
             args = [];
 
         this.site.onTick.push(func.bind(this.site, ...args));
+        return this;
+    }
+
+    setRoleHandler(h: RoleHandler)
+    {
+        this.site.roleHandler = h.bind(this.site);
         return this;
     }
 
@@ -95,6 +71,10 @@ export class SiteBuilder
                 this.addObject(res.type, obj);
         }
 
+        let dropped = Game.rooms[origin.roomName].find(FIND_DROPPED_RESOURCES, {filter: x => origin.getRangeTo(x) >= range });
+        for (let drop of dropped)
+            this.addObject('energy', drop.id);
+
         return this;
     }
     //
@@ -108,7 +88,6 @@ export class SiteBuilder
             if (creep.memory['owner'] == this.site.identifier)
                 this.addObject('creep', creep);
         }
-        this.site.onTick.push(creepTick.bind(this.site));
         return this;
     }
     //

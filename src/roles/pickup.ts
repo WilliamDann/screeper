@@ -1,8 +1,10 @@
-// Responsible for controlling creeps transferring resources 
+// Responsible for controlling creeps while picking up resources
+
+import { assignRole } from "../funcs/misc";
 
 export default function(creep: Creep)
 {
-    const target = Game.getObjectById(creep.memory['target'] as Id<Source>);
+    const target = Game.getObjectById(creep.memory['target'] as Id<Resource>);
 
     if (creep.memory['state'] && creep.store.getFreeCapacity("energy") == 0)
         creep.memory['state'] = false;
@@ -11,17 +13,12 @@ export default function(creep: Creep)
 
     if (creep.memory['state'])
     {
-        let status: any = creep.harvest(target);
+        let status: any = creep.pickup(target);
         if (status == ERR_NOT_IN_RANGE)
             status = creep.moveTo(target);
 
-        if (status == ERR_FULL)
-        {
-            creep.memory['role']   = undefined;
-            creep.memory['state']  = undefined;
-            creep.memory['target'] = undefined;
-            return;
-        }
+        if (status == ERR_INVALID_TARGET)
+            assignRole(creep, undefined, undefined);
         if (status != OK)
             creep.say(`! ${status}`);
     }

@@ -1,7 +1,8 @@
+import NestFactory from "../../../nest/NestFactory";
 import { Site } from "../../Site";
 
 // Maintain a minimum population
-export default function(pop: number)
+export default function(pop: number, room: string)
 {
     let site   = this as Site;
     let creeps = site.objects.getContent('creep');
@@ -9,7 +10,7 @@ export default function(pop: number)
 
     if (creeps.length < pop && danger.length == 0)
     {
-        for (let handler of site.spawnRequestHandlers)
+        for (let handler of NestFactory.getInstance(room).handlers.spawn)
         {
             let name = `${site.identifier}_${Game.time}`;
             let body = [WORK, CARRY, MOVE, MOVE];

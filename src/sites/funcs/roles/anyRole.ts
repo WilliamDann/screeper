@@ -1,6 +1,7 @@
 import { filter, sortBy } from "lodash";
 import { Site } from "../../Site";
 import RoleHandler from "./RoleHandler";
+import NestFactory from "../../../nest/NestFactory";
 
 function assignRole(creep: Creep, role:string, target?:string, initalState=true)
 {
@@ -10,7 +11,7 @@ function assignRole(creep: Creep, role:string, target?:string, initalState=true)
 }
 
 function findCollectRole(creep:Creep, site: Site) {
-    for (let handler of site.energyRequestHandlers)
+    for (let handler of NestFactory.getInstance(creep.room.name).handlers.energy)
         if (handler(creep))
             return;
 }
