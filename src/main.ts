@@ -1,3 +1,4 @@
+import NestFactory from "./nest/NestFactory";
 import roles from "./roles/all";
 import { Site } from "./sites/Site";
 import Basic from "./strats/Basic";
@@ -17,4 +18,7 @@ export function loop()
 
         roles[role](creep);
     }
+
+    // static objects are not destroyed by screeps
+    NestFactory.instances = {} as any;
 }
