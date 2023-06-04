@@ -10,6 +10,7 @@ import NestFactory from "../nest/NestFactory";
 import anyRole from "../sites/funcs/roles/anyRole";
 import { sortBy } from "lodash";
 import harvestHander from "../sites/funcs/energy/harvestHander";
+import templatePop from "../sites/funcs/tick/templatePop";
 
 export default (function(room: Room)
 {
@@ -22,7 +23,6 @@ export default (function(room: Room)
         .addRoomArea(new RoomPosition(25, 25, room.name), 50)
         .addCreeps()
         .addObject('controller', room.controller.id)
-        .addCreeps()
         .addOnTick(minPop, sources.length*4, room.name)
         .setRoleHandler(anyRole)
         .build()
@@ -34,7 +34,7 @@ export default (function(room: Room)
         let site = new SiteBuilder(source.id)
             .addRoomArea(source.pos, 10)
             .addCreeps()
-            .addOnTick(minPop, spots, source.room.name)
+            .addOnTick(templatePop, spots, source.room.name, [MOVE, CARRY, WORK], [WORK, WORK, MOVE])
             .setRoleHandler(oneRole('staticHarvest', 'source'))
             .build();
 
@@ -48,7 +48,6 @@ export default (function(room: Room)
         let site = new SiteBuilder(spawn.id)
             .addRoomArea(spawn.pos, 5)
             .addObject('spawn', spawn.id)
-            .addObject('container', spawn.id)
             .addObject('controller', spawn.room.controller.id)
             .addCreeps()
             .addOnTick(minPop, 1, spawn.room.name)

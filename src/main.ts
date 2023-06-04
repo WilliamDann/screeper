@@ -21,4 +21,7 @@ export function loop()
 
     // static objects are not destroyed by screeps
     NestFactory.instances = {} as any;
+    for (let name in Memory.creeps)
+        if (!Game.creeps[name])
+            delete Memory.creeps[name];
 }

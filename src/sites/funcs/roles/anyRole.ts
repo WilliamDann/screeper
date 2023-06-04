@@ -22,7 +22,13 @@ function findWorkRole(creep: Creep, site: Site)
     // TODO 
     //  this will be suboptimal for Storages because of their huge capacity
     //  some way to limit will be useful
-    let containers = site.objects.getContent('container') as StructureContainer[];
+    let containers = [
+        ...site.objects.getContent('spawn'),
+        ...site.objects.getContent('extension'),
+        ...site.objects.getContent('tower'),
+        ...site.objects.getContent('container'),
+    ] as StructureContainer[];
+
     containers = filter(containers, x => x.store.getFreeCapacity(RESOURCE_ENERGY) != 0);
     if (containers.length != 0)
     {
