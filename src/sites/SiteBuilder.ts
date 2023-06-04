@@ -77,6 +77,13 @@ export class SiteBuilder
 
         return this;
     }
+
+    findAndAdd(room: Room, findType: FindConstant, addAs: string, filterFunc: Function)
+    {
+        for (let item of room.find(findType, { filter: filterFunc }) as _HasId[])
+            this.addObject(addAs, item.id);
+        return this;
+    }
     //
 
     // creeps

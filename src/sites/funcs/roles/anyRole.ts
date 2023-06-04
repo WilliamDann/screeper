@@ -60,7 +60,7 @@ export default (function (creep:Creep) {
     if (!role || role == 'idle' || !state)
     {
         let fillPercent = creep.store.getUsedCapacity() / creep.store.getCapacity();
-        if (fillPercent < 0.25)
+        if (fillPercent < 0.80)
             return findCollectRole(creep, this);
         return findWorkRole(creep, this);
     }

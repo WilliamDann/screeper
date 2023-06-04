@@ -23,7 +23,7 @@ export default (function(room: Room)
         .addCreeps()
         .addObject('controller', room.controller.id)
         .addCreeps()
-        .addOnTick(minPop, 25, room.name)
+        .addOnTick(minPop, sources.length*4, room.name)
         .setRoleHandler(anyRole)
         .build()
     nest.addSite(workerSite);

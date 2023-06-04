@@ -1,5 +1,7 @@
 // Responsible for controlling creeps while building
 
+import { assignRole } from "../funcs/misc";
+
 export default function(creep: Creep) 
 {
     const target = Game.getObjectById(creep.memory['target'] as Id<ConstructionSite>);
@@ -18,7 +20,7 @@ export default function(creep: Creep)
         if (status != OK)
             creep.say(`! ${status}`);
         if (status == ERR_INVALID_TARGET)
-            delete creep.memory['state'];
+            assignRole(creep, null, null)
     }
     else
         creep.say("idle");
