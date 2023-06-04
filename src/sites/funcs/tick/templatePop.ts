@@ -1,8 +1,18 @@
 import NestFactory from "../../../nest/NestFactory";
 import { Site } from "../../Site";
 
+function bodyCost(body: BodyPartConstant[])
+{
+    let c = 0
+    for (let item of body)
+        c += BODYPART_COST[item]
+    return c;
+}
+
 function addPattern(body: BodyPartConstant[], pattern: BodyPartConstant[], budget: number): BodyPartConstant[]
 {
+    budget -= bodyCost(body);
+
     for (let i = 0, j = 0; i < 100; i++)
     {
         budget -= BODYPART_COST[pattern[j]]
