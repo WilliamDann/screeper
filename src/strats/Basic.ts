@@ -1,5 +1,5 @@
 // Strategy to repopulate a room low on creeps
-import { findSourceSpots } from "../funcs/misc";
+import { findSourceSpots, getFloatingEnergy } from "../funcs/misc";
 import { SiteBuilder } from "../sites/SiteBuilder";
 import anySpawnHandler from "../sites/funcs/spawn/anySpawnHandler";
 import minPop from "../sites/funcs/tick/minPop";
@@ -7,10 +7,12 @@ import RoomStrat from "./RoomStrat";
 import oneRole from "../sites/funcs/roles/oneRole";
 import dropsHandler from "../sites/funcs/energy/dropsHandler";
 import NestFactory from "../nest/NestFactory";
-import anyRole from "../sites/funcs/roles/anyRole";
+import anyRole from "../sites/funcs/roles/focusRole";
 import { sortBy } from "lodash";
 import harvestHander from "../sites/funcs/energy/harvestHander";
 import templatePop from "../sites/funcs/tick/templatePop";
+import trySpawn from "../sites/funcs/tick/trySpawn";
+import roundRobinRole from "../sites/funcs/roles/roundRobinRole";
 
 export default (function(room: Room)
 {
@@ -18,14 +20,16 @@ export default (function(room: Room)
 
     let spawners = room.find(FIND_MY_SPAWNS);
     let sources  = sortBy(room.find(FIND_SOURCES), x => spawners[0].pos.getRangeTo(x))
-
-    let workerSite = new SiteBuilder(room.controller.id)
+    let wsb = new SiteBuilder(room.controller.id)
         .addRoomArea(new RoomPosition(25, 25, room.name), 50)
         .addCreeps()
         .addObject('controller', room.controller.id)
-        .addOnTick(minPop, sources.length*4, room.name)
-        .setRoleHandler(anyRole)
-        .build()
+        .setRoleHandler(roundRobinRole)
+
+    if (getFloatingEnergy(wsb.site) >= room.energyCapacityAvailable && wsb.site.objects.getContent('creep').length < 40)
+        wsb.addOnTick(trySpawn, room.name);
+
+    let workerSite = wsb.build();
     nest.addSite(workerSite);
 
     for (let source of sources)
@@ -61,5 +65,9 @@ export default (function(room: Room)
     }
 
     nest.tick();
+
+    for (let baddie of room.find(FIND_HOSTILE_CREEPS))
+        for (let tower of room.find(FIND_STRUCTURES, { filter: x => x.structureType == 'tower'}) as StructureTower[])
+            tower.attack(baddie);
 
 }) as RoomStrat;

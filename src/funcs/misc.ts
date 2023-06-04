@@ -1,3 +1,5 @@
+import { Site } from "../sites/Site";
+
 export function findSourceSpots(source: Source): number
 {
     let area = source.room.lookForAtArea(
@@ -17,4 +19,13 @@ export function assignRole(creep: Creep, role:string, target?:string, initalStat
     creep.memory['role']   = role;
     creep.memory['target'] = target;
     creep.memory['state']  = initalState;
+}
+
+export function getFloatingEnergy(site: Site) 
+{
+    let num = 0;
+    for (let item of site.objects.getContent('resource') as Resource[])
+        if (item.resourceType == 'energy')
+            num += item.amount
+    return num;
 }
