@@ -14,27 +14,10 @@ import templatePop from "../sites/funcs/tick/templatePop";
 import trySpawn from "../sites/funcs/tick/trySpawn";
 import roundRobinRole from "../sites/funcs/roles/roundRobinRole";
 import maxPop from "../sites/funcs/tick/maxPop";
+import Nest from "../nest/Nest";
 
-export default (function(room: Room)
+function addSourceSites(nest: Nest, sources)
 {
-    let nest = NestFactory.getInstance(room.name);
-
-    let spawners = room.find(FIND_MY_SPAWNS);
-    let sources  = sortBy(room.find(FIND_SOURCES), x => spawners[0].pos.getRangeTo(x))
-    let wsb = new SiteBuilder(room.controller.id)
-        .addRoomArea(new RoomPosition(25, 25, room.name), 50)
-        .addCreeps()
-        .addObject('controller', room.controller.id)
-        .setRoleHandler(roundRobinRole)
-
-    if (getFloatingEnergy(wsb.site) >= room.energyCapacityAvailable && wsb.site.objects.getContent('creep').length < 30)
-        wsb.addOnTick(trySpawn, room.name);
-    else
-        wsb.addOnTick(maxPop, 4*sources.length, 3)
-
-    let workerSite = wsb.build();
-    nest.addSite(workerSite);
-
     for (let source of sources)
     {
         let spots = findSourceSpots(source);
@@ -50,6 +33,10 @@ export default (function(room: Room)
             .addSite(site);
     }
 
+}
+
+function addSpawnerSites(nest: Nest, spawners)
+{
     for (let spawn of spawners)
     {
         let site = new SiteBuilder(spawn.id)
@@ -63,14 +50,44 @@ export default (function(room: Room)
 
         nest.addHandler('spawn', anySpawnHandler, site)
             .addSite(site);
-
-        workerSite.objects.addContent('container', spawn.id);
     }
+}
 
+function addWorkerSite(nest: Nest, sources: Source[], room: Room)
+{
+    let wsb = new SiteBuilder(room.controller.id)
+        .addRoomArea(new RoomPosition(25, 25, room.name), 50)
+        .addCreeps()
+        .addObject('controller', room.controller.id)
+        .setRoleHandler(roundRobinRole)
+
+    if (getFloatingEnergy(wsb.site) >= room.energyCapacityAvailable && wsb.site.objects.getContent('creep').length < 30)
+        wsb.addOnTick(trySpawn, room.name);
+    else
+        wsb.addOnTick(maxPop, 4*sources.length)
+
+    let workerSite = wsb.build();
+    nest.addSite(workerSite);
+
+}
+
+function tick(nest: Nest, room: Room)
+{
     nest.tick();
 
     for (let baddie of room.find(FIND_HOSTILE_CREEPS))
         for (let tower of room.find(FIND_STRUCTURES, { filter: x => x.structureType == 'tower'}) as StructureTower[])
             tower.attack(baddie);
+}
+export default (function(room: Room)
+{
+    let nest     = NestFactory.getInstance(room.name);
+    let spawners = room.find(FIND_MY_SPAWNS);
+    let sources  = sortBy(room.find(FIND_SOURCES), x => spawners[0].pos.getRangeTo(x))
 
+    addWorkerSite(nest, sources, room);
+    addSourceSites(nest, sources);
+    addSpawnerSites(nest, sources);
+
+    tick(nest, room);
 }) as RoomStrat;
