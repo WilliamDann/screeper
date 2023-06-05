@@ -13,6 +13,7 @@ import harvestHander from "../sites/funcs/energy/harvestHander";
 import templatePop from "../sites/funcs/tick/templatePop";
 import trySpawn from "../sites/funcs/tick/trySpawn";
 import roundRobinRole from "../sites/funcs/roles/roundRobinRole";
+import maxPop from "../sites/funcs/tick/maxPop";
 
 export default (function(room: Room)
 {
@@ -26,8 +27,10 @@ export default (function(room: Room)
         .addObject('controller', room.controller.id)
         .setRoleHandler(roundRobinRole)
 
-    if (getFloatingEnergy(wsb.site) >= room.energyCapacityAvailable && wsb.site.objects.getContent('creep').length < 40)
+    if (getFloatingEnergy(wsb.site) >= room.energyCapacityAvailable && wsb.site.objects.getContent('creep').length < 30)
         wsb.addOnTick(trySpawn, room.name);
+    else
+        wsb.addOnTick(maxPop, 4*sources.length, 3)
 
     let workerSite = wsb.build();
     nest.addSite(workerSite);

@@ -7,6 +7,7 @@ import pull     from "./pull"
 import take     from './take'
 import pickup   from './pickup';
 import staticHarvest from './staticHarvest';
+import recycle from './recycle';
 
 const roles =
 {
@@ -18,6 +19,7 @@ const roles =
     'fill'   : fill,
     'pull'   : pull,
     'take'   : take,
+    'recycle' : recycle,
     'idle'   : idle
 }
 

@@ -29,3 +29,11 @@ export function getFloatingEnergy(site: Site)
             num += item.amount
     return num;
 }
+
+export function bodyCost(body: BodyPartConstant[])
+{
+    let c = 0
+    for (let item of body)
+        c += BODYPART_COST[item]
+    return c;
+}

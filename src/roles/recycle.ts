@@ -1,11 +1,9 @@
-// Responsible for controlling creeps while picking up resources
-
-import { assign } from "lodash";
-import { assignRole } from "../funcs/misc";
+// Responsible for controlling creeps while they recycle themselves
 
 export default function(creep: Creep)
 {
-    const target = Game.getObjectById(creep.memory['target'] as Id<Resource>);
+    const target = Game.getObjectById(creep.memory['target'] as Id<StructureSpawn>);
+    creep.say('bye')
 
     if (creep.memory['state'] && creep.store.getFreeCapacity("energy") == 0)
         creep.memory['state'] = false;
@@ -14,12 +12,10 @@ export default function(creep: Creep)
 
     if (creep.memory['state'])
     {
-        let status: any = creep.pickup(target);
+        let status: any = target.recycleCreep(creep)
         if (status == ERR_NOT_IN_RANGE)
             status = creep.moveTo(target);
 
-        if (status == ERR_INVALID_TARGET)
-            assignRole(creep, undefined, undefined);
         if (status != OK)
             creep.say(`! ${status}`);
     }
