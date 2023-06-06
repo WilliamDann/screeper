@@ -87,7 +87,7 @@ export default (function(room: Room)
 
     addWorkerSite(nest, sources, room);
     addSourceSites(nest, sources);
-    addSpawnerSites(nest, sources);
+    addSpawnerSites(nest, spawners);
 
     tick(nest, room);
 }) as RoomStrat;
