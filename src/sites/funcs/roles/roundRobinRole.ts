@@ -16,6 +16,7 @@ const roles = {
         ] as StructureContainer[];
 
         containers = filter(containers, x => x.store.getFreeCapacity(RESOURCE_ENERGY) != 0);
+        containers = filter(containers, x => x.structureType as any == 'storage' && x.store.energy <= 10_000) as StructureContainer[]
         if (containers.length != 0)
         {
             containers = sortBy(containers, x => creep.pos.getRangeTo(x));
