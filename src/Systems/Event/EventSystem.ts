@@ -1,3 +1,4 @@
+import { info, warning } from "../../log";
 import EventHandler from "./EventHandler";
 
 // In an event system the sender and sendee do not know about eachother
@@ -36,9 +37,20 @@ export default class EventSystem
     //  returns true if event was handled
     emit(eventName: string, event: object): boolean
     {
+        if (!this.events[eventName])
+        {
+            warning(`Event dropped, no handler:${eventName}`);
+            return false;
+        }
+
         for (let handler of this.events[eventName])
             if (handler(event))
+            {
+                info(`Event handled: event:${event}`)
                 return true;
+            }
+
+        warning(`Event dropped, no free handler:${eventName}`)
         return false;
     }
 }
