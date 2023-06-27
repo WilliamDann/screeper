@@ -1,4 +1,4 @@
-import { info, warning } from "../../log";
+import { info, warning } from "../Logging/log";
 import EventHandler from "./EventHandler";
 
 // In an event system the sender and sendee do not know about eachother

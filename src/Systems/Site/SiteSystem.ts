@@ -1,4 +1,4 @@
-import BaseSite from "./BaseSite";
+import BaseSite from "../../Objects/Sites/BaseSite";
 
 // Site system keeps track of the sites in the world
 export default class SiteSystem

@@ -1,4 +1,4 @@
-import Systems from "../../../Core/Systems";
+import Systems from "../../Core/Systems";
 
 export default class BaseEvent
 {

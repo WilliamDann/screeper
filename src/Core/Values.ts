@@ -1,4 +1,4 @@
-import { LogLevel } from "../LogLevel";
+import { LogLevel } from "../Systems/Logging/LogLevel";
 
 export default class Values
 {

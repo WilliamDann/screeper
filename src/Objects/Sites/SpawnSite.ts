@@ -1,5 +1,5 @@
 import Systems      from "../../Core/Systems";
-import SpawnRequest from "../Event/Events/SpawnRequestEvent";
+import SpawnRequest from "../Events/SpawnRequestEvent";
 import BaseSite     from "./BaseSite";
 
 export default class SpawnSite extends BaseSite<StructureSpawn>

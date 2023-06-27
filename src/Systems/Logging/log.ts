@@ -1,4 +1,4 @@
-import Values       from "./Core/Values";
+import Values       from "../../Core/Values";
 import { LogLevel } from "./LogLevel";
 
 // Log a message with a given log level

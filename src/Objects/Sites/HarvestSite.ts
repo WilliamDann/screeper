@@ -1,5 +1,5 @@
 import Systems           from "../../Core/Systems";
-import SpawnRequestEvent from "../Event/Events/SpawnRequestEvent";
+import SpawnRequestEvent from "../Events/SpawnRequestEvent";
 import BaseSite          from "./BaseSite";
 
 export default class HarvestSite extends BaseSite<Source>

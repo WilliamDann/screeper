@@ -1,12 +1,15 @@
 import Systems      from "./Core/Systems";
 import Values       from "./Core/Values";
-import HarvestSite  from "./Systems/Site/HarvestSite";
-import SpawnSite    from "./Systems/Site/SpawnSite";
-import { LogLevel } from "./LogLevel";
+import { LogLevel } from "./Systems/Logging/LogLevel";
+
+import HarvestSite  from "./Objects/Sites/HarvestSite";
+import SpawnSite    from "./Objects/Sites/SpawnSite";
+import CreepSite    from "./Objects/Sites/CreepSite";
 
 const sites = {
     'SpawnSite'   : SpawnSite,
-    'HarvestSite' : HarvestSite
+    'HarvestSite' : HarvestSite,
+    'CreepSite'   : CreepSite,
 }
 
 

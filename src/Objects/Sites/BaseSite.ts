@@ -1,5 +1,5 @@
 import Systems from "../../Core/Systems";
-import Resources from "../../Objects/Resources";
+import Resources from "../../Systems/Site/Resources";
 
 export default class BaseSite<T extends _HasId>
 {
