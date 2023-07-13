@@ -6,15 +6,17 @@
     "grunt-cli": "^1.4.3",
     "grunt-contrib-clean": "^2.0.1",
     "grunt-contrib-copy": "^1.0.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "rimraf": "^3.0.1"
   },
   "name": "screeper",
   "version": "1.0.0",
   "description": "Screeps Bot",
   "main": "main.js",
   "scripts": {
-    "build": "echo Building... && rm -rf ./bin/* && tsc -p tsconfig.json && echo Done.",
-    "push": "npm run build && echo Pushing... && grunt && echo Done.",
+    "clean": "echo Cleaning... && rimraf dist/ && rimraf bin/ && echo Clean Complete.",
+    "build": "echo Building... && npm run clean && tsc -p tsconfig.json && echo Build Complete.",
+    "push": "npm run build && echo Pushing... && grunt && echo Push Compete.",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
