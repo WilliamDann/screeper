@@ -1,88 +1,30 @@
-import Systems      from "./Core/Systems";
-import Values       from "./Core/Values";
-import { LogLevel } from "./Systems/Logging/LogLevel";
+import Core             from "./Core";
+import Event from "./Events/Event";
+import debugRoomFactory from "./Factory/debugRoomFactory";
+import all from "./Roles/all";
 
-import HarvestSite  from "./Objects/Sites/HarvestSite";
-import SpawnSite    from "./Objects/Sites/SpawnSite";
-import CreepSite    from "./Objects/Sites/CreepSite";
-
-const sites = {
-    'SpawnSite'   : SpawnSite,
-    'HarvestSite' : HarvestSite,
-    'CreepSite'   : CreepSite,
-}
-
-
-function dump()
-{
-    let sys = Systems.getInstance();
-
-    // save sites
-    Memory['sites'] = [];
-    Object.keys(sys.siteSystem.sites).forEach(x => {
-        Memory['sites'].push({ type: sys.siteSystem.sites[x].constructor.name, obj: sys.siteSystem.sites[x] });
-    })
-}
-
-
-function load()
-{
-    let sys = Systems.getInstance();
-
-    // load saved sites
-    for (let site of Memory['sites'])
-    {
-        let f   = sites[site.type];
-        let obj = new f(site.obj.focus);
-
-        Object.assign(obj, site.obj);
-        sys.siteSystem.register(obj);
-    }
-}
-
-
-// debug setup
-function setup()
-{
-    let sys  = Systems.getInstance();
-
-    if (!Memory['sites'])
-    {
-        for (let spawn in Game.spawns)
-            sys.siteSystem.register(new SpawnSite(Game.spawns[spawn].id));
-        for (let name in Game.rooms)
-            for (let source of Game.rooms[name].find(FIND_SOURCES))
-                sys.siteSystem.register(new HarvestSite(source.id));
-
-        dump();
-    }
-}
-
-
+// screeps entry point
 export function loop()
 {
-    // debug setup
-    setup();
+    // init core systems
+    Core.getInstance();
 
+    // load in debug room
+    debugRoomFactory(Game.rooms.sim);
 
-    // load info
-    load();
-    let sys  = Systems.getInstance();
-    let vals = Values.getInstance(); 
+    // emit flow control events
+    new Event('init', {}).emit();
+    new Event('tick', {}).emit();
 
-    vals.logLevel = LogLevel.Warning;
+    // run creep roles
+    for (let name in Game.creeps)
+    {
+        const creep = Game.creeps[name];
 
+        // run role function
+        all[creep.memory['role']](creep);
+    }
 
-    // emit flow events
-    sys.eventSystem.emit('ready',   null);
-    sys.eventSystem.emit('tick',    null);
-    sys.eventSystem.emit('destroy', null);
-
-
-    // save state changes
-    dump();
-
-    // screeps does not destroy static members, so we must
-    Systems.clear();
-    Values.clear();
+    // screeps does not always destroy static members of a class
+    Core.clearInstance();
 }
