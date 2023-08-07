@@ -1,13 +1,10 @@
 import Core             from "../Core";
-import DropHarvestSite  from "../Sites/Energy/DropHarvestSite";
+import DropHarvestSite  from "../Sites/Harvest/DropHarvestSite";
 import FIFOSpawn        from "../Sites/Spawn/FIFOSpawn";
 
 // get the number of empty spaces around the focus
 function harvestSpots(source: Source): number
 {
-    if (this.memory['spots'])
-        return this.memory['spots'];
-
     // count free squares around the source
     let area   = source.room.lookForAtArea(
         LOOK_TERRAIN,
@@ -20,7 +17,6 @@ function harvestSpots(source: Source): number
     area = area.filter(x => x.terrain != 'wall');
 
     // store and return spots
-    this.memory['spots'] = area.length;
     return area.length;
 }
 
@@ -37,8 +33,9 @@ export default function(room: Room): void
     // add sources
     for (let source of spawn.focus.room.find(FIND_SOURCES))
     {
-        let dhs       = new DropHarvestSite(source.id);
-        dhs.creepGoal = harvestSpots(source);
+        let dhs        = new DropHarvestSite(source.id);
+        dhs.harvesters = harvestSpots(source);
+        ss.addSite(dhs);
     }
 
     // add creeps to their sites
