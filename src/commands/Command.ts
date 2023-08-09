@@ -1,6 +1,8 @@
 import { CommandCreateOpts } from "./CommandCreateOpts";
 import { randomHex }         from "../utils/util";
 import { filter }            from "lodash";
+import Colony                from "../Colony";
+import World                 from "../World";
 
 // A command is an instruction to the bot
 export default abstract class Command
@@ -17,13 +19,15 @@ export default abstract class Command
     name                : string;           // the name of the flag
     pos                 : RoomPosition;     // the position of the flag
     room                : Room | null;      // the room of the flag
+    colony              : Colony;           // the colony the command is executing in
 
 
     constructor(flag: Flag)
     {
-        this.name = flag.name;
-        this.pos  = flag.pos;
-        this.room = flag.room;
+        this.name   = flag.name;
+        this.pos    = flag.pos;
+        this.room   = flag.room;
+        this.colony = World.getInstance().colonies[this.room.name];
     }
 
 
@@ -102,5 +106,13 @@ export default abstract class Command
         if (scope == "room")
             return this.presentInRoom(pos);
         return this.presentAtPos(pos);
+    }
+
+
+    // remove the command by removing it's flag
+    remove()
+    {
+        for (let flag of this.pos.lookFor(LOOK_FLAGS))
+            flag.remove();
     }
 }

@@ -11,18 +11,15 @@ export default abstract class Process
 {
     protected procInit : ProcessInit;
 
-    room : Room | undefined;
-    name : string;
-    pos  : RoomPosition;
+    name: string;
+    pos : RoomPosition;
 
 
     constructor(procInit: ProcessInit, name: string)
     {
         this.procInit = procInit;
-
         this.name     = name;
         this.pos      = procInit.pos;
-        this.room     = procInit.room;
     }
 
 
