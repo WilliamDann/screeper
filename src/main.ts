@@ -1,27 +1,20 @@
-import Colony from "./Colony";
-import World from "./World";
-import CommandFactory from "./commands/CommandFactory";
+import Processor      from "./Processor";
+import commandFactory from "./commands/util/CommandFactory";
 
 // screeps entry point
 export function loop()
 {
-    const world = World.getInstance();
-
-    // create colonies for rooms
-    for (let name in Game.rooms)
-        world.colonies[name] = new Colony(name);
+    const processor = Processor.getInstance();
+    processor.init();
 
 
-    // create commands for rooms
+    // create commands
     for (let flag in Game.flags)
-        world.processor.registerCommand(CommandFactory(Game.flags[flag]));
+        processor.registerCommand(commandFactory(Game.flags[flag]));
 
 
-    // run bot
-    world.processor.init();
-    world.processor.run();
+    processor.run();
 
-
-    // remove static members, as screeps does not always
-    World.clear();
+    // remove static members, screeps does not always
+    Processor.clear();
 }

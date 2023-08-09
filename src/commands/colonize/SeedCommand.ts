@@ -1,6 +1,5 @@
 import { first } from "lodash";
 import Command from "../Command";
-import SpawnerSite from "../../sites/SpawnerSite";
 
 // creates a SpawnerSite for the colony
 export default class SeedCommand extends Command
@@ -10,6 +9,10 @@ export default class SeedCommand extends Command
     static flagColorA  = COLOR_PURPLE;
     static flagColorB  = COLOR_GREY;
 
+
+    memory: {
+        test: number;
+    }
 
     constructor(flag: Flag)
     {
@@ -26,22 +29,16 @@ export default class SeedCommand extends Command
 
 
     init(): void {
-
     }
 
 
     run(): void {
-        const spawn = this.getSpawner();
-
-        if (!spawn)
+        if (this.memory.test)
         {
-            console.log("Colonize waiting, no spawner");
-            return;
+            console.log(this.memory.test);
+            this.remove();
         }
-
-        // create the spawner site
-        this.colony.sites.push(new SpawnerSite(this.colony, spawn));
-        this.remove();
+        this.memory.test = Game.time;
     }
 
 

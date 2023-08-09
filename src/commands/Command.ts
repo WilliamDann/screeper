@@ -1,8 +1,6 @@
-import { CommandCreateOpts } from "./CommandCreateOpts";
+import { CommandCreateOpts } from "./util/CommandCreateOpts";
 import { randomHex }         from "../utils/util";
 import { filter }            from "lodash";
-import Colony                from "../Colony";
-import World                 from "../World";
 
 // A command is an instruction to the bot
 export default abstract class Command
@@ -17,17 +15,20 @@ export default abstract class Command
 
     // concrete command info
     name                : string;           // the name of the flag
+    ref                 : string;           // unique identifier of the command
     pos                 : RoomPosition;     // the position of the flag
     room                : Room | null;      // the room of the flag
-    colony              : Colony;           // the colony the command is executing in
+
+    memory : object;                        // things the command wants to remember between ticks, managed by the processor
 
 
     constructor(flag: Flag)
     {
         this.name   = flag.name;
+        this.ref    = `${this.name}@${flag.pos.x},${flag.pos.y},${flag.pos.roomName}`;
         this.pos    = flag.pos;
         this.room   = flag.room;
-        this.colony = World.getInstance().colonies[this.room.name];
+        this.memory = flag.memory || {};
     }
 
 

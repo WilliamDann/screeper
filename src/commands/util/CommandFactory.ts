@@ -1,7 +1,7 @@
-import Command     from "./Command";
-import SeedCommand from "./colonize/SeedCommand";
+import Command     from "../Command";
+import SeedCommand from "../colonize/SeedCommand";
 
-export default function CommandFactory(flag: Flag): Command
+export default function commandFactory(flag: Flag): Command
 {
     switch (flag.color)
     {

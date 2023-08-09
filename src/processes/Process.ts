@@ -1,25 +1,20 @@
-export interface ProcessInit
-{
-    room   : Room | undefined;
-    pos    : RoomPosition;
-
-    memory : object;
-}
-
 // A process is something that the bot *does*.
 export default abstract class Process
 {
-    protected procInit : ProcessInit;
+    name   : string;            // name of the process
+    ref    : string;            // unique identifier for the process
+    pos    : RoomPosition;      // rough position the process takes place at
+    room   : Room | undefined;  // the room the process takes place in, if applicable
 
-    name: string;
-    pos : RoomPosition;
+    memory : object;            // things the process wants to remember, managed by the processor
 
 
-    constructor(procInit: ProcessInit, name: string)
+    constructor(name: string, pos: RoomPosition)
     {
-        this.procInit = procInit;
         this.name     = name;
-        this.pos      = procInit.pos;
+        this.ref      = `${name}@${pos.x},${pos.y},${pos.roomName}`;
+        this.pos      = pos;
+        this.room     = Game.rooms[pos.roomName];
     }
 
 
