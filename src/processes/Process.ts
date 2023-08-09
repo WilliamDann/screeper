@@ -1,20 +1,15 @@
 // A process is something that the bot *does*.
 export default abstract class Process
 {
-    name   : string;            // name of the process
-    ref    : string;            // unique identifier for the process
-    pos    : RoomPosition;      // rough position the process takes place at
-    room   : Room | undefined;  // the room the process takes place in, if applicable
+    name   : string;
+    ref    : string;
+    memory : object;
 
-    memory : object;            // things the process wants to remember, managed by the processor
-
-
-    constructor(name: string, pos: RoomPosition)
+    constructor(name: string, memory ?: object)
     {
-        this.name     = name;
-        this.ref      = `${name}@${pos.x},${pos.y},${pos.roomName}`;
-        this.pos      = pos;
-        this.room     = Game.rooms[pos.roomName];
+        this.name   = name;
+        this.ref    = `${this.constructor.name}_${this.name}`;
+        this.memory = memory || {};
     }
 
 

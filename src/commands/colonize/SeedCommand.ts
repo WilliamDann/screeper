@@ -10,10 +10,6 @@ export default class SeedCommand extends Command
     static flagColorB  = COLOR_GREY;
 
 
-    memory: {
-        test: number;
-    }
-
     constructor(flag: Flag)
     {
         super(flag);
@@ -29,16 +25,12 @@ export default class SeedCommand extends Command
 
 
     init(): void {
+
     }
 
 
     run(): void {
-        if (this.memory.test)
-        {
-            console.log(this.memory.test);
-            this.remove();
-        }
-        this.memory.test = Game.time;
+
     }
 
 
