@@ -1,5 +1,7 @@
 import { first } from "lodash";
 import Command from "../Command";
+import Processor from "../../Processor";
+import TestProc from "../../processes/TestProc";
 
 // creates a SpawnerSite for the colony
 export default class SeedCommand extends Command
@@ -30,7 +32,9 @@ export default class SeedCommand extends Command
 
 
     run(): void {
-
+        // spawn test process
+        Processor.getInstance().registerProcess(new TestProc('testproc'));
+        this.remove();
     }
 
 

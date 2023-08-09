@@ -1,4 +1,3 @@
-import Processor from "../Processor";
 import Process from "./Process";
 
 // test process
@@ -21,8 +20,12 @@ export default class TestProc extends Process
 
 
     run(): void {
-        console.log(this.memory.test);
+        if (this.memory.test)
+        {
+            console.log(this.memory.test);
+            this.kill = true;
+            return;
+        }
         this.memory.test = Game.time;
     }
 }
-Processor.registerProcessType(TestProc);

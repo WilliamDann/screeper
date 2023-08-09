@@ -1,6 +1,8 @@
+import procTable from "./ProcTable";
 import Command from "./commands/Command";
 import Process from "./processes/Process";
 
+// stored information about a process
 interface ProcessMemory
 {
     procType : string;
@@ -15,10 +17,9 @@ export default class Processor
     private processes : Process[];                     // stores ongoing Process objects Processes are things the bot does
 
     static _inst      : Processor;                     // singelton instance of the processor.
-    static _procTypes : {}                             // store process constructors so they can be recreated
 
-    memory: {                                               // storage object for bot memory
-        commands  : { [commandRef: string] : object }       // stores command memory objects
+    memory: {                                                // storage object for bot memory
+        commands  : { [commandRef: string] : object }        // stores command memory objects
         processes : { [procRef   : string] : ProcessMemory } // stores process memory objects
     }
 
@@ -37,13 +38,6 @@ export default class Processor
         if (!this._inst)
             this._inst = new Processor();
         return this._inst;
-    }
-
-
-    // register a process constructor so it can be recreated from memory
-    static registerProcessType(_class: any)
-    {
-        this._procTypes[_class.constructor.name] = _class.constructor;
     }
 
 
@@ -66,6 +60,14 @@ export default class Processor
     }
 
 
+    // unregister a command
+    unregisterCommand(cmd: Command): void
+    {
+        delete this.memory[cmd.ref];
+        delete Memory['processor']['commands'][cmd.ref];
+    }
+
+
     // add a process to the processor
     registerProcess(proc: Process): void
     {
@@ -77,15 +79,22 @@ export default class Processor
     }
 
 
+    // unregister a precess
+    unregisterProcess(proc: Process): void
+    {
+        delete this.memory[proc.ref];
+        delete Memory['processor']['processes'][proc.ref];
+    }
+
     // start saved processes
     private restartProcesses()
     {
         for (let procRef in this.memory.processes)
         {
-            let _constructor = Processor._procTypes[procRef];
             let procMem      = this.memory.processes[procRef];
+            let _constructor = procTable[procMem.procType];
 
-            let obj          = _constructor(procMem.procName, procMem.memory);
+            let obj          = new _constructor(procMem.procName, procMem.memory);
             this.processes.push(obj);
         }
     }
@@ -116,6 +125,12 @@ export default class Processor
             // run command
             command.run();
 
+            if (command.kill)
+            {
+                this.unregisterCommand(command);
+                continue;
+            }
+
             // save memory
             this.memory.commands[command.ref] = command.memory;
         }
@@ -125,6 +140,13 @@ export default class Processor
         {
             // run process
             process.run();
+
+            // do not save if the process is finished
+            if (process.kill)
+            {
+                this.unregisterProcess(process);
+                continue;
+            }
 
             // save memory
             this.memory.processes[process.ref] = {

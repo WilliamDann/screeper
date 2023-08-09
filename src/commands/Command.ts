@@ -21,6 +21,7 @@ export default abstract class Command
 
     memory : object;                        // things the command wants to remember between ticks, managed by the processor
 
+    kill = false;
 
     constructor(flag: Flag)
     {
@@ -115,5 +116,6 @@ export default abstract class Command
     {
         for (let flag of this.pos.lookFor(LOOK_FLAGS))
             flag.remove();
+        this.kill = true;
     }
 }
