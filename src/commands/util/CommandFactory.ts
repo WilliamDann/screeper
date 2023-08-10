@@ -1,6 +1,7 @@
 import Command     from "../Command";
 import SeedCommand from "../colonize/SeedCommand";
 import HarvestCommand from "../resource/HarvestCommand";
+import RefilCommand from "../resource/RefilCommand";
 
 export default function commandFactory(flag: Flag): Command
 {
@@ -21,6 +22,8 @@ export default function commandFactory(flag: Flag): Command
             {
                 case COLOR_YELLOW:
                     return new HarvestCommand(flag);
+                case COLOR_GREY:
+                    return new RefilCommand(flag);
             }
             break;
     }

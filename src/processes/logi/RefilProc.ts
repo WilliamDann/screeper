@@ -8,9 +8,10 @@ export default class RefilProc extends Process
         targets  : Id<_HasId>[],
     }
 
-    constructor(roomName: string)
+
+    constructor(roomName: string, memory ?: object)
     {
-        super(roomName, { roomName: roomName });
+        super(roomName, memory);
     }
 
 
@@ -24,11 +25,15 @@ export default class RefilProc extends Process
 
 
     init(): void {
-        
+        if (!this.memory.roomName)
+            this.memory.roomName = this.name;
+
+        if (!this.memory.targets)
+            this.memory.targets = [];
     }
 
 
     run(): void {
-        
+        // console.log(JSON.stringify(this.memory.targets));
     }
 }

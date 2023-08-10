@@ -68,12 +68,15 @@ export default class DropHarvestProc extends Process
 
     run(): void
     {
+        if (!this.memory.creeps)
+            this.memory.creeps = [];
+
         // run creeps under the proccess
         for (let creep of this.memory.creeps)
             this.runCreep(Game.getObjectById(creep));
 
         // emit a spawn request if missing a creeps
-        if (this.memory.harvesters < this.memory.creeps.length)
+        if (this.memory.harvesters > this.memory.creeps.length)
             Comms.emit('spawnRequest', {
                 name: ''+this.name+Game.time,
                 body: [WORK, CARRY, MOVE],

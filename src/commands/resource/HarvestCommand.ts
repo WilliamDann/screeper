@@ -68,6 +68,6 @@ export default class HarvestCommand extends Command
         );
 
         // consume command
-        this.kill = true;
+        this.remove();
     }
 }
