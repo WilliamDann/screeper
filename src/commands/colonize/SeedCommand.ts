@@ -1,7 +1,7 @@
 import { first } from "lodash";
 import Command from "../Command";
 import Processor from "../../Processor";
-import TestProc from "../../processes/TestProc";
+import BasicSpawnProc from "../../processes/spawn/BasicSpawnProc";
 
 // creates a SpawnerSite for the colony
 export default class SeedCommand extends Command
@@ -18,22 +18,21 @@ export default class SeedCommand extends Command
     }
 
 
-    // get a spawner in the room to be colonized assuming there is one already
-    //  TODO in new rooms there wont be a spawner!
-    private getSpawner(): StructureSpawn
-    {
-        return first(this.room.find(FIND_MY_SPAWNS));
-    }
-
-
     init(): void {
 
     }
 
 
     run(): void {
-        // spawn test process
-        Processor.getInstance().registerProcess(new TestProc('testproc'));
+        // create spawner process
+        Processor.getInstance().registerProcess(
+            new BasicSpawnProc(
+                'BasicSpawnProc',
+                { roomName: this.room.name }
+            )
+        )
+
+        // remove the command
         this.remove();
     }
 

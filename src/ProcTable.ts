@@ -1,6 +1,6 @@
-import TestProc from "./processes/TestProc";
+import BasicSpawnProc from "./processes/spawn/BasicSpawnProc";
 
 const procTable = {
-    'TestProc': TestProc
+    'BasicSpawnProc': BasicSpawnProc
 }
 export default procTable;
