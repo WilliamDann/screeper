@@ -62,7 +62,7 @@ export default class BasicSpawnProc extends Process
             this.getSpawners();
 
         // register spawn request event handler
-        Comms.register('spawnRequest', this.handleSpawnRequest);
+        Comms.register('spawnRequest', this.handleSpawnRequest.bind(this));
     }
 
 

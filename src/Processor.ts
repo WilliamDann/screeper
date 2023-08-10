@@ -29,6 +29,11 @@ export default class Processor
     {
         this.commands  = [];
         this.processes = [];
+
+        // init processor memory
+        if (!Memory['processor'])
+            Memory['processor'] = { processes: {}, commands: {} };
+        this.memory = Memory['processor'];
     }
 
 
@@ -56,7 +61,6 @@ export default class Processor
             cmd.memory = this.memory.commands[cmd.ref];
 
         this.commands.push(cmd);
-
     }
 
 
@@ -99,13 +103,9 @@ export default class Processor
         }
     }
 
-    init(): void
-    {
-        // init processor memory
-        if (!Memory['processor'])
-            Memory['processor'] = { processes: {}, commands: {} };
-        this.memory = Memory['processor'];
 
+    init(): void
+    { 
         // restart saved processes
         this.restartProcesses();
 

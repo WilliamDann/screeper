@@ -41,10 +41,6 @@ export default abstract class Command
     abstract run(): void;
 
 
-    // spawn processes for the command
-    abstract spawnProcesses(): void;
-
-
     // create the game world flag for the command
     static createFlag(pos: RoomPosition, opts: CommandCreateOpts): number | string
     {
