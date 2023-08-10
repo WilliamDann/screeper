@@ -23,6 +23,7 @@ export default class DropHarvestProc extends Process
     // update the creeps in the memory for the process
     updateCreeps()
     {
+        this.memory.creeps = [];
         for (let name in Game.creeps)
         {
             const creep = Game.creeps[name];
@@ -72,10 +73,11 @@ export default class DropHarvestProc extends Process
             this.runCreep(Game.getObjectById(creep));
 
         // emit a spawn request if missing a creeps
-        Comms.emit('spawnRequest', {
-            name: ''+this.name+Game.time,
-            body: [WORK, CARRY, MOVE],
-            opts: { memory: { owner: this.ref } }
-        } as SpawnRequest);
+        if (this.memory.harvesters < this.memory.creeps.length)
+            Comms.emit('spawnRequest', {
+                name: ''+this.name+Game.time,
+                body: [WORK, CARRY, MOVE],
+                opts: { memory: { owner: this.ref } }
+            } as SpawnRequest);
     }
 }   
