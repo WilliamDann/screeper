@@ -1,28 +1,21 @@
+import Comms from "../../Comms";
 import Process from "../Process";
 
 // refil containers in the room
 export default class RefilProc extends Process
 {
     memory: {
-        roomName : string,
-        targets  : Id<_HasId>[],
+        roomName  : string,
+        targets   : Id<_HasId>[],
 
-        creeps   : Id<Creep>[]
+        creeps    : Id<Creep>[],
+        refillers : number
     }
 
 
     constructor(roomName: string, memory ?: object)
     {
         super(roomName, memory);
-    }
-
-
-    // find targets to refil
-    findTargets()
-    {
-        this.memory.targets = Game.rooms[this.memory.roomName]
-            .find(FIND_STRUCTURES, { filter: x => x['store']!! })
-            .map(x => x.id);
     }
 
 
@@ -53,8 +46,10 @@ export default class RefilProc extends Process
         if (!this.memory.targets)
             this.memory.targets = [];
 
-        if (!this.memory.creeps)
+        if (!this.memory.creeps || Game.time % 10 == 0)
             this.updateCreeps();
+
+        this.memory.refillers = Math.min(this.memory.targets.length, 3);
     }
 
 
@@ -62,7 +57,16 @@ export default class RefilProc extends Process
         if (!this.memory.creeps)
             this.memory.creeps = [];
 
+        // run creep funcs
         for (let creep of this.memory.creeps)
             this.runCreep(Game.getObjectById(creep));
+
+        // spawn creeps if needed
+        if (this.memory.creeps.length < this.memory.refillers)
+            Comms.emit('spawnRequest', {
+                name: this.ref+Game.time,
+                body: [WORK, CARRY, MOVE],
+                opts: { memory: { owner: this.ref }}
+            });
     }
 }

@@ -15,6 +15,9 @@ export default class Comms
     // emit a message to a channel
     static emit(channel: string, data: any)
     {
+        if (!this.listners[channel])
+            return;
+
         for (let listner of this.listners[channel])
             listner(data);
     }
