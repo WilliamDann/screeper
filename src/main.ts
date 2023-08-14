@@ -1,6 +1,6 @@
-import init                 from "./Init"
-import Processor            from "./processor/Processor";
-import { commandFactory }   from "./processor/_Init";
+import init                 from "./framework/Init"
+import Processor            from "./framework/Processor";
+import { commandFactory }   from "./framework/_Init";
 
 // screeps entry point
 export function loop()

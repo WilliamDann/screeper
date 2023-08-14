@@ -1,3 +1,6 @@
+import Process from "./Process";
+import Processor from "./Processor";
+
 // A command is an instruction to the bot
 export default abstract class Command
 {
@@ -19,6 +22,13 @@ export default abstract class Command
 
     // runtime logic
     abstract run(): void;
+
+
+    // shorthand for creating a process
+    createProcess(proc: Process)
+    {
+        Processor.getInstance().registerProcess(proc);
+    }
 
 
     // remove the command by removing it's flag
