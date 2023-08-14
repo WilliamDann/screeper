@@ -73,6 +73,7 @@ export default class Processor
         if (this.memory.processes[proc.ref])
             proc.memory = this.memory.processes[proc.ref].memory;
 
+        proc.init();
         this.processes.push(proc);
     }
 

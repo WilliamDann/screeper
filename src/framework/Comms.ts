@@ -19,6 +19,7 @@ export default class Comms
             return;
 
         for (let listner of this.listners[channel])
-            listner(data);
+            if (listner(data))
+                break;
     }
 }
