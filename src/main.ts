@@ -1,27 +1,18 @@
-import NestFactory from "./nest/NestFactory";
-import roles from "./roles/all";
-import { Site } from "./sites/Site";
-import Basic from "./strats/Basic";
+import init                 from "./Init"
+import Processor            from "./processor/Processor";
+import { commandFactory }   from "./processor/_Init";
 
+// screeps entry point
 export function loop()
 {
-    // Run Strats
-    for (let name in Game.rooms)
-        Basic(Game.rooms[name]);
+    // run initilization step
+    init();
+    const processor = Processor.getInstance();
 
-    // Run Creeps
-    for(var name in Game.creeps) {
-        const creep = Game.creeps[name];
-        const role  = creep.memory['role'];
-        if (!role)
-            continue;
+    // create commands
+    for (let flag in Game.flags)
+        processor.registerCommand(commandFactory(Game.flags[flag]));
 
-        roles[role](creep);
-    }
-
-    // static objects are not destroyed by screeps
-    NestFactory.instances = {} as any;
-    for (let name in Memory.creeps)
-        if (!Game.creeps[name])
-            delete Memory.creeps[name];
+    processor.init();
+    processor.run();
 }
