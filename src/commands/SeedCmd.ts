@@ -33,17 +33,19 @@ export default class SeedCmd extends Command
             }
         ));
 
-        // create a proto harvester for the spawner
-        let source = this.room.find(FIND_SOURCES).sort(x => this.spawns[0].pos.getRangeTo(x))[0];
-        this.createProcess(new ProtoHarvestProc(
-            this.room.name,
-            {
-                source     : source.id,
-                spawner    : this.spawns[0].id,
-                harvesters : freeSpots(source.pos)
-            }
-        ))
 
+        // create a proto harvest process for sources in the room
+        for (let source of this.room.find(FIND_SOURCES))
+            this.createProcess(new ProtoHarvestProc(
+                source.id,
+                {
+                    source: source.id,
+                    spawner: this.spawns[0].id,
+                    harvesters: freeSpots(source.pos)
+                }
+            ));
+
+        // remove the command
         this.remove();
     }
 }

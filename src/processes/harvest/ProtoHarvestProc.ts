@@ -73,7 +73,7 @@ export default class ProtoHarvestProc extends Process
     run(): void
     {
         // upgrade to a drop harvester if possible
-        if (this.memory.creeps.length >= this.memory.harvesters)
+        if (this.memory.creeps.length >= this.memory.harvesters && Game.time % 100 == 0)
         {
             this.upgradeProc();
             return;
@@ -90,7 +90,7 @@ export default class ProtoHarvestProc extends Process
 
 
         // try to spawn a creep
-        if (this.memory.creeps.length < this.memory.harvesters && Game.time % 100 == 0)
+        if (this.memory.creeps.length < this.memory.harvesters)
             Comms.emit(
                 'spawnRequest',
                 {
