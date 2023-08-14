@@ -1,6 +1,6 @@
 import { first } from "lodash";
 import Command from "../Command";
-import Processor from "../../Processor";
+import Processor from "../../processor/Processor";
 import RefilProc from "../../processes/logi/RefilProc";
 
 export default class RefilCommand extends Command

@@ -1,6 +1,6 @@
-import procTable from "./ProcTable";
-import Command from "./commands/Command";
-import Process from "./processes/Process";
+import Command from "../commands/Command";
+import Process from "../processes/Process";
+import { processFactory } from "./_Init";
 
 // stored information about a process
 interface ProcessMemory
@@ -90,11 +90,10 @@ export default class Processor
     {
         for (let procRef in this.memory.processes)
         {
-            let procMem      = this.memory.processes[procRef];
-            let _constructor = procTable[procMem.procType];
+            let procMem = this.memory.processes[procRef];
+            let proc    = processFactory(procMem.procType, procMem.memory);
 
-            let obj          = new _constructor(procMem.procName, procMem.memory);
-            this.processes.push(obj);
+            this.processes.push(proc);
         }
     }
 

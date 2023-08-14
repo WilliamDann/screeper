@@ -1,5 +1,5 @@
 import { first } from "lodash";
-import Processor        from "../../Processor";
+import Processor        from "../../processor/Processor";
 import DropHarvestProc  from "../../processes/resource/DropHarvestProc";
 import Command          from "../Command"
 

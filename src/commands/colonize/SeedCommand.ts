@@ -1,5 +1,5 @@
 import Command        from "../Command";
-import Processor      from "../../Processor";
+import Processor      from "../../processor/Processor";
 import BasicSpawnProc from "../../processes/spawn/BasicSpawnProc";
 
 // creates a SpawnerSite for the colony
