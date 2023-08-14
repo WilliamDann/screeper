@@ -5,11 +5,6 @@ import RefilProc from "../../processes/logi/RefilProc";
 
 export default class RefilCommand extends Command
 {
-    static commandName = 'refil';
-
-    static flagColorA = COLOR_YELLOW;
-    static flagColorB = COLOR_GREY;
-
     memory: {
         target: Id<_HasId>      // the target of the command
         amount: number;         // the amount to refill
@@ -18,7 +13,7 @@ export default class RefilCommand extends Command
     constructor(flag: Flag)
     {
         super(flag);
-        this.memory.amount = parseInt(this.name);
+        this.memory.amount = parseInt(this.flag.name);
     }
 
 
@@ -26,7 +21,7 @@ export default class RefilCommand extends Command
     getTarget(): _HasId
     {
         return first(
-            this.pos.lookFor(LOOK_STRUCTURES)
+            this.flag.pos.lookFor(LOOK_STRUCTURES)
             .filter(x => x['store']!!)
         )
     }
@@ -35,7 +30,7 @@ export default class RefilCommand extends Command
     // find the memory of a refill process in the room of the command
     findRefilProc(): any|undefined
     {
-        return Memory['processor']['processes']['RefilProc_'+this.room.name];
+        return Memory['processor']['processes']['RefilProc_'+this.flag.room.name];
     }
 
 
@@ -59,7 +54,7 @@ export default class RefilCommand extends Command
         // spawn a refil proc if there is none
         if (!proc)
         {
-            Processor.getInstance().registerProcess(new RefilProc(this.room.name));
+            Processor.getInstance().registerProcess(new RefilProc(this.flag.room.name));
             return;
         }
 

@@ -19,7 +19,6 @@ export default class Processor
     static _inst      : Processor;                     // singelton instance of the processor.
 
     memory: {                                                // storage object for bot memory
-        commands  : { [commandRef: string] : object }        // stores command memory objects
         processes : { [procRef   : string] : ProcessMemory } // stores process memory objects
     }
 
@@ -56,10 +55,6 @@ export default class Processor
     // add a command to the processor
     registerCommand(cmd: Command): void
     {
-        // load command memory if exists
-        if (this.memory.commands[cmd.ref])
-            cmd.memory = this.memory.commands[cmd.ref];
-
         this.commands.push(cmd);
     }
 
@@ -67,8 +62,7 @@ export default class Processor
     // unregister a command
     unregisterCommand(cmd: Command): void
     {
-        delete this.memory[cmd.ref];
-        delete Memory['processor']['commands'][cmd.ref];
+        this.commands = this.commands.filter(x => x != cmd);
     }
 
 
@@ -89,6 +83,7 @@ export default class Processor
         delete this.memory[proc.ref];
         delete Memory['processor']['processes'][proc.ref];
     }
+
 
     // start saved processes
     private restartProcesses()
@@ -124,15 +119,6 @@ export default class Processor
         {
             // run command
             command.run();
-
-            if (command.kill)
-            {
-                this.unregisterCommand(command);
-                continue;
-            }
-
-            // save memory
-            this.memory.commands[command.ref] = command.memory;
         }
 
         // run processes

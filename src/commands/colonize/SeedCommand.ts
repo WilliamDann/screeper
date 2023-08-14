@@ -1,17 +1,10 @@
-import { first } from "lodash";
-import Command from "../Command";
-import Processor from "../../Processor";
+import Command        from "../Command";
+import Processor      from "../../Processor";
 import BasicSpawnProc from "../../processes/spawn/BasicSpawnProc";
 
 // creates a SpawnerSite for the colony
 export default class SeedCommand extends Command
 {
-    static commandName = 'colonize';
-
-    static flagColorA  = COLOR_PURPLE;
-    static flagColorB  = COLOR_GREY;
-
-
     constructor(flag: Flag)
     {
         super(flag);
@@ -28,7 +21,7 @@ export default class SeedCommand extends Command
         Processor.getInstance().registerProcess(
             new BasicSpawnProc(
                 'BasicSpawnProc',
-                { roomName: this.room.name }
+                { roomName: this.flag.room.name }
             )
         )
 

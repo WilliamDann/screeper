@@ -1,35 +1,15 @@
-import { CommandCreateOpts } from "./util/CommandCreateOpts";
-import { randomHex }         from "../utils/util";
-import { filter }            from "lodash";
-
 // A command is an instruction to the bot
 export default abstract class Command
 {
-    // command info
-    static commandName : string;            // the text name of the command, such as "colonize"
-
-    // flag for the command
-    static flagColorA  : ColorConstant;     // flag color
-    static flagColorB  : ColorConstant;     // flag secondaryColor
-
-
     // concrete command info
-    name                : string;           // the name of the flag
-    ref                 : string;           // unique identifier of the command
-    pos                 : RoomPosition;     // the position of the flag
-    room                : Room | null;      // the room of the flag
+    ref  : string;           // unique identifier of the command
+    flag : Flag;             // the Flag attatched to the command
 
-    memory : object;                        // things the command wants to remember between ticks, managed by the processor
-
-    kill = false;
 
     constructor(flag: Flag)
     {
-        this.name   = flag.name;
-        this.ref    = `${this.name}@${flag.pos.x},${flag.pos.y},${flag.pos.roomName}`;
-        this.pos    = flag.pos;
-        this.room   = flag.room;
-        this.memory = flag.memory || {};
+        this.flag = flag;
+        this.ref = `${flag.name}@${flag.pos.x},${flag.pos.y},${flag.pos.roomName}`;
     }
 
 
@@ -41,77 +21,10 @@ export default abstract class Command
     abstract run(): void;
 
 
-    // create the game world flag for the command
-    static createFlag(pos: RoomPosition, opts: CommandCreateOpts): number | string
-    {
-        // resolve flag name
-        let flagName = opts.name || undefined;
-        if (!flagName)
-        {
-            flagName = randomHex(8);
-            if (Game.flags[flagName])
-                return ERR_NAME_EXISTS;
-        }
-
-        // log creation
-        if (!opts.quiet)
-        {
-            // TODO logging module
-            console.log(`Creating command: ${this.commandName} @ ${pos.x},${pos.y}`);
-        }
-
-        // create flag
-        const result = pos.createFlag(flagName, this.flagColorA, this.flagColorB);
-        if (result == flagName && opts.memory)
-        {
-            Memory.flags[flagName] = opts.memory;
-        }
-
-        return result;
-    }
-
-
-    // if a given flag is for this command
-    static flagIsMatch(flag: Flag): boolean
-    {
-        return flag.color == this.flagColorA && flag.secondaryColor == this.flagColorB;
-    }
-
-
-    // if a command flag is present in a given room
-    static presentInRoom(pos: RoomPosition): boolean
-    {
-        return filter(
-            Game.rooms[pos.roomName].find(FIND_FLAGS), 
-            this.flagIsMatch
-        ).length > 0
-    }
-
-
-    // if a command flag is present at a given position
-    static presentAtPos(pos: RoomPosition): boolean
-    {
-        return filter(
-            pos.lookFor(LOOK_FLAGS),
-            this.flagIsMatch
-        ).length > 0
-    }
-
-
-    // if a command flag exists given a scope
-    static present(pos: RoomPosition, scope: "room"|"pos"): boolean
-    {
-        if (scope == "room")
-            return this.presentInRoom(pos);
-        return this.presentAtPos(pos);
-    }
-
-
     // remove the command by removing it's flag
     remove()
     {
-        for (let flag of this.pos.lookFor(LOOK_FLAGS))
-            flag.remove();
-        this.kill = true;
+        this.flag.remove();
+        this.flag = undefined;
     }
 }

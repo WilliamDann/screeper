@@ -7,15 +7,8 @@ import Command          from "../Command"
 // harvest energy from a source by spawning a harvest process
 export default class HarvestCommand extends Command
 {
-    static commandName = 'harvest';
-
-    static flagColorA = COLOR_YELLOW;
-    static flagColorB = COLOR_YELLOW;
-
-    memory: {
-        source: Id<Source>,             // the target source
-        harvesters: number,             // the number of harvesters for the command
-    };
+    source      : Id<Source>    // the target source
+    harvesters  : number        // the number of harvesters for the command
 
 
     constructor(flag: Flag)
@@ -27,7 +20,7 @@ export default class HarvestCommand extends Command
     // find the free spots around the source
     findSourceSpots(): number
     {
-        let source = Game.getObjectById(this.memory.source);
+        let source = Game.getObjectById(this.source);
         let area   = source.room.lookForAtArea(
             LOOK_TERRAIN,
             source.pos.y - 1,
@@ -44,12 +37,12 @@ export default class HarvestCommand extends Command
     init(): void
     {
         // find source under flag
-        if (!this.memory.source)
-            this.memory.source = first(this.pos.lookFor(LOOK_SOURCES)).id;
+        if (!this.source)
+            this.source = first(this.flag.pos.lookFor(LOOK_SOURCES)).id;
 
         // count harvest spots if needed
-        if (!this.memory.harvesters)
-            this.memory.harvesters = this.findSourceSpots();
+        if (!this.harvesters)
+            this.harvesters = this.findSourceSpots();
     }
 
 
@@ -59,10 +52,10 @@ export default class HarvestCommand extends Command
         //  TODO more than just a drop harvester
         Processor.getInstance().registerProcess(
             new DropHarvestProc(
-                this.memory.source,
+                this.source,
                 { 
-                    source     : this.memory.source,
-                    harvesters : this.memory.harvesters
+                    source     : this.source,
+                    harvesters : this.harvesters
                 }
             )
         );
