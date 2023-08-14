@@ -1,7 +1,7 @@
-import SeedCmd from "../commands/SeedCmd";
+import SeedCmd from "./commands/SeedCmd";
 
-import {addCommand, addProcess} from "./_Init";
-import Processor                from "./Processor";
+import {addCommand, addProcess} from "./framework/_Init";
+import Processor                from "./framework/Processor";
 
 
 /// Initilizaiton Step

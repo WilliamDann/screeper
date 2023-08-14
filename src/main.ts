@@ -1,4 +1,4 @@
-import init                 from "./framework/Init"
+import init                 from "./Init"
 import Processor            from "./framework/Processor";
 import { commandFactory }   from "./framework/_Init";
 
