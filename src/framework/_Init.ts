@@ -1,5 +1,5 @@
-import Command from "../commands/Command";
-import Process from "../processes/Process";
+import Command from "./Command";
+import Process from "./Process";
 
 // stores initilization values
 export default class _Init
