@@ -42,10 +42,10 @@ export function commandFactory(flag: Flag): Command
 
 
 // create Process objects from their process type
-export function processFactory(name: string, memory ?: object): Process
+export function processFactory(procType: string, procName: string, memory ?: object): Process
 {
-    if (!PROCESS_TABLE[name])
-        throw new Error(`Invalid process type: ${name}`);
+    if (!PROCESS_TABLE[procType])
+        throw new Error(`Invalid process type: ${procType}`);
 
-    return new PROCESS_TABLE[name](name, memory);
+    return new PROCESS_TABLE[procType](procName, memory);
 }

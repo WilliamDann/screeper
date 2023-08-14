@@ -91,7 +91,7 @@ export default class Processor
         for (let procRef in this.memory.processes)
         {
             let procMem = this.memory.processes[procRef];
-            let proc    = processFactory(procMem.procType, procMem.memory);
+            let proc    = processFactory(procMem.procType, procMem.procName, procMem.memory);
 
             this.processes.push(proc);
         }
