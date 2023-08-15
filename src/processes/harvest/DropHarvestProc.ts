@@ -1,15 +1,13 @@
-import Comms from "../../framework/Comms";
-import Process from "../../framework/Process";
-import { SpawnRequest } from "../../interface/SpawnRequest";
+import CreepProc from "../CreepProc";
 
 // harvests material from a sources and drops them
-export default class DropHarvestProc extends Process
+export default class DropHarvestProc extends CreepProc
 {
     memory: {
         source      : Id<Source>    // the source to mine from
 
         creeps      : string[]      // the creeps under the control of the proc
-        harvesters  : number        // the number of creeps to mine with
+        creepGoal   : number        // the number of creeps to mine with
     }
 
 
@@ -37,30 +35,12 @@ export default class DropHarvestProc extends Process
 
     init(): void
     {
-        if (!this.memory.creeps)
-            this.memory.creeps = [];
+        super.init();
     }
 
 
     run(): void
     {
-        // remove dead creeps
-        this.memory.creeps = this.memory.creeps.filter(x => Game.creeps[x] != undefined);
-
-        // run creeps
-        for (let name of this.memory.creeps)
-            this.handleCreep(Game.creeps[name]);
-
-        // try to spawn
-        if (this.memory.creeps.length < this.memory.harvesters)
-            Comms.emit(
-                'spawnRequest',
-                {
-                    name      : `${this.ref}_${Game.time}`,
-                    body      : [ WORK, CARRY, MOVE ],
-                    opts      : { },
-                    requester : this
-                } as SpawnRequest
-            );
+        super.run();
     }
 }

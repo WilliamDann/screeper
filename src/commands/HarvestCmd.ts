@@ -26,8 +26,8 @@ export default class HarvestCmd extends Command
         this.createProcess(new DropHarvestProc(
             this.source.id, 
             {
-                source     : this.source.id,
-                harvesters : freeSpots(this.source.pos)
+                source    : this.source.id,
+                creepGoal : freeSpots(this.source.pos)
             }
         ));
 

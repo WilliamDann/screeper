@@ -1,11 +1,7 @@
-import Comms            from "../../framework/Comms";
-import Process          from "../../framework/Process";
-import Processor        from "../../framework/Processor";
-import { SpawnRequest } from "../../interface/SpawnRequest";
-import DropHarvestProc  from "./DropHarvestProc";
+import CreepProc from "../CreepProc";
 
 // harvests material from a sources and drops them
-export default class ProtoHarvestProc extends Process
+export default class ProtoHarvestProc extends CreepProc
 {
     source : Source;            // source to draw from
     spawner: StructureSpawn;    // spawn to deposit in
@@ -14,8 +10,8 @@ export default class ProtoHarvestProc extends Process
         source      : Id<Source>            // the source to mine from
         spawner     : Id<StructureSpawn>    // the spawn to fill
 
-        creeps      : string[]              // the creeps under the control of the proc
-        harvesters  : number                // the number of creeps to mine with
+        creeps      : string[]              // creeps under control of the proc
+        creepGoal   : number                // total creeps to have by the proc
     }
 
 
@@ -52,53 +48,17 @@ export default class ProtoHarvestProc extends Process
     }
 
 
-    // upgrade to a drop harvester
-    upgradeProc()
-    {
-        Processor.getInstance().registerProcess(new DropHarvestProc(this.name, this.memory));
-        this.kill = true;
-    }
-
-
     init(): void
     {
-        if (!this.memory.creeps)
-            this.memory.creeps = [];
-
         this.source  = Game.getObjectById(this.memory.source);
         this.spawner = Game.getObjectById(this.memory.spawner);
+
+        super.init();
     }
 
 
     run(): void
     {
-        // upgrade to a drop harvester if possible
-        if (this.memory.creeps.length >= this.memory.harvesters && Game.time % 100 == 0)
-        {
-            this.upgradeProc();
-            return;
-        }
-
-
-        // remove dead creeps
-        this.memory.creeps = this.memory.creeps.filter(x => Game.creeps[x] != undefined);
-
-
-        // run creeps
-        for (let name of this.memory.creeps)
-            this.handleCreep(Game.creeps[name]);
-
-
-        // try to spawn a creep
-        if (this.memory.creeps.length < this.memory.harvesters)
-            Comms.emit(
-                'spawnRequest',
-                {
-                    name      : `${this.ref}_${Game.time}`,
-                    body      : [ WORK, CARRY, MOVE ],
-                    opts      : { },
-                    requester : this
-                } as SpawnRequest
-            );
+        super.run();
     }
 }

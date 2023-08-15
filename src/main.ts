@@ -18,4 +18,7 @@ export function loop()
     // call init and tick funcs on cmds and procs
     processor.init();
     processor.run();
+
+    // screeps does not always remove static members
+    Comms.listners = {};
 }
