@@ -13,7 +13,7 @@ The idea was to organize the behaviors of the bot into the two sections listed b
 The idea is to loosely resemble a computer, where there are different processes running with their own memory doing their own things. These processes can communicate via an event system, but should generally have no knowledge of each other.
 
 ### Processes
-A process is something that the bot *does*. Things like keeping track of spawners, harvesting a source, spawning creeps, etc. would fall into a processes.
+A process is a port of the bot that *does*. Things like keeping track of spawners, harvesting a source, spawning creeps, etc. would fall into a processes.
 
 #### Example Process
 This is an example of a process that prints out last tick's Game.time value:
