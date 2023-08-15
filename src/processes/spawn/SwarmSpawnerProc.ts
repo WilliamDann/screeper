@@ -13,6 +13,7 @@ export default class SwarmSpawnerProc extends Process
         reserve     : number                // the creeps to keep in reserve
     };
 
+
     constructor(name, memory)
     {
         super(name, memory);
@@ -77,9 +78,9 @@ export default class SwarmSpawnerProc extends Process
         // try to spawn a creep at each spawn until reserve limit is hit
         for (let spawn of this.spawners)
         {
-            this.trySpawnCreep(spawn);
             if (this.memory.idleCreeps.length >= this.memory.reserve)
                 break;
+            this.trySpawnCreep(spawn);
         }
     }
 }

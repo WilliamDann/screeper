@@ -1,5 +1,4 @@
 import Command          from "../framework/Command";
-import FirstSpawnerProc from "../processes/spawn/FirstSpawnerProc";
 import SwarmSpawnerProc from "../processes/spawn/SwarmSpawnerProc";
 
 // the seed command is the first command run in a room
