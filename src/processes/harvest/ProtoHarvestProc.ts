@@ -1,3 +1,4 @@
+import { freeSpots } from "../../util";
 import CreepProc from "../CreepProc";
 
 // harvests material from a sources and drops them
@@ -8,8 +9,8 @@ export default class ProtoHarvestProc extends CreepProc
 
     memory: {
         source      : Id<Source>            // the source to mine from
+        
         spawner     : Id<StructureSpawn>    // the spawn to fill
-
         creeps      : string[]              // creeps under control of the proc
         creepGoal   : number                // total creeps to have by the proc
     }
@@ -51,7 +52,11 @@ export default class ProtoHarvestProc extends CreepProc
     init(): void
     {
         this.source  = Game.getObjectById(this.memory.source);
+        if (!this.memory.spawner)
+            this.memory.spawner = this.source.room.find(FIND_MY_SPAWNS)[0].id;
         this.spawner = Game.getObjectById(this.memory.spawner);
+        if (!this.memory.creepGoal)
+            this.memory.creepGoal = freeSpots(this.source.pos);
 
         super.init();
     }

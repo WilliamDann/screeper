@@ -1,12 +1,16 @@
-import Command from "../framework/Command";
+import Command         from "../framework/Command";
 import DropHarvestProc from "../processes/harvest/DropHarvestProc";
-import { freeSpots } from "../util";
+import ProtoHarvestProc from "../processes/harvest/ProtoHarvestProc";
+import { freeSpots }   from "../util";
 
 // command for making a harvest process for a source
 export default class HarvestCmd extends Command
 {
-    source: Source; // the target source
-
+    source: Source;                     // the target source
+    harvestProcTypes = {                // map of procName -> procType for choosing what type you want
+        'Proto' : ProtoHarvestProc,
+        'Drop'  : DropHarvestProc
+    }
 
     constructor(flag: Flag)
     {
@@ -22,14 +26,15 @@ export default class HarvestCmd extends Command
 
     run(): void
     {
+        let proc = this.harvestProcTypes[this.flag.name];
+        if (!proc)
+        {
+            this.remove();
+            throw new Error("Invalid harvest proc type: " + this.flag.name);
+        }
+
         // create harvest proc
-        this.createProcess(new DropHarvestProc(
-            this.source.id, 
-            {
-                source    : this.source.id,
-                creepGoal : freeSpots(this.source.pos)
-            }
-        ));
+        this.createProcess(new proc(this.source.id, { source: this.source.id }));
 
         // done
         this.remove();

@@ -5,7 +5,7 @@ import { SpawnRequest } from "../../interface/SpawnRequest";
 // process for spawning creeps based on who asks first
 export default class FirstSpawnerProc extends Process
 {
-    busy  : { [id: Id<StructureSpawn>]: boolean }   // if a spawner has already promised to spawn this tick, it will be marked as true here
+    busy  : { string : boolean }   // if a spawner has already promised to spawn this tick, it will be marked as true here
     memory: {
         spawners : Id<StructureSpawn>[]             // the spawners known to the spawner proc
     }
@@ -14,7 +14,7 @@ export default class FirstSpawnerProc extends Process
     constructor(name: string, memory: object)
     {
         super(name, memory);
-        this.busy = {};
+        this.busy = {} as any;
     }
 
 
