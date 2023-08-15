@@ -1,4 +1,4 @@
-import CreepProc from "./CreepProc";
+import CreepProc from "../CreepProc";
 
 // handles creeps upgrading a controller
 export default class RclProc extends CreepProc
