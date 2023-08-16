@@ -1,8 +1,10 @@
+import { freeSpots } from "../../util";
 import CreepProc from "../CreepProc";
 
 // harvests material from a sources and drops them
 export default class DropHarvestProc extends CreepProc
 {
+    source: Source;
     memory: {
         source      : Id<Source>    // the source to mine from
 
@@ -35,6 +37,9 @@ export default class DropHarvestProc extends CreepProc
 
     init(): void
     {
+        this.source = Game.getObjectById(this.memory.source);
+        if (!this.memory.creepGoal)
+            this.memory.creepGoal = freeSpots(this.source.pos);
         super.init();
     }
 

@@ -49,7 +49,7 @@ export default abstract class CreepProc extends Process
             'spawnRequest',
             {
                 name      : `${this.ref}_${Game.time}`,
-                body      : [ WORK, CARRY, MOVE ],
+                body      : [ WORK, CARRY, MOVE, MOVE ],
                 opts      : { },
                 requester : this
             } as SpawnRequest
