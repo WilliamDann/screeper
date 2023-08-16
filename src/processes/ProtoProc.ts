@@ -17,6 +17,51 @@ export default class ProtoProc extends CreepProc
         super(name, memory);
     }
 
+    // find a place to get energy
+    // TODO replace with seperate logistics proc
+    findEnergyTarget(creep: Creep)
+    {
+        // look for storages
+        let storage = creep.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_STORAGE })[0] as StructureStorage;
+        if (storage.store.energy > 1000)
+        {
+            creep.memory['state']  = 'withdraw';
+            creep.memory['target'] = storage.id;
+            return;
+        }
+
+        // look for drops
+        let drops = creep.room.find(FIND_DROPPED_RESOURCES)
+            .sort(x => -x.pos.getDirectionTo(creep.pos) + (x.amount * 10));
+
+        // if no drops harvest
+        if (drops.length == 0)
+        {
+            creep.memory['state'] = 'harvest';
+            return;
+        }
+
+        // otherwise pickup
+        creep.memory['target'] = drops[0].id;
+    }
+
+    // pick a role for an idle creep
+    findCreepState(creep: Creep): void {
+        // remove previous role state
+        creep.memory = {};
+
+        // if the creep needs energy, pick it up
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
+        {
+            creep.memory['state'] = 'pickup';
+        }
+        else
+        {
+            creep.memory['state'] = 'dropoff';
+        }
+
+    }
+
     handleHarvest(creep: Creep): void {
         // find a pickup site if needed
         if (!creep.memory['target'])
@@ -39,18 +84,7 @@ export default class ProtoProc extends CreepProc
     handlePickup(creep: Creep): void {
         // find a pickup site if needed
         if (!creep.memory['target'])
-        {
-            let drops = creep.room.find(FIND_DROPPED_RESOURCES)
-                .sort(x => -x.pos.getDirectionTo(creep.pos) + (x.amount * 10));
-
-            if (drops.length == 0)
-            {
-                creep.memory['state'] = 'harvest';
-                return;
-            }
-
-            creep.memory['target'] = drops[0].id;
-        }
+            this.findEnergyTarget(creep);
 
         // pickup the resources
         let target = Game.getObjectById(creep.memory['target']) as Resource;
@@ -72,12 +106,12 @@ export default class ProtoProc extends CreepProc
         if (!creep.memory['target'])
         {
             let fills = creep.room.find(FIND_STRUCTURES)
-                .filter(x => x['store'] && x['store'].getFreeCapacity(RESOURCE_ENERGY) != 0 && !x['moveTo']);
+                .filter(x => x['store'] && x['store'].getFreeCapacity(RESOURCE_ENERGY) != 0 && !x['moveTo'] && x['store'].energy < 1000);
 
             // if nothing to fill, upgrade
             if (fills.length == 0)
             {
-                creep.memory['state'] = 'upgrade';
+                creep.memory['state'] = 'build';
                 return;
             }
 
@@ -94,6 +128,39 @@ export default class ProtoProc extends CreepProc
             creep.memory['state'] = undefined;
     }
 
+    handleBuild(creep: Creep): void {
+        // find a dropoff site if needed
+        if (!creep.memory['target'])
+        {
+            let sites = creep.room.find(FIND_CONSTRUCTION_SITES)
+                .sort(x => creep.pos.getRangeTo(creep.pos))
+
+            // if nothing to fill, upgrade
+            if (sites.length == 0)
+            {
+                creep.memory['state'] = 'upgrade';
+                return;
+            }
+
+            creep.memory['target'] = sites[0].id;
+        }
+
+        // pickup the resources
+        let target = Game.getObjectById(creep.memory['target']) as ConstructionSite;
+        if (!target)
+        {
+            delete creep.memory['state'];
+            return;
+        }
+    
+        if (creep.build(target) == ERR_NOT_IN_RANGE)
+            creep.moveTo(target);
+
+        // new state needed
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
+            creep.memory['state'] = undefined; 
+    }
+
     handleUpgrade(creep: Creep): void {
         if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE)
             creep.moveTo(creep.room.controller);
@@ -103,25 +170,36 @@ export default class ProtoProc extends CreepProc
             creep.memory['state'] = undefined;
     }
 
+    handleWithdraw(creep: Creep): void {
+        // pickup the resources
+        let target = Game.getObjectById(creep.memory['target']) as StructureContainer;
+        if (!target)
+        {
+            delete creep.memory['target'];
+            return;
+        }
+        if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+            creep.moveTo(target);
+
+        // new state needed
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) != 0)
+            creep.memory['state'] = undefined;
+    }
+
     handleCreep(creep: Creep): void {
         creep.say((''+creep.memory['state'])[0]);
 
         // find role
         if (!creep.memory['state'])
-        {
-            delete creep.memory['target'];
-
-            if (creep.store.getFreeCapacity(RESOURCE_ENERGY) != 0)
-                creep.memory['state'] = 'pickup';
-            else
-                creep.memory['state'] = 'dropoff';
-        }
+            this.findCreepState(creep);
 
         let x = {
-            'harvest' : this.handleHarvest,
-            'pickup'  : this.handlePickup,
-            'dropoff' : this.handleDropoff,
-            'upgrade' : this.handleUpgrade
+            'harvest'  : this.handleHarvest.bind(this),
+            'pickup'   : this.handlePickup.bind(this),
+            'dropoff'  : this.handleDropoff.bind(this),
+            'build'    : this.handleBuild.bind(this),
+            'upgrade'  : this.handleUpgrade.bind(this),
+            'withdraw' : this.handleWithdraw.bind(this)
 
         };
         

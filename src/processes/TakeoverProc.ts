@@ -24,7 +24,12 @@ export default class TakeoverProc extends Process
     }
 
     init(): void {
-        Comms.register('spawnRequest', this.handleSpawnRequest.bind(this))
+        // intercept spawn requests with old creeps
+        Comms.register('spawnRequest', this.handleSpawnRequest.bind(this));
+
+        // clear creep memory
+        for (let creep in this.memory.creeps)
+            Game.creeps[creep].memory = {};
     }
 
     run(): void {
