@@ -1,5 +1,5 @@
-import Command          from "../framework/Command";
-import SwarmSpawnerProc from "../processes/spawn/SwarmSpawnerProc";
+import Command          from "../../framework/Command";
+import SwarmSpawnerProc from "../../processes/spawn/SwarmSpawnerProc";
 
 // the seed command is the first command run in a room
 export default class SeedCmd extends Command

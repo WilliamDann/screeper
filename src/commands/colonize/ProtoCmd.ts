@@ -1,6 +1,6 @@
-import Command          from "../framework/Command";
-import ProtoProc from "../processes/ProtoProc";
-import FirstSpawnerProc from "../processes/spawn/FirstSpawnerProc";
+import Command          from "../../framework/Command";
+import ProtoProc        from "../../processes/ProtoProc";
+import FirstSpawnerProc from "../../processes/spawn/FirstSpawnerProc";
 
 // the seed command is the first command run in a room
 export default class ProtoCmd extends Command

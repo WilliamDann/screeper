@@ -12,6 +12,13 @@ export default class Comms
     }
 
 
+    // unregister a listner
+    static unregister(channel: string, func: Function)
+    {
+        this.listners[channel] = this.listners[channel].filter(x => x != func);
+    }
+
+
     // emit a message to a channel
     static emit(channel: string, data: any)
     {

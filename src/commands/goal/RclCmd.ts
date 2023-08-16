@@ -1,5 +1,5 @@
-import Command from "../framework/Command";
-import RclProc from "../processes/goal/RclProc";
+import Command from "../../framework/Command";
+import RclProc from "../../processes/goal/RclProc";
 
 export default class RclCmd extends Command
 {

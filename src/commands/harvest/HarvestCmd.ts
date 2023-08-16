@@ -1,7 +1,7 @@
-import Command         from "../framework/Command";
-import DropHarvestProc from "../processes/harvest/DropHarvestProc";
-import ProtoHarvestProc from "../processes/harvest/ProtoHarvestProc";
-import { freeSpots }   from "../util";
+import Command         from "../../framework/Command";
+import DropHarvestProc from "../../processes/harvest/DropHarvestProc";
+import ProtoHarvestProc from "../../processes/harvest/ProtoHarvestProc";
+import { freeSpots }   from "../../util";
 
 // command for making a harvest process for a source
 export default class HarvestCmd extends Command
