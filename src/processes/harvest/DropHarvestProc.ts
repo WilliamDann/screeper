@@ -8,8 +8,9 @@ export default class DropHarvestProc extends CreepProc
     memory: {
         source      : Id<Source>    // the source to mine from
 
-        creeps      : string[]      // the creeps under the control of the proc
-        creepGoal   : number        // the number of creeps to mine with
+        creeps      : string[]           // the creeps under the control of the proc
+        creepGoal   : number             // the number of creeps to mine with
+        bodyGoal    : BodyPartConstant[] // the creep body goal of the proc
     }
 
 
