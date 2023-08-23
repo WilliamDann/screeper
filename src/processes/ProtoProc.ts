@@ -32,7 +32,7 @@ export default class ProtoProc extends CreepProc
 
         // look for drops
         let drops = creep.room.find(FIND_DROPPED_RESOURCES)
-            .sort(x => -x.pos.getDirectionTo(creep.pos) + (x.amount * 10));
+            .sort(x => -x.pos.getRangeTo(creep.pos) + (x.amount * 10));
 
         // if no drops harvest
         if (drops.length == 0)

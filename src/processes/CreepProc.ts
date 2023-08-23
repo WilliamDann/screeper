@@ -1,13 +1,14 @@
-import Comms from "../framework/Comms";
-import Process from "../framework/Process";
+import Comms            from "../framework/Comms";
+import Process          from "../framework/Process";
 import { SpawnRequest } from "../interface/SpawnRequest";
 
 // base class for a process that handles creeps
 export default abstract class CreepProc extends Process
 {
     memory: {
-        creeps    : string[]        // the creeps under the control of the proc
-        creepGoal : number          // the total creeps the proc wants
+        creeps    : string[]           // the creeps under the control of the proc
+        creepGoal : number             // the total creeps the proc wants
+        bodyGoal ?: BodyPartConstant[] // the goal creep body of the proc
     }
 
 
@@ -33,6 +34,8 @@ export default abstract class CreepProc extends Process
     init(): void {
         if (!this.memory.creeps)
             this.memory.creeps = [];
+        if (!this.memory.bodyGoal)
+            this.memory.bodyGoal = [WORK, CARRY, MOVE, MOVE];
     }
 
 
@@ -49,7 +52,7 @@ export default abstract class CreepProc extends Process
             'spawnRequest',
             {
                 name      : `${this.ref}_${Game.time}`,
-                body      : [ WORK, CARRY, MOVE, MOVE ],
+                body      : this.memory.bodyGoal,
                 opts      : { },
                 requester : this
             } as SpawnRequest
