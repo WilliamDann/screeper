@@ -21,4 +21,9 @@ export function loop()
 
     // screeps does not always remove static members
     Comms.listners = {};
+
+    // clean game memory
+    for (let name in Memory.creeps)
+        if (!Game.creeps[name])
+            delete Memory.creeps[name];
 }
