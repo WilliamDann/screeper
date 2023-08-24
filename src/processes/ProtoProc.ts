@@ -22,13 +22,13 @@ export default class ProtoProc extends CreepProc
     findEnergyTarget(creep: Creep)
     {
         // look for storages
-        let storage = creep.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_STORAGE })[0] as StructureStorage;
-        if (storage.store.energy > 1000)
-        {
-            creep.memory['state']  = 'withdraw';
-            creep.memory['target'] = storage.id;
-            return;
-        }
+        // let storage = creep.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_STORAGE })[0] as StructureStorage;
+        // if (storage.store.energy > 1000)
+        // {
+        //     creep.memory['state']  = 'withdraw';
+        //     creep.memory['target'] = storage.id;
+        //     return;
+        // }
 
         // look for drops
         let drops = creep.room.find(FIND_DROPPED_RESOURCES)
