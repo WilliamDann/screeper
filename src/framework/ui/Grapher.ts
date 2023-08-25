@@ -5,7 +5,7 @@ interface GrapherData {
 }
 
 export default class Grapher {
-    static DISP_NUM = 23;
+    static DISP_NUM = 25;
 
     x        : number;
     y        : number;
@@ -38,7 +38,11 @@ export default class Grapher {
     {
         for (let name in this.funcs)
         {
-            this.data[name].push(this.funcs[name].data());
+            let point = this.funcs[name].data()
+            if (point == undefined || point == null)
+                continue;
+
+            this.data[name].push(point);
             if (this.data[name].length > Grapher.DISP_NUM)
                 this.data[name].shift();
         }
@@ -52,6 +56,9 @@ export default class Grapher {
         let x      = 1;
         let last   = points[0];
         let scale  = this.funcs[name].scale;
+
+        if (!last)
+            return;
 
         for (let point of points)
         {

@@ -1,11 +1,13 @@
 import init                 from "./Init"
 import Comms                from "./framework/Comms";
-import Processor            from "./framework/Processor";
 import TaskManager          from "./framework/ui/TaskManager";
 import { commandFactory }   from "./framework/_Init";
-import Grapher from "./framework/ui/Grapher";
+import Grapher              from "./framework/ui/Grapher";
+import { max, min }         from "lodash";
+import Processor            from "./framework/Processor";
 
 const DEBUG = true;
+const RESET = false;
 
 function consoleClear()
 {
@@ -49,12 +51,23 @@ export function loop()
     // show debug UI
     if (DEBUG)
     {
+        if (RESET)
+        {
+            if (Game.time % Grapher.DISP_NUM == 0)
+                Memory['grapher'] = {};
+        }
+
         let tm = new TaskManager(0, 0);
         tm.draw();
         
         let gr = new Grapher(23, 0);
-        gr.addLine('% Usage CPU per Tick', {
+        gr.addLine('% Total CPU', {
             data  : () => (100 * (Game.cpu.getUsed() / Game.cpu.limit)),
+            scale : x  => 10 - (0.10 * x),
+            color : "#53717a"
+        });
+        gr.addLine('% Process CPU', {
+            data  : () => (100 * ( (Game.cpu.getUsed() - tm.usage['overhead']) / Game.cpu.limit) ),
             scale : x  => 10 - (0.10 * x),
             color : "#6fd9fc"
         });
@@ -63,6 +76,16 @@ export function loop()
             scale: x => 10 - (x/1000),
             color : "#fcba03"
         })
+        gr.addLine('Max CPU %', {
+            data  : () => (Game.time % 25 == 0) ? max(Memory['grapher']['% Process CPU']) : null,
+            scale : x => 10 - (0.10 * x),
+            color : "#bf654d"
+        });
+        gr.addLine('Min CPU %', {
+            data  : () => (Game.time % 25 == 0) ? min(Memory['grapher']['% Process CPU']) : null,
+            scale : x => 10 - (0.10 * x),
+            color : "#88bd5c"
+        });
         gr.collect();
         gr.draw();
     }
