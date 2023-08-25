@@ -21,17 +21,24 @@ export default class LinkNetProc extends CreepProc
     pullFromSublinks()
     {
         for (let link of this.sublinks)
-            link.transferEnergy(this.baseLink);
+            if (link.cooldown == 0)
+                link.transferEnergy(this.baseLink);
     }
 
     handleCreep(creep: Creep): void {
-        this.pullFromSublinks();
+        if (this.baseLink.cooldown == 0)
+            this.pullFromSublinks();
         
-        if (creep.withdraw(this.baseLink, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
-            creep.moveTo(this.baseLink);
-
-        if (creep.transfer(this.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
-            creep.moveTo(this.storage);
+        if (creep.store.energy == 0)
+        {
+            if (creep.withdraw(this.baseLink, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                creep.moveTo(this.baseLink);
+        }
+        else
+        {
+            if (creep.transfer(this.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                creep.moveTo(this.storage);
+        }
     }
 
     init(): void {
