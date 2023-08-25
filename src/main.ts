@@ -39,15 +39,6 @@ export function loop()
         if (!Game.creeps[name])
             delete Memory.creeps[name];
 
-    // temp tower control code
-    for (let name in Game.rooms)
-    {
-        let towers = Game.rooms[name].find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_TOWER }) as StructureTower[];
-        for (let baddie of Game.rooms[name].find(FIND_HOSTILE_CREEPS))
-            for (let tower of towers)
-                tower.attack(baddie);
-    }
-
     // show debug UI
     if (DEBUG)
     {

@@ -1,3 +1,4 @@
+import { sortBy } from "lodash";
 import CreepProc from "./CreepProc";
 
 // proc for a room that is just getting started
@@ -105,8 +106,9 @@ export default class ProtoProc extends CreepProc
         // find a dropoff site if needed
         if (!creep.memory['target'])
         {
-            let fills = this.room.find(FIND_STRUCTURES)
-                .filter(x => x['store'] && x['store'].getFreeCapacity(RESOURCE_ENERGY) != 0 && !x['moveTo'] && x.structureType != STRUCTURE_STORAGE && x.structureType != STRUCTURE_LINK);
+            let fills = sortBy(this.room.find(FIND_STRUCTURES)
+                .filter(x => x['store'] && x['store'].getFreeCapacity(RESOURCE_ENERGY) != 0 && !x['moveTo'] && x.structureType != STRUCTURE_STORAGE && x.structureType != STRUCTURE_LINK),
+                x => creep.pos.getRangeTo(x));
 
             // if nothing to fill, upgrade
             if (fills.length == 0)
@@ -132,8 +134,7 @@ export default class ProtoProc extends CreepProc
         // find a dropoff site if needed
         if (!creep.memory['target'])
         {
-            let sites = this.room.find(FIND_CONSTRUCTION_SITES)
-                .sort(x => creep.pos.getRangeTo(creep.pos))
+            let sites = sortBy(this.room.find(FIND_CONSTRUCTION_SITES), x => creep.pos.getRangeTo(x));
 
             // if nothing to fill, upgrade
             if (sites.length == 0)

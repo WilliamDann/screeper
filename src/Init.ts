@@ -9,6 +9,7 @@ import ClaimCmd                 from "./commands/colonize/ClaimCmd";
 import RemoteHarvestCmd         from "./commands/goal/RemoteHarvestCmd";
 import StealCmd                 from "./commands/goal/StealCmd";
 import LinkNetCmd               from "./commands/logi/InitLinkNetCmd";
+import DefenseCmd               from "./commands/war/DefenseCmd";
 
 import Processor                from "./framework/Processor";
 import DropHarvestProc          from "./processes/harvest/DropHarvestProc";
@@ -23,6 +24,7 @@ import RemoteHarvestProc        from "./processes/harvest/RemoteHarvestProc";
 import StealProc                from "./processes/harvest/StealProc";
 import LinkHarvestProc          from "./processes/harvest/LinkHarvestProc";
 import LinkNetProc              from "./processes/LinkNetProc";
+import StaticDefenseProc        from "./processes/war/StaticDefenseProc";
 
 
 /// Initilizaiton Step
@@ -43,6 +45,8 @@ export default function()
 
     addCommand(COLOR_YELLOW, COLOR_GREY, StealCmd);
 
+    addCommand(COLOR_RED, COLOR_BLUE, DefenseCmd);
+
     // process setup
     addProcess('ProtoProc', ProtoProc);
 
@@ -60,6 +64,8 @@ export default function()
     addProcess('RemoteHarvestProc', RemoteHarvestProc);
     addProcess('StealProc', StealProc);
     addProcess('LinkNetProc', LinkNetProc);
+
+    addProcess('StaticDefenseProc', StaticDefenseProc);
 
     // init processor
     Processor.clear();
