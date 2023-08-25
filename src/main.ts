@@ -1,8 +1,11 @@
 import init                 from "./Init"
 import Comms                from "./framework/Comms";
 import Processor            from "./framework/Processor";
-import TaskManager          from "./framework/TaskManager";
+import TaskManager          from "./framework/ui/TaskManager";
 import { commandFactory }   from "./framework/_Init";
+import Grapher from "./framework/ui/Grapher";
+
+const DEBUG = true;
 
 function consoleClear()
 {
@@ -13,8 +16,6 @@ function consoleClear()
 // screeps entry point
 export function loop()
 {
-    consoleClear();
-
     // run initilization step
     init();
     const processor = Processor.getInstance();
@@ -45,7 +46,24 @@ export function loop()
                 tower.attack(baddie);
     }
 
-    // task manager
-    let tm = new TaskManager();
-    tm.logUsage();
+    // show debug UI
+    if (DEBUG)
+    {
+        let tm = new TaskManager(0, 0);
+        tm.draw();
+        
+        let gr = new Grapher(23, 0);
+        gr.addLine('% Usage CPU per Tick', {
+            data  : () => (100 * (Game.cpu.getUsed() / Game.cpu.limit)),
+            scale : x  => 10 - (0.10 * x),
+            color : "#6fd9fc"
+        });
+        gr.addLine('CPU Bucket', {
+            data: () => Game.cpu.bucket,
+            scale: x => 10 - (x/1000),
+            color : "#fcba03"
+        })
+        gr.collect();
+        gr.draw();
+    }
 }
