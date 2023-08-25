@@ -86,6 +86,18 @@ export function loop()
             scale : x => 10 - (0.10 * x),
             color : "#88bd5c"
         });
+
+        gr.addLine("Min Min CPU", {
+            data  : () => min(Memory['grapher']['Min CPU %']),
+            scale : x => 10 - (0.10 * x),
+            color : "#6f9c4b"
+        })
+        gr.addLine("Max Max CPU", {
+            data  : () => max(Memory['grapher']['Max CPU %']),
+            scale : x => 10 - (0.10 * x),
+            color : "#a65742"
+        })
+
         gr.collect();
         gr.draw();
     }
