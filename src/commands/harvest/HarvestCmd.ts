@@ -1,7 +1,7 @@
-import Command         from "../../framework/Command";
-import DropHarvestProc from "../../processes/harvest/DropHarvestProc";
+import Command          from "../../framework/Command";
+import DropHarvestProc  from "../../processes/harvest/DropHarvestProc";
+import LinkHarvestProc  from "../../processes/harvest/LinkHarvestProc";
 import ProtoHarvestProc from "../../processes/harvest/ProtoHarvestProc";
-import { freeSpots }   from "../../util";
 
 // command for making a harvest process for a source
 export default class HarvestCmd extends Command
@@ -9,7 +9,8 @@ export default class HarvestCmd extends Command
     source: Source;                     // the target source
     harvestProcTypes = {                // map of procName -> procType for choosing what type you want
         'Proto' : ProtoHarvestProc,
-        'Drop'  : DropHarvestProc
+        'Drop'  : DropHarvestProc,
+        'Link'  : LinkHarvestProc,
     }
 
     constructor(flag: Flag)
