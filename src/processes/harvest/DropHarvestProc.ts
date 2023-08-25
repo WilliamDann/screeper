@@ -27,7 +27,8 @@ export default class DropHarvestProc extends CreepProc
             creep.moveTo(this.source);
 
         // drop if resouce below is getting low or we're full
-        if (creep.pos.lookFor(LOOK_RESOURCES)[0].amount < 100 || creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
+        let dropPoint = creep.pos.lookFor(LOOK_RESOURCES)[0];
+        if (!dropPoint || dropPoint.amount < 100 || creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
             creep.drop(RESOURCE_ENERGY);
     }
 

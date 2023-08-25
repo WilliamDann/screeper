@@ -18,15 +18,20 @@ export default class LinkHarvestProc extends CreepProc
     // handle the behavior of a creep
     handleCreep(creep: Creep)
     {
-        const target = Game.getObjectById(this.memory.source);
-        const result = creep.harvest(target);
+        let linkTransferSoon    = this.link.cooldown <= 1;
+        let hasEnergyToTransfer = creep.store.energy != 0;
+        let isFull              = creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0;
 
-        if (result == ERR_NOT_IN_RANGE)
-            creep.moveTo(target)
-
-        if (this.link.cooldown == 0)
+        if ( isFull || (linkTransferSoon && hasEnergyToTransfer) )
+        {
             if (creep.transfer(this.link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
-                creep.moveTo(this.link)
+                creep.moveTo(this.link);
+        }
+        else if (this.source.energy != 0)
+        {
+            if (creep.harvest(this.source) == ERR_NOT_IN_RANGE)
+                creep.moveTo(this.source);
+        }
     }
 
 
