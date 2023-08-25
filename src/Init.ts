@@ -16,6 +16,8 @@ import TakeoverCmd from "./commands/colonize/TakeoverCmd";
 import TakeoverProc from "./processes/TakeoverProc";
 import ClaimCmd from "./commands/colonize/ClaimCmd";
 import ClaimProc from "./processes/goal/ClaimProc";
+import RemoteHarvestCmd from "./commands/goal/RemoteHarvestCmd";
+import RemoteHarvestProc from "./processes/harvest/RemoteHarvestProc";
 
 
 /// Initilizaiton Step
@@ -23,6 +25,8 @@ export default function()
 {
     // command setup
     addCommand(COLOR_YELLOW, COLOR_YELLOW, HarvestCmd);
+    addCommand(COLOR_YELLOW, COLOR_BLUE, RemoteHarvestCmd);
+
     addCommand(COLOR_WHITE, COLOR_WHITE, SeedCmd);
     addCommand(COLOR_WHITE, COLOR_GREY, RclCmd);
 
@@ -44,6 +48,7 @@ export default function()
     addProcess('TakeoverProc', TakeoverProc);
 
     addProcess('ClaimProc', ClaimProc);
+    addProcess('RemoteHarvestProc', RemoteHarvestProc);
 
     // init processor
     Processor.clear();
