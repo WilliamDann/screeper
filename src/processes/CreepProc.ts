@@ -6,8 +6,8 @@ import { SpawnRequest } from "../interface/SpawnRequest";
 export default abstract class CreepProc extends Process
 {
     memory: {
-        creeps    : string[]           // the creeps under the control of the proc
         creepGoal : number             // the total creeps the proc wants
+        creeps   ?: string[]           // the creeps under the control of the proc
         bodyGoal ?: BodyPartConstant[] // the goal creep body of the proc
     }
 

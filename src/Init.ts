@@ -14,6 +14,8 @@ import SwarmSpawnerProc         from "./processes/spawn/SwarmSpawnerProc";
 import ProtoProc                from "./processes/ProtoProc";
 import TakeoverCmd from "./commands/colonize/TakeoverCmd";
 import TakeoverProc from "./processes/TakeoverProc";
+import ClaimCmd from "./commands/colonize/ClaimCmd";
+import ClaimProc from "./processes/goal/ClaimProc";
 
 
 /// Initilizaiton Step
@@ -27,6 +29,8 @@ export default function()
     addCommand(COLOR_PURPLE, COLOR_PURPLE, ProtoCmd);
     addCommand(COLOR_WHITE, COLOR_BROWN, TakeoverCmd);
 
+    addCommand(COLOR_PURPLE, COLOR_GREEN, ClaimCmd);
+
     // process setup
     addProcess('ProtoProc', ProtoProc);
 
@@ -38,6 +42,8 @@ export default function()
 
     addProcess('RclProc', RclProc);
     addProcess('TakeoverProc', TakeoverProc);
+
+    addProcess('ClaimProc', ClaimProc);
 
     // init processor
     Processor.clear();
