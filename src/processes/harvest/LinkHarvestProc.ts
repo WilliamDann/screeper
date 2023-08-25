@@ -24,8 +24,9 @@ export default class LinkHarvestProc extends CreepProc
         if (result == ERR_NOT_IN_RANGE)
             creep.moveTo(target)
 
-        if (creep.transfer(this.link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
-            creep.moveTo(this.link)
+        if (this.link.cooldown == 0)
+            if (creep.transfer(this.link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+                creep.moveTo(this.link)
     }
 
 
