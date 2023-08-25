@@ -18,6 +18,8 @@ import ClaimCmd from "./commands/colonize/ClaimCmd";
 import ClaimProc from "./processes/goal/ClaimProc";
 import RemoteHarvestCmd from "./commands/goal/RemoteHarvestCmd";
 import RemoteHarvestProc from "./processes/harvest/RemoteHarvestProc";
+import StealCmd from "./commands/goal/StealCmd";
+import StealProc from "./processes/harvest/StealProc";
 
 
 /// Initilizaiton Step
@@ -35,6 +37,8 @@ export default function()
 
     addCommand(COLOR_PURPLE, COLOR_GREEN, ClaimCmd);
 
+    addCommand(COLOR_YELLOW, COLOR_GREY, StealCmd)
+
     // process setup
     addProcess('ProtoProc', ProtoProc);
 
@@ -49,6 +53,7 @@ export default function()
 
     addProcess('ClaimProc', ClaimProc);
     addProcess('RemoteHarvestProc', RemoteHarvestProc);
+    addProcess('StealProc', StealProc)
 
     // init processor
     Processor.clear();

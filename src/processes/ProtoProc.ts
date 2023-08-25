@@ -22,13 +22,13 @@ export default class ProtoProc extends CreepProc
     findEnergyTarget(creep: Creep)
     {
         // look for storages
-        // let storage = this.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_STORAGE })[0] as StructureStorage;
-        // if (storage.store.energy > 1000)
-        // {
-        //     creep.memory['state']  = 'withdraw';
-        //     creep.memory['target'] = storage.id;
-        //     return;
-        // }
+        let storage = this.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_STORAGE })[0] as StructureStorage;
+        if (storage && storage.store.energy > 0)
+        {
+            creep.memory['state']  = 'withdraw';
+            creep.memory['target'] = storage.id;
+            return;
+        }
 
         // look for drops
         let drops = this.room.find(FIND_DROPPED_RESOURCES)
@@ -106,7 +106,7 @@ export default class ProtoProc extends CreepProc
         if (!creep.memory['target'])
         {
             let fills = this.room.find(FIND_STRUCTURES)
-                .filter(x => x['store'] && x['store'].getFreeCapacity(RESOURCE_ENERGY) != 0 && !x['moveTo'] && x['store'].energy < 1000);
+                .filter(x => x['store'] && x['store'].getFreeCapacity(RESOURCE_ENERGY) != 0 && !x['moveTo'] && x.structureType != STRUCTURE_STORAGE);
 
             // if nothing to fill, upgrade
             if (fills.length == 0)
@@ -182,7 +182,7 @@ export default class ProtoProc extends CreepProc
             creep.moveTo(target);
 
         // new state needed
-        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) != 0)
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) != 0 || target.store.getUsedCapacity(RESOURCE_ENERGY) == 0)
             creep.memory['state'] = undefined;
     }
 
