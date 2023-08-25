@@ -22,7 +22,7 @@ export default class ProtoProc extends CreepProc
     findEnergyTarget(creep: Creep)
     {
         // look for storages
-        // let storage = creep.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_STORAGE })[0] as StructureStorage;
+        // let storage = this.room.find(FIND_STRUCTURES, { filter: x => x.structureType == STRUCTURE_STORAGE })[0] as StructureStorage;
         // if (storage.store.energy > 1000)
         // {
         //     creep.memory['state']  = 'withdraw';
@@ -31,7 +31,7 @@ export default class ProtoProc extends CreepProc
         // }
 
         // look for drops
-        let drops = creep.room.find(FIND_DROPPED_RESOURCES)
+        let drops = this.room.find(FIND_DROPPED_RESOURCES)
             .sort(x => -x.amount);
 
         // if no drops harvest
@@ -66,7 +66,7 @@ export default class ProtoProc extends CreepProc
         // find a pickup site if needed
         if (!creep.memory['target'])
         {
-            let srcs = creep.room.find(FIND_SOURCES)
+            let srcs = this.room.find(FIND_SOURCES)
                 .sort(x => creep.pos.getRangeTo(x));
             creep.memory['target'] = srcs[0].id;
         }
@@ -105,7 +105,7 @@ export default class ProtoProc extends CreepProc
         // find a dropoff site if needed
         if (!creep.memory['target'])
         {
-            let fills = creep.room.find(FIND_STRUCTURES)
+            let fills = this.room.find(FIND_STRUCTURES)
                 .filter(x => x['store'] && x['store'].getFreeCapacity(RESOURCE_ENERGY) != 0 && !x['moveTo'] && x['store'].energy < 1000);
 
             // if nothing to fill, upgrade
@@ -132,7 +132,7 @@ export default class ProtoProc extends CreepProc
         // find a dropoff site if needed
         if (!creep.memory['target'])
         {
-            let sites = creep.room.find(FIND_CONSTRUCTION_SITES)
+            let sites = this.room.find(FIND_CONSTRUCTION_SITES)
                 .sort(x => creep.pos.getRangeTo(creep.pos))
 
             // if nothing to fill, upgrade
@@ -188,6 +188,14 @@ export default class ProtoProc extends CreepProc
 
     handleCreep(creep: Creep): void {
         creep.say((''+creep.memory['state'])[0]);
+
+        // if the creep is not in the target room, move there
+        // if (creep.room.name != this.room.name)
+        // {
+        //     creep.memory = {};
+        //     creep.moveTo(new RoomPosition(25, 25, this.room.name));
+        //     return;
+        // }
 
         // find role
         if (!creep.memory['state'])

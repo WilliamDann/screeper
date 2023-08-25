@@ -33,5 +33,9 @@ export default class ClaimProc extends CreepProc
 
     run(): void {
         super.run();
+
+        // remove when done
+        if (this.targetRoom && this.targetRoom.controller.my)
+            this.kill = true;
     }
 }
