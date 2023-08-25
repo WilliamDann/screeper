@@ -1,6 +1,7 @@
 import Comms            from "../framework/Comms";
 import Process          from "../framework/Process";
 import { SpawnRequest } from "../interface/SpawnRequest";
+import { timerStart, timerStop } from "../util";
 
 // base class for a process that handles creeps
 export default abstract class CreepProc extends Process
@@ -42,7 +43,7 @@ export default abstract class CreepProc extends Process
     run(): void {
         // remove dead creeps from list
         this.memory.creeps = this.memory.creeps.filter(x => Game.creeps[x] != undefined);
-
+        
         // call creep handler funcs
         this.handleCreeps();
 

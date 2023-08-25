@@ -1,11 +1,20 @@
 import init                 from "./Init"
-import Comms from "./framework/Comms";
+import Comms                from "./framework/Comms";
 import Processor            from "./framework/Processor";
+import TaskManager          from "./framework/TaskManager";
 import { commandFactory }   from "./framework/_Init";
+
+function consoleClear()
+{
+    for (let i = 0; i < 25; i++)
+        console.log();
+}
 
 // screeps entry point
 export function loop()
 {
+    consoleClear();
+
     // run initilization step
     init();
     const processor = Processor.getInstance();
@@ -35,4 +44,8 @@ export function loop()
             for (let tower of towers)
                 tower.attack(baddie);
     }
+
+    // task manager
+    let tm = new TaskManager();
+    tm.logUsage();
 }

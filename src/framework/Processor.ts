@@ -13,8 +13,8 @@ interface ProcessMemory
 // runs commands and processes, as well as keeps track of their memory
 export default class Processor
 {
-    private commands  : Command[];                     // stores ongoing Command object. Commands are instructions to the bot
-    private processes : Process[];                     // stores ongoing Process objects Processes are things the bot does
+    commands  : Command[];                     // stores ongoing Command object. Commands are instructions to the bot
+    processes : Process[];                     // stores ongoing Process objects Processes are things the bot does
 
     static _inst      : Processor;                     // singelton instance of the processor.
 
@@ -108,7 +108,13 @@ export default class Processor
         for (let command of this.commands)
             command.init();
         for (let process of this.processes)
+        {
+            let pre  = Game.cpu.getUsed();
             process.init();
+            let post = Game.cpu.getUsed() - pre;
+
+            process['_cpu'] = post;
+        }
     }
 
 
@@ -125,6 +131,7 @@ export default class Processor
         for (let process of this.processes)
         {
             // run process
+            let pre  = Game.cpu.getUsed();
             process.run();
 
             // do not save if the process is finished
@@ -140,6 +147,8 @@ export default class Processor
                 procName: process.name,
                 memory  : process.memory
             };
+            let post = Game.cpu.getUsed() - pre;
+            process['_cpu'] += post;
         }
 
         // save processor memory

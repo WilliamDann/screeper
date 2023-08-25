@@ -1,3 +1,5 @@
+import { uniqueId } from "lodash";
+
 // get the free spots around a point
 export function freeSpots(pos: RoomPosition)
 {
@@ -11,4 +13,30 @@ export function freeSpots(pos: RoomPosition)
     );
     area = area.filter(x => x.terrain != 'wall');
     return area.length;
+}
+
+// get the CPU used by a func
+export function time(func : Function): number
+{
+    let pre = Game.cpu.getUsed();
+    func()
+    let post = Game.cpu.getUsed();
+
+    return post-pre;
+}
+
+
+// start CPU timer
+let timers = {};
+export function timerStart(): string
+{
+    let id = uniqueId();
+    timers[id] = Game.cpu.getUsed();
+    return id;
+}
+
+// stop cpu timer
+export function timerStop(uid: string): number
+{
+    return Game.cpu.getUsed() - timers[uid];
 }

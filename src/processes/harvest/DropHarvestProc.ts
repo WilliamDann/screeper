@@ -1,4 +1,4 @@
-import { freeSpots } from "../../util";
+import { freeSpots, timerStart, timerStop } from "../../util";
 import CreepProc from "../CreepProc";
 
 // harvests material from a sources and drops them
@@ -23,16 +23,12 @@ export default class DropHarvestProc extends CreepProc
     // handle the behavior of a creep
     handleCreep(creep: Creep)
     {
-        // drop harvest at target
-        const target = Game.getObjectById(this.memory.source);
-        const result = creep.harvest(target);
+        if (creep.harvest(this.source) == ERR_NOT_IN_RANGE)
+            creep.moveTo(this.source);
 
-        if (result == ERR_NOT_IN_RANGE)
-            creep.moveTo(target)
-        else if (result == OK)
+        // drop if resouce below is getting low or we're full
+        if (creep.pos.lookFor(LOOK_RESOURCES)[0].amount < 100 || creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0)
             creep.drop(RESOURCE_ENERGY);
-        else
-            creep.say(`err: ${result}`);
     }
 
 
