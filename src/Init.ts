@@ -25,6 +25,8 @@ import StealProc                from "./processes/harvest/StealProc";
 import LinkHarvestProc          from "./processes/harvest/LinkHarvestProc";
 import LinkNetProc              from "./processes/LinkNetProc";
 import StaticDefenseProc        from "./processes/war/StaticDefenseProc";
+import WaveAttackProc from "./processes/war/WaveAttackProc";
+import AttackCmd from "./commands/war/AttackCmd";
 
 
 /// Initilizaiton Step
@@ -46,6 +48,7 @@ export default function()
     addCommand(COLOR_YELLOW, COLOR_GREY, StealCmd);
 
     addCommand(COLOR_RED, COLOR_BLUE, DefenseCmd);
+    addCommand(COLOR_RED, COLOR_RED, AttackCmd);
 
     // process setup
     addProcess('ProtoProc', ProtoProc);
@@ -66,6 +69,7 @@ export default function()
     addProcess('LinkNetProc', LinkNetProc);
 
     addProcess('StaticDefenseProc', StaticDefenseProc);
+    addProcess('WaveAttackProc', WaveAttackProc);
 
     // init processor
     Processor.clear();
