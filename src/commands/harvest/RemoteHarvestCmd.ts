@@ -1,4 +1,4 @@
-import Command from "../../framework/Command";
+import Command           from "../../framework/Command";
 import RemoteHarvestProc from "../../processes/harvest/RemoteHarvestProc";
 
 export default class RemoteHarvestCmd extends Command

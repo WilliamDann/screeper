@@ -6,7 +6,7 @@ import RclCmd                   from "./commands/goal/RclCmd";
 import ProtoCmd                 from "./commands/colonize/ProtoCmd";
 import TakeoverCmd              from "./commands/colonize/TakeoverCmd";
 import ClaimCmd                 from "./commands/colonize/ClaimCmd";
-import RemoteHarvestCmd         from "./commands/goal/RemoteHarvestCmd";
+import RemoteHarvestCmd         from "./commands/harvest/RemoteHarvestCmd";
 import StealCmd                 from "./commands/goal/StealCmd";
 import LinkNetCmd               from "./commands/logi/InitLinkNetCmd";
 import DefenseCmd               from "./commands/war/DefenseCmd";
