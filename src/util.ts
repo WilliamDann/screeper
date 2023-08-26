@@ -40,3 +40,10 @@ export function timerStop(uid: string): number
 {
     return Game.cpu.getUsed() - timers[uid];
 }
+
+// 'clear' the console by printing 25 newlines
+export function consoleClear()
+{
+    for (let i = 0; i < 25; i++)
+        console.log();
+}

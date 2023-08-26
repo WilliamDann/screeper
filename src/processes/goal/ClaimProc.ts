@@ -16,6 +16,8 @@ export default class ClaimProc extends CreepProc
         if (creep.pos.roomName != this.memory.roomName)
             creep.moveTo(new RoomPosition(25, 25, this.memory.roomName));
         else {
+            if (creep.room.controller.owner && creep.room.controller.owner.username != 'WilliamDann') // TODO
+                creep.attackController(creep.room.controller);
             if (creep.claimController(creep.room.controller) == ERR_NOT_IN_RANGE)
                 creep.moveTo(creep.room.controller);
         }

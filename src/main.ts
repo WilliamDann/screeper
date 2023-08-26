@@ -9,12 +9,6 @@ import Processor            from "./framework/Processor";
 const DEBUG = true;
 const RESET = false;
 
-function consoleClear()
-{
-    for (let i = 0; i < 25; i++)
-        console.log();
-}
-
 // screeps entry point
 export function loop()
 {
