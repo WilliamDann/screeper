@@ -29,6 +29,8 @@ import WaveAttackProc from "./processes/war/WaveAttackProc";
 import AttackCmd from "./commands/war/AttackCmd";
 import ActiveDefenseProc from "./processes/war/ActiveDefenseProc";
 import ActiveDefenseCmd from "./commands/war/ActiveDefenseCmd";
+import SignCmd from "./commands/war/SignCmd";
+import SignProc from "./processes/war/SignProc";
 
 
 /// Initilizaiton Step
@@ -52,6 +54,7 @@ export default function()
     addCommand(COLOR_RED, COLOR_BLUE, DefenseCmd);
     addCommand(COLOR_RED, COLOR_RED, AttackCmd);
     addCommand(COLOR_RED, COLOR_GREEN, ActiveDefenseCmd);
+    addCommand(COLOR_RED, COLOR_GREY, SignCmd)
 
     // process setup
     addProcess('ProtoProc', ProtoProc);
@@ -74,6 +77,7 @@ export default function()
     addProcess('StaticDefenseProc', StaticDefenseProc);
     addProcess('WaveAttackProc', WaveAttackProc);
     addProcess('ActiveDefenseProc', ActiveDefenseProc);
+    addProcess('SignProc', SignProc)
 
     // init processor
     Processor.clear();
