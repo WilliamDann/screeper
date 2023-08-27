@@ -5,7 +5,7 @@ export default class ActiveDefenseProc extends CreepProc
 {
     room     : Room;
     ramparts : StructureRampart[];
-
+    baddies  : Creep[];
 
     memory: {
         roomName : string;
@@ -17,16 +17,6 @@ export default class ActiveDefenseProc extends CreepProc
     };
 
     handleCreep(creep: Creep): void {
-        // get re-newed if low
-        if (creep.ticksToLive < 200)
-        {
-            if (!creep.memory['spawner'])
-                creep.memory['spawner'] = creep.room.find(FIND_MY_SPAWNS)[0].id;
-            let spawn = Game.getObjectById(creep.memory['spawner']) as StructureSpawn;
-            
-            if (spawn.renewCreep(creep) == ERR_NOT_IN_RANGE)
-                creep.moveTo(spawn)
-        }
         // find rampart
         if (!creep.memory['post'])
         {
@@ -41,8 +31,7 @@ export default class ActiveDefenseProc extends CreepProc
             creep.moveTo(post);
 
         // try to shoot baddie
-        let baddies = creep.room.find(FIND_HOSTILE_CREEPS);
-        for (let baddie of baddies)
+        for (let baddie of this.baddies)
             if (creep.pos.getRangeTo(baddie) <= 4)
                 creep.rangedAttack(baddie);
     }
@@ -55,6 +44,12 @@ export default class ActiveDefenseProc extends CreepProc
     
         this.room     = Game.rooms[this.memory.roomName];
         this.ramparts = this.memory.ramparts.map(Game.getObjectById) as any[];
+        this.baddies  = this.room.find(FIND_HOSTILE_CREEPS);
+
+        if (this.baddies.length != 0)
+            this.memory.creepGoal = this.ramparts.length;
+        else
+            this.memory.creepGoal = 0;
 
         super.init();
     }
