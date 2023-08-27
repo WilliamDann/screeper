@@ -27,6 +27,8 @@ import LinkNetProc              from "./processes/LinkNetProc";
 import StaticDefenseProc        from "./processes/war/StaticDefenseProc";
 import WaveAttackProc from "./processes/war/WaveAttackProc";
 import AttackCmd from "./commands/war/AttackCmd";
+import ActiveDefenseProc from "./processes/war/ActiveDefenseProc";
+import ActiveDefenseCmd from "./commands/war/ActiveDefenseCmd";
 
 
 /// Initilizaiton Step
@@ -49,6 +51,7 @@ export default function()
 
     addCommand(COLOR_RED, COLOR_BLUE, DefenseCmd);
     addCommand(COLOR_RED, COLOR_RED, AttackCmd);
+    addCommand(COLOR_RED, COLOR_GREEN, ActiveDefenseCmd);
 
     // process setup
     addProcess('ProtoProc', ProtoProc);
@@ -70,6 +73,7 @@ export default function()
 
     addProcess('StaticDefenseProc', StaticDefenseProc);
     addProcess('WaveAttackProc', WaveAttackProc);
+    addProcess('ActiveDefenseProc', ActiveDefenseProc);
 
     // init processor
     Processor.clear();

@@ -49,7 +49,7 @@ export default class TaskManager
         const BOLD_TEXT    = {align: "left", opacity: 0.4 } as MapTextStyle;
 
         let v = new RoomVisual();
-        v.rect(this.x, this.y, 23, 15, { fill: undefined, opacity: 0.1, })
+        v.rect(this.x, this.y, 23, 15, { fill: undefined, opacity: 0.0, })
         v.text("Task Manager", this.x+1, this.y+1, BOLD_TEXT)
 
         // labs
