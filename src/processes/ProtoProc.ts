@@ -108,7 +108,7 @@ export default class ProtoProc extends CreepProc
         {
             let fills = sortBy(this.room.find(FIND_STRUCTURES)
                 .filter(x => x['store'] && x['store'].getFreeCapacity(RESOURCE_ENERGY) != 0 && !x['moveTo'] && x.structureType != STRUCTURE_STORAGE && x.structureType != STRUCTURE_LINK),
-                x => x['store'].energy);
+                x => x.pos.getRangeTo(creep));
 
             // if nothing to fill, upgrade
             if (fills.length == 0)

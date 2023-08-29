@@ -57,7 +57,36 @@ export default class CompanyProc extends CreepProc
             creep.moveTo(this.station)
     }
 
+    handleRenew(creep: Creep): boolean
+    {
+        if (creep.memory['state'] == 'renew')
+        {
+            let spawn: StructureSpawn;
+            if (!creep.memory['spawn'])
+                spawn = creep.room.find(FIND_MY_SPAWNS)[0];
+            if(!spawn)
+                return;
+
+            if (spawn.renewCreep(creep) == ERR_NOT_IN_RANGE)
+                creep.moveTo(spawn);
+
+            if (creep.ticksToLive > 1500)
+            {
+                creep.memory['state'] = undefined;
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
     handleCreep(creep: Creep): void {
+        // renew creep
+        if (creep.ticksToLive < 500)
+            creep.memory['state'] = 'renew';
+        if (this.handleRenew(creep))
+            return;
+        
         // heal self and others in range
         
         // attack the lowest hits target in range

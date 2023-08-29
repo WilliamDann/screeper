@@ -22,7 +22,11 @@ export default class LinkHarvestProc extends CreepProc
         let hasEnergyToTransfer = creep.store.energy != 0;
         let isFull              = creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0;
 
-        if ( isFull || (linkTransferSoon && hasEnergyToTransfer) )
+        let dropped = creep.pos.lookFor(LOOK_RESOURCES)
+        if (dropped.length != 0)
+            creep.pickup(dropped[0]);
+
+        if ( isFull || (linkTransferSoon && hasEnergyToTransfer) || creep.ticksToLive <= 10 )
         {
             if (creep.transfer(this.link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
                 creep.moveTo(this.link);
