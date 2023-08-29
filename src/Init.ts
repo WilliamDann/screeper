@@ -34,6 +34,7 @@ import SignProc from "./processes/war/SignProc";
 import CompanyProc from "./processes/war/CompanyProc";
 import CompanyCmd from "./commands/war/CompanyCommand";
 import CompanyMoveCmd from "./commands/war/CompanyMoveCmd";
+import ContainerHarvestProc from "./processes/harvest/ContainerHarvestProc";
 
 
 /// Initilizaiton Step
@@ -85,6 +86,7 @@ export default function()
     addProcess('ActiveDefenseProc', ActiveDefenseProc);
     addProcess('SignProc', SignProc);
     addProcess('CompanyProc', CompanyProc);
+    addProcess('ContainerHarvestProc', ContainerHarvestProc);
 
     // init processor
     Processor.clear();
