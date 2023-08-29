@@ -70,7 +70,7 @@ export default class CompanyProc extends CreepProc
             if (spawn.renewCreep(creep) == ERR_NOT_IN_RANGE)
                 creep.moveTo(spawn);
 
-            if (creep.ticksToLive > 1500)
+            if (creep.ticksToLive >= 1450)
             {
                 creep.memory['state'] = undefined;
                 return false;
