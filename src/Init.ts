@@ -35,6 +35,8 @@ import CompanyProc from "./processes/war/CompanyProc";
 import CompanyCmd from "./commands/war/CompanyCommand";
 import CompanyMoveCmd from "./commands/war/CompanyMoveCmd";
 import ContainerHarvestProc from "./processes/harvest/ContainerHarvestProc";
+import PathingProc from "./processes/PathingProc";
+import OptimizeCmd from "./commands/OptimizeCmd";
 
 
 /// Initilizaiton Step
@@ -63,6 +65,8 @@ export default function()
     addCommand(COLOR_RED, COLOR_ORANGE, CompanyCmd);
     addCommand(COLOR_RED, COLOR_BROWN, CompanyMoveCmd);
 
+    addCommand(COLOR_GREEN, COLOR_GREEN, OptimizeCmd);
+
     // process setup
     addProcess('ProtoProc', ProtoProc);
 
@@ -88,6 +92,8 @@ export default function()
     addProcess('CompanyProc', CompanyProc);
     addProcess('ContainerHarvestProc', ContainerHarvestProc);
 
+    addProcess('PathingProc', PathingProc);
+    
     // init processor
     Processor.clear();
     Processor.getInstance();
