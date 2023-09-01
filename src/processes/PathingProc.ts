@@ -2,11 +2,12 @@ import { filter, sortBy } from "lodash";
 import Process from "../framework/Process";
 import Comms from "../framework/Comms";
 
-interface PathInfo
+export interface PathInfo
 {
     startPos : RoomPosition;    // the roomposition where the path starts
     endPos   : RoomPosition;    // the roomposition where the path ends
     path     : PathStep[];      // the actual path
+    time     : number
 }
 
 
@@ -14,6 +15,7 @@ export default class PathingProc extends Process
 {
     static PATH_REACH  = 6;
     static CREEP_REACH = 6; 
+    static EXPIRE_TIME = 100;
 
     static PATH_ERR : number[] = [ ERR_NOT_OWNER, ERR_NOT_FOUND, ERR_INVALID_ARGS ]
 
@@ -27,6 +29,15 @@ export default class PathingProc extends Process
         let creep  = args[0] as Creep;
         let target = args[1] as RoomPosition;
         
+        // reset creep path if target is no longer what it was
+        if (creep.memory['path'])
+        {
+            let dist = target.getRangeTo(creep.memory['path'].endPos);
+            if (!dist || creep.memory['path'] > 1)
+                creep.memory['path'] = undefined;
+        }
+        
+
         // if creep is close, just moveTo
         if (creep.pos.getRangeTo(target) <= PathingProc.PATH_REACH)
         {
@@ -38,23 +49,29 @@ export default class PathingProc extends Process
         if (!creep.memory['path'])
         {
             // find ends in path reach range
-            let ends   = filter(this.memory.paths, x => creep.pos.getRangeTo(x.endPos) <= PathingProc.PATH_REACH);
+            let ends   = filter(this.memory.paths, x => target.getRangeTo(x.endPos) <= PathingProc.PATH_REACH);
             
             // sort starts by nearest
-            let starts = sortBy(ends, x => x.startPos.getRangeTo(creep));
+            let starts = sortBy(ends, x => creep.pos.getRangeTo(x.startPos));
     
             // if path is out of creep reach range or just does not exist moveTo and record new path
             if (starts.length == 0 || starts[0].startPos.getRangeTo(creep) > PathingProc.CREEP_REACH)
             {
                 // create new path
-                let path             = { startPos: creep.pos, endPos: target, path: creep.pos.findPathTo(target) } as PathInfo;
+                let path             = { startPos: creep.pos, endPos: target, path: creep.pos.findPathTo(target), time: Game.time } as PathInfo;
                 
                 // remember path
                 this.memory.paths.push(path);
                 
                 // move creep
-                creep.moveByPath(path.path);
                 creep.memory['path'] = path;
+            }
+
+            // otherwise used existing path
+            else
+            {
+                creep.memory['path'] = starts[0];
+                starts[0].time = Game.time;
             }
         }
 
@@ -68,7 +85,6 @@ export default class PathingProc extends Process
 
             creep.say(code+'');
         }
-
     }
 
     init(): void {
@@ -76,6 +92,7 @@ export default class PathingProc extends Process
     }
 
     run(): void {
-        
+        // filter out old paths
+        // filter(this.memory.paths, x => x.time != undefined && Game.time - x.time > PathingProc.EXPIRE_TIME)
     }
 }

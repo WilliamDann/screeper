@@ -5,6 +5,7 @@ import { commandFactory }   from "./framework/_Init";
 import Grapher              from "./framework/ui/Grapher";
 import { max, min }         from "lodash";
 import Processor            from "./framework/Processor";
+import PathDraw from "./framework/ui/PathDraw";
 
 const DEBUG = true;
 const RESET = false;
@@ -42,10 +43,10 @@ export function loop()
                 Memory['grapher'] = {};
         }
 
-        let tm = new TaskManager(0, 0);
+        let tm = new TaskManager(0, 35);
         tm.draw();
         
-        let gr = new Grapher(23, 0);
+        let gr = new Grapher(23, 35);
         gr.addLine('% Total CPU', {
             data  : () => (100 * (Game.cpu.getUsed() / Game.cpu.limit)),
             scale : x  => 10 - (0.10 * x),
@@ -85,5 +86,8 @@ export function loop()
 
         gr.collect();
         gr.draw();
+
+        let pd = new PathDraw('PathingProc_pathing');
+        pd.draw();
     }
 }
